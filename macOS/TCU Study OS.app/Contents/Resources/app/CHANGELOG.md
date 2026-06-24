@@ -1,15 +1,24 @@
-# TCU Study OS PWA v7 — Rotina Inteligente + Backup Seguro
+# Changelog
 
-## Novidades
+## v8 — Progresso, Recordes e Backup Assistido
 
-- Tela Hoje mais estratégica, com metas vivas e alerta de backup.
-- Backup inteligente: último backup, saúde dos dados, snapshots locais e importação com mesclagem.
-- Histórico com filtros por disciplina, modo, data e busca.
-- Conteúdo mais forte: filtros por status/busca, botão Próximo tópico e botão Registrar tópico.
-- Registro a partir de tópico já vem pré-preenchido com disciplina, modo e assunto.
-- Ciclo em pizza mantém disciplinas repetidas separadas na ordem real do ciclo.
-- Configurações agora incluem lembrete de backup.
+- Adicionado painel de recordes pessoais.
+- Adicionado maior CH diária já atingida.
+- Adicionado mês com maior estudo.
+- Adicionada melhor semana.
+- Adicionado maior percentual diário de acertos.
+- Adicionado maior volume diário de questões.
+- Adicionada melhor disciplina por percentual de acertos.
+- Adicionado avanço do ciclo ativo com percentual por disciplina.
+- A tela Progresso agora exibe somente disciplinas ativas na tabela principal.
+- Adicionadas conquistas por marcos de horas, questões e constância.
+- Adicionada opção de autoexportar backup JSON após registro.
+- Mantida a separação de disciplinas com frequência 2x no ciclo.
+- Atualizado cache para forçar publicação da nova versão.
 
-## Observação
+## v7 — Rotina Inteligente + Backup Seguro
 
-Backup automático real para iCloud/Google Drive ainda exige ação do usuário ou integração autenticada. Esta versão cria snapshots locais e facilita a exportação JSON para salvar no iCloud Drive/Google Drive.
+- Histórico com filtros.
+- Backup com mesclagem.
+- Conteúdo com registro direto por tópico.
+- Metas vivas e backup inteligente.

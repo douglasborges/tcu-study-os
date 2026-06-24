@@ -2,7 +2,7 @@
   'use strict';
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
-  const BACKUP_VERSION = 7;
+  const BACKUP_VERSION = 8;
   const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
   const MAX_SNAPSHOTS = 3;
   const MODES = ['Teoria', 'Revisão', 'Questões', 'Caderno de Erros', 'Em espera'];
@@ -7908,7 +7908,8 @@
         neglectDays: 7,
         updatedAt: new Date().toISOString(),
         lastBackupAt: '',
-        backupReminderDays: 1
+        backupReminderDays: 1,
+        autoExportAfterRegister: false
       },
       disciplines,
       topics,
@@ -7937,6 +7938,7 @@
     };
     clean.settings.lastBackupAt = clean.settings.lastBackupAt || '';
     clean.settings.backupReminderDays = Number.isFinite(Number(clean.settings.backupReminderDays)) ? Number(clean.settings.backupReminderDays) : 1;
+    clean.settings.autoExportAfterRegister = Boolean(clean.settings.autoExportAfterRegister);
     clean.disciplines = clean.disciplines.map((d, idx) => ({
       id: d.id || slugify(d.name) || uid('disc'),
       name: d.name || `Disciplina ${idx + 1}`,
@@ -8166,33 +8168,22 @@
 
   function cycleArray() {
     const base = activeDisciplines();
-    const arr = base.slice();
+    if (!base.length) return [];
+    const remaining = base.map(d => ({ disc: d, left: Math.max(1, parseIntSafe(d.frequency || 1)), order: Number(d.order) || 999 }));
+    const out = [];
 
-    // Frequência não significa repetição grudada.
+    // Frequência significa presença distribuída, não repetição grudada.
     // Ex.: Português 2x + DCON 1x + DAD 1x => Português → DCON → Português → DAD.
-    // A regra abaixo insere repetições nos melhores espaços disponíveis, evitando
-    // disciplinas iguais lado a lado sempre que houver outra disciplina para separar.
-    base.forEach(d => {
-      const n = Math.max(1, parseIntSafe(d.frequency || 1));
-      for (let extra = 1; extra < n; extra += 1) {
-        const target = Math.max(1, Math.round((extra * base.length) / n));
-        let bestPos = -1;
-        let bestScore = -Infinity;
-        for (let pos = 0; pos <= arr.length; pos += 1) {
-          const prev = arr[pos - 1];
-          const next = arr[pos];
-          const adjacentSame = (prev && prev.id === d.id) || (next && next.id === d.id);
-          if (adjacentSame && base.length > 1) continue;
-          const samePositions = arr.map((x, idx) => x.id === d.id ? idx : -1).filter(idx => idx >= 0);
-          const nearest = samePositions.length ? Math.min(...samePositions.map(idx => Math.abs(idx - pos))) : arr.length + 1;
-          const score = nearest * 10 - Math.abs(pos - target);
-          if (score > bestScore) { bestScore = score; bestPos = pos; }
-        }
-        if (bestPos < 0) bestPos = arr.length;
-        arr.splice(bestPos, 0, d);
-      }
-    });
-    return arr;
+    while (remaining.some(x => x.left > 0)) {
+      const last = out[out.length - 1];
+      let candidates = remaining.filter(x => x.left > 0 && (!last || x.disc.id !== last.id));
+      if (!candidates.length) candidates = remaining.filter(x => x.left > 0);
+      candidates.sort((a, b) => b.left - a.left || a.order - b.order || a.disc.name.localeCompare(b.disc.name, 'pt-BR'));
+      const chosen = candidates[0];
+      out.push(chosen.disc);
+      chosen.left -= 1;
+    }
+    return out;
   }
 
   function suggestedSessions() {
@@ -8472,6 +8463,151 @@
   }
 
 
+
+  function groupSessionsBy(keyFn) {
+    const map = new Map();
+    state.sessions.forEach(s => {
+      const key = keyFn(s);
+      if (!key) return;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(s);
+    });
+    return map;
+  }
+
+  function bestDailyHours() {
+    const grouped = groupSessionsBy(s => s.date);
+    let best = { key: '', hours: 0, sessions: 0 };
+    grouped.forEach((list, key) => {
+      const hours = sum(list, 'hours');
+      if (hours > best.hours) best = { key, hours, sessions: list.length };
+    });
+    return best;
+  }
+
+  function bestMonthStats() {
+    const grouped = groupSessionsBy(s => monthKey(s.date));
+    let best = { key: '', hours: 0, sessions: 0 };
+    grouped.forEach((list, key) => {
+      const hours = sum(list, 'hours');
+      if (hours > best.hours) best = { key, hours, sessions: list.length };
+    });
+    return best;
+  }
+
+  function bestWeekStats() {
+    const grouped = groupSessionsBy(s => weekStartISO(new Date(String(s.date || todayISO()) + 'T12:00:00')));
+    let best = { key: '', hours: 0, sessions: 0 };
+    grouped.forEach((list, key) => {
+      const hours = sum(list, 'hours');
+      if (hours > best.hours) best = { key, hours, sessions: list.length };
+    });
+    return best;
+  }
+
+  function bestAccuracyDay() {
+    const grouped = groupSessionsBy(s => s.date);
+    let best = { key: '', pct: 0, questions: 0, correct: 0 };
+    grouped.forEach((list, key) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      const pct = questions ? Math.round((correct / questions) * 100) : 0;
+      if (questions > 0 && (pct > best.pct || (pct === best.pct && questions > best.questions))) {
+        best = { key, pct, questions, correct };
+      }
+    });
+    return best;
+  }
+
+  function bestQuestionDay() {
+    const grouped = groupSessionsBy(s => s.date);
+    let best = { key: '', questions: 0, correct: 0 };
+    grouped.forEach((list, key) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      if (questions > best.questions) best = { key, questions, correct };
+    });
+    return best;
+  }
+
+  function bestDisciplineAccuracy() {
+    const grouped = groupSessionsBy(s => s.disciplineId || normalizeName(s.disciplineName));
+    let best = { name: '', pct: 0, questions: 0, correct: 0 };
+    grouped.forEach((list, key) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      const pct = questions ? Math.round((correct / questions) * 100) : 0;
+      const name = list[0] && list[0].disciplineName ? list[0].disciplineName : key;
+      if (questions > 0 && (pct > best.pct || (pct === best.pct && questions > best.questions))) {
+        best = { name, pct, questions, correct };
+      }
+    });
+    return best;
+  }
+
+  function activeCycleProgressStats() {
+    const active = activeDisciplines();
+    const rows = active.map(d => {
+      const topics = topicsForDiscipline(d);
+      const total = topics.length;
+      const progressed = topics.filter(t => t.status !== 'Em espera').length;
+      const score = total ? Math.round(topics.reduce((acc, t) => acc + topicProgressValue(t.status), 0) / total) : 0;
+      return { d, total, progressed, score };
+    });
+    const totalTopics = rows.reduce((acc, r) => acc + r.total, 0);
+    const progressedTopics = rows.reduce((acc, r) => acc + r.progressed, 0);
+    const weightedScore = totalTopics ? Math.round(rows.reduce((acc, r) => acc + r.score * r.total, 0) / totalTopics) : 0;
+    const simplePct = totalTopics ? Math.round((progressedTopics / totalTopics) * 100) : 0;
+    return { rows, totalTopics, progressedTopics, weightedScore, simplePct };
+  }
+
+  function recordCardsHTML() {
+    const daily = bestDailyHours();
+    const month = bestMonthStats();
+    const week = bestWeekStats();
+    const accDay = bestAccuracyDay();
+    const qDay = bestQuestionDay();
+    const discAcc = bestDisciplineAccuracy();
+    return `
+      <section class="grid cards-3" style="margin-top:18px">
+        <div class="card record-card"><div class="label">Maior CH diária</div><div class="value">${fmt(daily.hours)}h</div><div class="hint">${daily.key ? formatDate(daily.key) + ' · ' + daily.sessions + ' sessão(ões)' : 'sem registro'}</div></div>
+        <div class="card record-card"><div class="label">Melhor mês</div><div class="value">${fmt(month.hours)}h</div><div class="hint">${month.key || 'sem registro'}</div></div>
+        <div class="card record-card"><div class="label">Melhor semana</div><div class="value">${fmt(week.hours)}h</div><div class="hint">início ${week.key ? formatDate(week.key) : '—'}</div></div>
+        <div class="card record-card"><div class="label">Maior % diário</div><div class="value">${accDay.questions ? accDay.pct + '%' : '—'}</div><div class="hint">${accDay.questions ? formatDate(accDay.key) + ' · ' + accDay.correct + '/' + accDay.questions : 'sem questões'}</div></div>
+        <div class="card record-card"><div class="label">Mais questões em um dia</div><div class="value">${qDay.questions}</div><div class="hint">${qDay.key ? formatDate(qDay.key) + ' · ' + qDay.correct + ' acertos' : 'sem questões'}</div></div>
+        <div class="card record-card"><div class="label">Melhor disciplina</div><div class="value">${discAcc.questions ? discAcc.pct + '%' : '—'}</div><div class="hint">${discAcc.questions ? escapeHTML(discAcc.name) + ' · ' + discAcc.questions + ' questões' : 'sem questões'}</div></div>
+      </section>`;
+  }
+
+  function activeCycleProgressHTML() {
+    const stats = activeCycleProgressStats();
+    if (!stats.rows.length) return `<section class="card" style="margin-top:18px"><h3>Avanço do ciclo ativo</h3><p class="empty">Ative disciplinas no Ciclo para acompanhar o avanço.</p></section>`;
+    return `
+      <section class="card" style="margin-top:18px">
+        <div class="section-title compact"><h3>Avanço do ciclo ativo</h3><span class="badge dark">${stats.weightedScore}% maturidade</span></div>
+        <div class="progress-bar big"><span style="width:${stats.weightedScore}%"></span></div>
+        <p class="muted">${stats.progressedTopics}/${stats.totalTopics} tópico(s) já saíram de “Em espera”. O percentual considera somente disciplinas ativas no ciclo.</p>
+        <div class="cycle-progress-list">
+          ${stats.rows.map(r => `<div class="cycle-progress-row"><strong>${escapeHTML(r.d.name)}</strong><span>${r.progressed}/${r.total} tópicos · ${r.score}%</span><div class="progress-bar"><span style="width:${r.score}%"></span></div></div>`).join('')}
+        </div>
+      </section>`;
+  }
+
+  function achievementsHTML() {
+    const totalHours = sum(state.sessions, 'hours');
+    const totalQuestions = sum(state.sessions, 'questions');
+    const streak = constancyStats();
+    const goals = [
+      ['Primeiras 10h', totalHours >= 10, `${fmt(totalHours)}/10h`],
+      ['50h líquidas', totalHours >= 50, `${fmt(totalHours)}/50h`],
+      ['100h líquidas', totalHours >= 100, `${fmt(totalHours)}/100h`],
+      ['500 questões', totalQuestions >= 500, `${totalQuestions}/500`],
+      ['1.000 questões', totalQuestions >= 1000, `${totalQuestions}/1000`],
+      ['7 dias sem falhar', streak.best >= 7, `${streak.best}/7 dias`]
+    ];
+    return `<section class="card" style="margin-top:18px"><h3>Conquistas</h3><div class="achievement-grid">${goals.map(g => `<div class="achievement ${g[1] ? 'done' : ''}"><strong>${g[1] ? '✓' : '•'} ${g[0]}</strong><span>${g[2]}</span></div>`).join('')}</div></section>`;
+  }
+
   function backupNoticeHTML() {
     const due = backupIsDue();
     const days = daysSinceBackup();
@@ -8518,6 +8654,7 @@
         <div class="card constancy-card"><div class="section-title compact"><h3>Constância</h3><span class="badge">sem falhar</span></div><div class="constancy-values"><div><strong>${streak.current}</strong><span>dias atuais</span></div><div><strong>${streak.best}</strong><span>recorde</span></div><div><strong>${streak.studiedDays}</strong><span>dias estudados</span></div></div><p class="muted">Domingos não quebram a sequência quando estiverem configurados como descanso.</p></div>
         ${renderCyclePizza()}
       </section>
+      ${activeCycleProgressHTML()}
       <div class="section-title"><h3>Sessões recomendadas</h3><button class="primary-btn" data-nav="registrar">+ Registrar sessão</button></div>
       <section class="grid cards-2">
         ${suggestions.length ? suggestions.map((s, idx) => renderSessionCard(s, idx)).join('') : `<div class="card span-12"><p class="empty">Nenhuma sessão automática agora. Você ainda pode registrar qualquer estudo em <strong>Registrar</strong>.</p></div>`}
@@ -8708,7 +8845,11 @@
         state.sessions.push({ id: uid('sess'), createdAt: new Date().toISOString(), ...payload }); toast(`Sessão registrada: ${disc.name} · ${fmt(hours)}h`);
       }
       saveState();
-      if (backupIsDue()) setTimeout(() => toast('Backup recomendado: exporte seu JSON hoje.'), 900);
+      if (state.settings.autoExportAfterRegister) {
+        setTimeout(() => { exportBackupFile(); toast('Backup JSON exportado automaticamente. Salve no iCloud/Drive.'); }, 120);
+      } else if (backupIsDue()) {
+        setTimeout(() => toast('Backup recomendado: exporte seu JSON hoje.'), 900);
+      }
       editingSessionId = null; lastDraft = null; renderRegister();
     });
     attachSessionActions();
@@ -8973,23 +9114,31 @@
 
   function renderProgress() {
     const periods = sessionsByPeriod();
+    const activeStats = activeCycleProgressStats();
     const content = `
-      <section class="banner"><h2>Progresso</h2><p>Horas, questões, acertos e evolução real.</p></section>
+      <section class="banner"><h2>Progresso</h2><p>Horas, questões, acertos, recordes e avanço real do ciclo.</p></section>
       <section class="grid cards-4">
-        <div class="card kpi"><div class="label">Hoje</div><div class="value">${fmt(sum(periods.today, 'hours'))}h</div><div class="hint">${periods.today.length} sessões</div></div>
+        <div class="card kpi"><div class="label">Hoje</div><div class="value">${fmt(sum(periods.today, 'hours'))}h</div><div class="hint">${periods.today.length} sessão(ões)</div></div>
         <div class="card kpi"><div class="label">Semana</div><div class="value">${fmt(sum(periods.week, 'hours'))}h</div><div class="hint">meta ${fmt(state.settings.weeklyGoal)}h</div></div>
         <div class="card kpi"><div class="label">Mês</div><div class="value">${fmt(sum(periods.month, 'hours'))}h</div><div class="hint">meta ${fmt(state.settings.monthlyGoal)}h</div></div>
-        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(periods.total)}%</div><div class="hint">${sum(periods.total, 'questions')} questões</div></div>
+        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(state.sessions)}%</div><div class="hint">${sum(state.sessions, 'questions')} questões</div></div>
       </section>
-      <section class="card" style="margin-top:18px">
-        <h3>Por disciplina</h3>${renderProgressTable()}
+      <section class="grid cards-3" style="margin-top:18px">
+        <div class="card kpi"><div class="label">Avanço do ciclo</div><div class="value">${activeStats.weightedScore}%</div><div class="hint">disciplinas ativas</div></div>
+        <div class="card kpi"><div class="label">Tópicos ativos</div><div class="value">${activeStats.progressedTopics}/${activeStats.totalTopics}</div><div class="hint">fora de “Em espera”</div></div>
+        <div class="card kpi"><div class="label">Constância</div><div class="value">${constancyStats().current}</div><div class="hint">recorde ${constancyStats().best} dia(s)</div></div>
       </section>
+      ${activeCycleProgressHTML()}
+      <section class="card" style="margin-top:18px"><h3>Recordes pessoais</h3><p class="muted">Marcos para manter motivação e visualizar evolução acumulada.</p>${recordCardsHTML()}</section>
+      ${achievementsHTML()}
+      <section class="card" style="margin-top:18px"><h3>Por disciplina</h3>${renderProgressTable()}</section>
     `;
     renderLayout(content);
   }
 
   function renderProgressTable() {
-    const rows = state.disciplines.map(d => {
+    const activeIds = new Set(activeDisciplines().map(d => d.id));
+    const rows = state.disciplines.filter(d => activeIds.has(d.id)).map(d => {
       const list = state.sessions.filter(s => s.disciplineId === d.id || s.disciplineName === d.name);
       const monthList = list.filter(s => monthKey(s.date) === monthKey(todayISO()));
       const hrs = sum(list, 'hours');
@@ -9002,10 +9151,9 @@
       const topicScore = topics.length ? Math.round(topics.reduce((acc,t)=>acc+topicProgressValue(t.status),0)/topics.length) : 0;
       const activeTopics = topics.filter(t => t.status !== 'Em espera').length;
       return { d, hrs, monthHrs: sum(monthList, 'hours'), q, c, pct, days, topicScore, activeTopics, topicTotal: topics.length };
-    }).filter(r => r.d.active || r.hrs > 0 || r.topicTotal > 0).sort((a,b) => b.hrs - a.hrs || a.d.name.localeCompare(b.d.name, 'pt-BR'));
-    if (!rows.length) return '<p class="empty">Sem dados de progresso ainda.</p>';
-    const maxHrs = Math.max(...rows.map(r => r.hrs), 1);
-    return `<div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Modo</th><th>Horas mês</th><th>Horas total</th><th>Questões</th><th>%</th><th>Tópicos</th><th>Progresso conteúdo</th><th>Último contato</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${escapeHTML(r.d.name)}</strong></td><td>${escapeHTML(r.d.mode)}</td><td>${fmt(r.monthHrs)}h</td><td>${fmt(r.hrs)}h</td><td>${r.q}</td><td>${r.pct}%</td><td>${r.activeTopics}/${r.topicTotal}</td><td><div class="progress-bar"><span style="width:${r.topicScore}%"></span></div><span class="muted">${r.topicScore}%</span></td><td>${r.days === null ? '—' : `${r.days} dia(s)`}</td></tr>`).join('')}</tbody></table></div>`;
+    }).sort((a,b) => b.topicScore - a.topicScore || b.hrs - a.hrs || a.d.name.localeCompare(b.d.name, 'pt-BR'));
+    if (!rows.length) return '<p class="empty">Nenhuma disciplina ativa no ciclo. Ative disciplinas na aba Ciclo.</p>';
+    return `<p class="muted">Esta tabela mostra apenas disciplinas ativas do ciclo. Disciplinas em espera ficam fora do cálculo motivacional.</p><div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Modo</th><th>Horas mês</th><th>Horas total</th><th>Questões</th><th>%</th><th>Tópicos</th><th>Progresso conteúdo</th><th>Último contato</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${escapeHTML(r.d.name)}</strong></td><td>${escapeHTML(r.d.mode)}</td><td>${fmt(r.monthHrs)}h</td><td>${fmt(r.hrs)}h</td><td>${r.q}</td><td>${r.pct}%</td><td>${r.activeTopics}/${r.topicTotal}</td><td><div class="progress-bar"><span style="width:${r.topicScore}%"></span></div><span class="muted">${r.topicScore}%</span></td><td>${r.days === null ? '—' : `${r.days} dia(s)`}</td></tr>`).join('')}</tbody></table></div>`;
   }
 
   function renderAttack() {
@@ -9096,6 +9244,7 @@
           <div class="field span-3"><label>% mínimo de acerto</label><input id="cfg-acc" value="${s.minAccuracy}" type="number"></div>
           <div class="field span-3"><label>Dias sem contato</label><input id="cfg-days" value="${s.neglectDays}" type="number"></div>
           <div class="field span-3"><label>Lembrete de backup (dias)</label><input id="cfg-backup-days" value="${s.backupReminderDays || 1}" type="number" min="1"></div>
+          <div class="field span-3"><label>Auto-exportar após registro?</label><select id="cfg-auto-export"><option ${s.autoExportAfterRegister?'':'selected'}>Não</option><option ${s.autoExportAfterRegister?'selected':''}>Sim</option></select></div>
           <div class="span-12"><button class="primary-btn" type="submit">Salvar configurações</button></div>
         </form>
       </section>
@@ -9110,6 +9259,7 @@
       state.settings.minAccuracy = parseIntSafe(document.getElementById('cfg-acc').value) || 70;
       state.settings.neglectDays = parseIntSafe(document.getElementById('cfg-days').value) || 7;
       state.settings.backupReminderDays = Math.max(1, parseIntSafe(document.getElementById('cfg-backup-days').value) || 1);
+      state.settings.autoExportAfterRegister = document.getElementById('cfg-auto-export').value === 'Sim';
       state.settings.updatedAt = new Date().toISOString();
       saveState(); toast('Configurações salvas.'); renderConfig();
     });
@@ -9128,7 +9278,7 @@
       </section>
       ${backupIsDue() ? `<section class="notice warn" style="margin-top:18px"><strong>Atenção:</strong> backup externo recomendado. Exporte e salve no iCloud Drive ou Google Drive.</section>` : `<section class="notice ok" style="margin-top:18px"><strong>Backup em dia.</strong> Mantenha o JSON em local seguro.</section>`}
       <section class="grid cards-2" style="margin-top:18px">
-        <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive ou Google Drive.</p><button class="primary-btn" id="export-json">Exportar backup agora</button></div>
+        <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive ou Google Drive.</p><button class="primary-btn" id="export-json">Exportar backup agora</button><p class="muted" style="margin-top:10px">Auto-exportação após registro: <strong>${state.settings.autoExportAfterRegister ? 'ativada' : 'desativada'}</strong>. Ajuste em Configurações.</p></div>
         <div class="card"><h3>Importar</h3><p class="muted">Escolha se deseja substituir tudo ou mesclar com o que já existe.</p><input type="file" id="import-file" accept="application/json,.json" class="inline-input"><div class="table-actions" style="margin-top:12px"><button class="subtle-btn" id="import-merge">Importar mesclando</button><button class="danger-btn" id="import-replace">Substituir tudo</button></div></div>
       </section>
       <section class="card" style="margin-top:18px"><h3>Backup automático local</h3><p class="muted">A cada alteração importante, o app mantém até ${MAX_SNAPSHOTS} snapshots no próprio navegador. Isso não substitui o JSON salvo fora do navegador.</p>${snapshots.length ? `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Registros</th><th>Tópicos</th><th>Ação</th></tr></thead><tbody>${snapshots.map((snp, idx) => `<tr><td>${new Date(snp.createdAt).toLocaleString('pt-BR')}</td><td>${snp.sessions}</td><td>${snp.topics}</td><td><button class="subtle-btn mini" data-restore-snapshot="${idx}">Restaurar</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">Nenhum snapshot local ainda.</p>'}</section>

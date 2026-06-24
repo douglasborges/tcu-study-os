@@ -2,7 +2,8 @@
   'use strict';
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
-  const BACKUP_VERSION = 7;
+  const BACKUP_VERSION = 9;
+  const APP_VERSION_LABEL = 'v9.0 — DCON + Questões';
   const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
   const MAX_SNAPSHOTS = 3;
   const MODES = ['Teoria', 'Revisão', 'Questões', 'Caderno de Erros', 'Em espera'];
@@ -664,203 +665,213 @@
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula demo — Teoria Geral da Constituição.",
-    "details": "Teoria Geral da Constituição.",
+    "title": "1- Aplicabilidade das normas constitucionais [A01]",
+    "details": "Aplicabilidade das normas constitucionais [A01]",
     "status": "Em espera",
-    "priority": "Média",
+    "priority": "Alta",
     "order": 1,
-    "notes": "",
-    "id": "topic_dcon_64_aula-demo-teoria-geral-da-constituicao"
+    "notes": "Aula A01",
+    "id": "topic_dcon_v9_1_aplicabilidade-das-normas-constitucionais-a01"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 02 — Princípios Fundamentais.",
-    "details": "Princípios Fundamentais.",
+    "title": "2- Princípios fundamentais [A01]",
+    "details": "Princípios fundamentais [A01]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 2,
-    "notes": "",
-    "id": "topic_dcon_65_aula-02-principios-fundamentais"
+    "notes": "Aula A01",
+    "id": "topic_dcon_v9_2_principios-fundamentais-a01"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 03 — Teoria Geral dos Direitos Fundamentais.",
-    "details": "Teoria Geral dos Direitos Fundamentais.",
+    "title": "3- Teoria de Direitos e Garantias Fundamentais [A02]",
+    "details": "Teoria de Direitos e Garantias Fundamentais [A02]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 3,
-    "notes": "",
-    "id": "topic_dcon_66_aula-03-teoria-geral-dos-direitos-fundamentais"
+    "notes": "Aula A02",
+    "id": "topic_dcon_v9_3_teoria-de-direitos-e-garantias-fundamentais-a02"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 04 — Direitos e Deveres Individuais e Coletivos. Art. 5º da Constituição Federal de 1988.",
-    "details": "Direitos e Deveres Individuais e Coletivos. Art. 5º da Constituição Federal de 1988.",
+    "title": "4- Direitos e Deveres Individuais e Coletivos [A02]",
+    "details": "Direitos e Deveres Individuais e Coletivos [A02]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 4,
-    "notes": "",
-    "id": "topic_dcon_67_aula-04-direitos-e-deveres-individuais-e-coletivos-art-5-da-"
+    "notes": "Aula A02",
+    "id": "topic_dcon_v9_4_direitos-e-deveres-individuais-e-coletivos-a02"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 05 — Remédios Constitucionais.",
-    "details": "Remédios Constitucionais.",
+    "title": "5- Direitos Sociais [A03]",
+    "details": "Direitos Sociais [A03]",
     "status": "Em espera",
-    "priority": "Alta",
+    "priority": "Média",
     "order": 5,
-    "notes": "",
-    "id": "topic_dcon_68_aula-05-remedios-constitucionais"
+    "notes": "Aula A03",
+    "id": "topic_dcon_v9_5_direitos-sociais-a03"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 06 — Direitos Sociais.",
-    "details": "Direitos Sociais.",
+    "title": "6- Direitos de Nacionalidade [A03]",
+    "details": "Direitos de Nacionalidade [A03]",
     "status": "Em espera",
     "priority": "Média",
     "order": 6,
-    "notes": "",
-    "id": "topic_dcon_69_aula-06-direitos-sociais"
+    "notes": "Aula A03",
+    "id": "topic_dcon_v9_6_direitos-de-nacionalidade-a03"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 07 — Direitos de Nacionalidade.",
-    "details": "Direitos de Nacionalidade.",
+    "title": "7- Direitos Políticos [A04]",
+    "details": "Direitos Políticos [A04]",
     "status": "Em espera",
     "priority": "Média",
     "order": 7,
-    "notes": "",
-    "id": "topic_dcon_70_aula-07-direitos-de-nacionalidade"
+    "notes": "Aula A04",
+    "id": "topic_dcon_v9_7_direitos-politicos-a04"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 08 — Direitos Políticos.",
-    "details": "Direitos Políticos.",
+    "title": "8- Partidos políticos [A04]",
+    "details": "Partidos políticos [A04]",
     "status": "Em espera",
-    "priority": "Alta",
+    "priority": "Média",
     "order": 8,
-    "notes": "",
-    "id": "topic_dcon_71_aula-08-direitos-politicos"
+    "notes": "Aula A04",
+    "id": "topic_dcon_v9_8_partidos-politicos-a04"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 09 — Partidos Políticos.",
-    "details": "Partidos Políticos.",
+    "title": "9- Organização do Estado [A05]",
+    "details": "Organização do Estado [A05]",
     "status": "Em espera",
     "priority": "Média",
     "order": 9,
-    "notes": "",
-    "id": "topic_dcon_72_aula-09-partidos-politicos"
+    "notes": "Aula A05",
+    "id": "topic_dcon_v9_9_organizacao-do-estado-a05"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 10 — Organização do Estado.",
-    "details": "Organização do Estado.",
+    "title": "10- Poder Legislativo [A06]",
+    "details": "Poder Legislativo [A06]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 10,
-    "notes": "",
-    "id": "topic_dcon_73_aula-10-organizacao-do-estado"
+    "notes": "Aula A06",
+    "id": "topic_dcon_v9_10_poder-legislativo-a06"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 11 — Administração Pública.",
-    "details": "Administração Pública.",
+    "title": "11- Processo legislativo [A07]",
+    "details": "Processo legislativo [A07]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 11,
-    "notes": "",
-    "id": "topic_dcon_74_aula-11-administracao-publica"
+    "notes": "Aula A07",
+    "id": "topic_dcon_v9_11_processo-legislativo-a07"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 12 — Poder Legislativo.",
-    "details": "Poder Legislativo.",
+    "title": "12- Fiscalização Contábil, Financeira e Orçamentária [A08]",
+    "details": "Fiscalização Contábil, Financeira e Orçamentária [A08]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 12,
-    "notes": "",
-    "id": "topic_dcon_75_aula-12-poder-legislativo"
+    "notes": "Aula A08",
+    "id": "topic_dcon_v9_12_fiscalizacao-contabil-financeira-e-orcamentaria-"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 13 — Processo Legislativo.",
-    "details": "Processo Legislativo.",
+    "title": "13- Poder Executivo [A08]",
+    "details": "Poder Executivo [A08]",
     "status": "Em espera",
-    "priority": "Alta",
+    "priority": "Média",
     "order": 13,
-    "notes": "",
-    "id": "topic_dcon_76_aula-13-processo-legislativo"
+    "notes": "Aula A08",
+    "id": "topic_dcon_v9_13_poder-executivo-a08"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 14 — Fiscalização Financeira e Orçamentária.",
-    "details": "Fiscalização Financeira e Orçamentária.",
+    "title": "14- Poder Judiciário [A09]",
+    "details": "Poder Judiciário [A09]",
     "status": "Em espera",
     "priority": "Alta",
     "order": 14,
-    "notes": "",
-    "id": "topic_dcon_77_aula-14-fiscalizacao-financeira-e-orcamentaria"
+    "notes": "Aula A09",
+    "id": "topic_dcon_v9_14_poder-judiciario-a09"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 15 — Poder Executivo.",
-    "details": "Poder Executivo.",
+    "title": "15- Funções essenciais à Justiça [A10]",
+    "details": "Funções essenciais à Justiça [A10]",
     "status": "Em espera",
     "priority": "Média",
     "order": 15,
-    "notes": "",
-    "id": "topic_dcon_78_aula-15-poder-executivo"
+    "notes": "Aula A10",
+    "id": "topic_dcon_v9_15_funcoes-essenciais-a-justica-a10"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 16 — Poder Judiciário.",
-    "details": "Poder Judiciário.",
+    "title": "16- Controle de constitucionalidade [A11]",
+    "details": "Controle de constitucionalidade [A11]",
     "status": "Em espera",
-    "priority": "Média",
+    "priority": "Alta",
     "order": 16,
-    "notes": "",
-    "id": "topic_dcon_79_aula-16-poder-judiciario"
+    "notes": "Aula A11",
+    "id": "topic_dcon_v9_16_controle-de-constitucionalidade-a11"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 17 — Funções Essenciais à Justiça.",
-    "details": "Funções Essenciais à Justiça.",
+    "title": "17- Defesa do Estado e das Instituições democráticas [A12]",
+    "details": "Defesa do Estado e das Instituições democráticas [A12]",
     "status": "Em espera",
     "priority": "Média",
     "order": 17,
-    "notes": "",
-    "id": "topic_dcon_80_aula-17-funcoes-essenciais-a-justica"
+    "notes": "Aula A12",
+    "id": "topic_dcon_v9_17_defesa-do-estado-e-das-instituicoes-democraticas"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 18 — Controle de Constitucionalidade.",
-    "details": "Controle de Constitucionalidade.",
+    "title": "18- Constituição: conceito e classificações [A13]",
+    "details": "Constituição: conceito e classificações [A13]",
     "status": "Em espera",
-    "priority": "Alta",
+    "priority": "Média",
     "order": 18,
-    "notes": "",
-    "id": "topic_dcon_81_aula-18-controle-de-constitucionalidade"
+    "notes": "Aula A13",
+    "id": "topic_dcon_v9_18_constituicao-conceito-e-classificacoes-a13"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 19 — Defesa do Estado e das Instituições Democráticas.",
-    "details": "Defesa do Estado e das Instituições Democráticas.",
+    "title": "19- Poder Constituinte [A14]",
+    "details": "Poder Constituinte [A14]",
     "status": "Em espera",
     "priority": "Média",
     "order": 19,
-    "notes": "",
-    "id": "topic_dcon_82_aula-19-defesa-do-estado-e-das-instituicoes-democraticas"
+    "notes": "Aula A14",
+    "id": "topic_dcon_v9_19_poder-constituinte-a14"
   },
   {
     "disciplineName": "DCON",
-    "title": "Aula 20 — Ordem Econômica e Financeira.",
-    "details": "Ordem Econômica e Financeira.",
+    "title": "20- Ordem Econômica e Financeira [A15]",
+    "details": "Ordem Econômica e Financeira [A15]",
     "status": "Em espera",
     "priority": "Média",
     "order": 20,
-    "notes": "",
-    "id": "topic_dcon_83_aula-20-ordem-economica-e-financeira"
+    "notes": "Aula A15",
+    "id": "topic_dcon_v9_20_ordem-economica-e-financeira-a15"
+  },
+  {
+    "disciplineName": "DCON",
+    "title": "21- Ordem Social [A16]",
+    "details": "Ordem Social [A16]",
+    "status": "Em espera",
+    "priority": "Média",
+    "order": 21,
+    "notes": "Aula A16",
+    "id": "topic_dcon_v9_21_ordem-social-a16"
   },
   {
     "disciplineName": "AFO",
@@ -7908,7 +7919,8 @@
         neglectDays: 7,
         updatedAt: new Date().toISOString(),
         lastBackupAt: '',
-        backupReminderDays: 1
+        backupReminderDays: 1,
+        autoExportAfterRegister: false
       },
       disciplines,
       topics,
@@ -7937,6 +7949,7 @@
     };
     clean.settings.lastBackupAt = clean.settings.lastBackupAt || '';
     clean.settings.backupReminderDays = Number.isFinite(Number(clean.settings.backupReminderDays)) ? Number(clean.settings.backupReminderDays) : 1;
+    clean.settings.autoExportAfterRegister = Boolean(clean.settings.autoExportAfterRegister);
     clean.disciplines = clean.disciplines.map((d, idx) => ({
       id: d.id || slugify(d.name) || uid('disc'),
       name: d.name || `Disciplina ${idx + 1}`,
@@ -7959,6 +7972,7 @@
     });
     clean.topics = normalizedTopics;
     canonicalizePortuguese_(clean);
+    canonicalizeDconTopics_(clean);
     return clean;
   }
 
@@ -8017,9 +8031,77 @@
     (clean.errors || []).forEach(fixEntity);
   }
 
+
+  const DCON_CANONICAL_TOPICS = [
+    ['1- Aplicabilidade das normas constitucionais [A01]', 'Aplicabilidade das normas constitucionais [A01]', 'Alta'],
+    ['2- Princípios fundamentais [A01]', 'Princípios fundamentais [A01]', 'Alta'],
+    ['3- Teoria de Direitos e Garantias Fundamentais [A02]', 'Teoria de Direitos e Garantias Fundamentais [A02]', 'Alta'],
+    ['4- Direitos e Deveres Individuais e Coletivos [A02]', 'Direitos e Deveres Individuais e Coletivos [A02]', 'Alta'],
+    ['5- Direitos Sociais [A03]', 'Direitos Sociais [A03]', 'Média'],
+    ['6- Direitos de Nacionalidade [A03]', 'Direitos de Nacionalidade [A03]', 'Média'],
+    ['7- Direitos Políticos [A04]', 'Direitos Políticos [A04]', 'Média'],
+    ['8- Partidos políticos [A04]', 'Partidos políticos [A04]', 'Média'],
+    ['9- Organização do Estado [A05]', 'Organização do Estado [A05]', 'Média'],
+    ['10- Poder Legislativo [A06]', 'Poder Legislativo [A06]', 'Alta'],
+    ['11- Processo legislativo [A07]', 'Processo legislativo [A07]', 'Alta'],
+    ['12- Fiscalização Contábil, Financeira e Orçamentária [A08]', 'Fiscalização Contábil, Financeira e Orçamentária [A08]', 'Alta'],
+    ['13- Poder Executivo [A08]', 'Poder Executivo [A08]', 'Média'],
+    ['14- Poder Judiciário [A09]', 'Poder Judiciário [A09]', 'Alta'],
+    ['15- Funções essenciais à Justiça [A10]', 'Funções essenciais à Justiça [A10]', 'Média'],
+    ['16- Controle de constitucionalidade [A11]', 'Controle de constitucionalidade [A11]', 'Alta'],
+    ['17- Defesa do Estado e das Instituições democráticas [A12]', 'Defesa do Estado e das Instituições democráticas [A12]', 'Média'],
+    ['18- Constituição: conceito e classificações [A13]', 'Constituição: conceito e classificações [A13]', 'Média'],
+    ['19- Poder Constituinte [A14]', 'Poder Constituinte [A14]', 'Média'],
+    ['20- Ordem Econômica e Financeira [A15]', 'Ordem Econômica e Financeira [A15]', 'Média'],
+    ['21- Ordem Social [A16]', 'Ordem Social [A16]', 'Média']
+  ];
+
+  function canonicalizeDconTopics_(clean) {
+    if (!clean || !Array.isArray(clean.topics) || !Array.isArray(clean.disciplines)) return;
+    const dcon = clean.disciplines.find(d => normalizeName(d.name) === 'dcon' || normalizeName(d.id) === 'dcon');
+    if (!dcon) return;
+    const oldDconTopics = clean.topics.filter(t => normalizeName(t.disciplineName) === 'dcon' || t.disciplineId === dcon.id);
+    const statusByNorm = new Map();
+    const priorityByNorm = new Map();
+    const notesByNorm = new Map();
+    const tecByNorm = new Map();
+    oldDconTopics.forEach(t => {
+      const keys = [t.title, t.details].map(normalizeName).filter(Boolean);
+      keys.forEach(k => {
+        if (!statusByNorm.has(k) && t.status && t.status !== 'Em espera') statusByNorm.set(k, t.status);
+        if (!priorityByNorm.has(k) && t.priority) priorityByNorm.set(k, t.priority);
+        if (!notesByNorm.has(k) && t.notes) notesByNorm.set(k, t.notes);
+        if (!tecByNorm.has(k) && t.tecUrl) tecByNorm.set(k, t.tecUrl);
+      });
+    });
+    clean.topics = clean.topics.filter(t => !(normalizeName(t.disciplineName) === 'dcon' || t.disciplineId === dcon.id));
+    DCON_CANONICAL_TOPICS.forEach((row, idx) => {
+      const [title, details, prio] = row;
+      const keys = [normalizeName(title), normalizeName(details)];
+      const status = keys.map(k => statusByNorm.get(k)).find(Boolean) || 'Em espera';
+      const priority = keys.map(k => priorityByNorm.get(k)).find(Boolean) || prio || 'Média';
+      const preservedNotes = keys.map(k => notesByNorm.get(k)).find(Boolean) || '';
+      const tecUrl = keys.map(k => tecByNorm.get(k)).find(Boolean) || '';
+      clean.topics.push(normalizeTopic({
+        id: `topic_dcon_v9_${idx + 1}_${slugify(details).slice(0, 48)}`,
+        disciplineId: dcon.id,
+        disciplineName: dcon.name,
+        title,
+        details,
+        status,
+        priority,
+        order: idx + 1,
+        notes: preservedNotes || (details.match(/\[(A\d+)\]/) ? `Aula ${details.match(/\[(A\d+)\]/)[1]}` : ''),
+        tecUrl
+      }, idx, clean.disciplines));
+    });
+    (clean.sessions || []).forEach(s => { if (normalizeName(s.disciplineName) === 'dcon') { s.disciplineId = dcon.id; s.disciplineName = dcon.name; } });
+    (clean.errors || []).forEach(e => { if (normalizeName(e.disciplineName) === 'dcon') { e.disciplineId = dcon.id; e.disciplineName = dcon.name; } });
+  }
+
   function getInitialRoute() {
     const hash = (location.hash || '#hoje').replace('#', '');
-    return ['hoje', 'registrar', 'historico', 'ciclo', 'conteudo', 'progresso', 'ataque', 'erros', 'fontes', 'backup', 'config', 'ajuda', 'sessao'].includes(hash) ? hash : 'hoje';
+    return ['hoje', 'registrar', 'historico', 'ciclo', 'conteudo', 'progresso', 'questoes', 'ataque', 'erros', 'fontes', 'backup', 'config', 'ajuda', 'sessao'].includes(hash) ? hash : 'hoje';
   }
 
   window.addEventListener('hashchange', () => {
@@ -8166,33 +8248,22 @@
 
   function cycleArray() {
     const base = activeDisciplines();
-    const arr = base.slice();
+    if (!base.length) return [];
+    const remaining = base.map(d => ({ disc: d, left: Math.max(1, parseIntSafe(d.frequency || 1)), order: Number(d.order) || 999 }));
+    const out = [];
 
-    // Frequência não significa repetição grudada.
+    // Frequência significa presença distribuída, não repetição grudada.
     // Ex.: Português 2x + DCON 1x + DAD 1x => Português → DCON → Português → DAD.
-    // A regra abaixo insere repetições nos melhores espaços disponíveis, evitando
-    // disciplinas iguais lado a lado sempre que houver outra disciplina para separar.
-    base.forEach(d => {
-      const n = Math.max(1, parseIntSafe(d.frequency || 1));
-      for (let extra = 1; extra < n; extra += 1) {
-        const target = Math.max(1, Math.round((extra * base.length) / n));
-        let bestPos = -1;
-        let bestScore = -Infinity;
-        for (let pos = 0; pos <= arr.length; pos += 1) {
-          const prev = arr[pos - 1];
-          const next = arr[pos];
-          const adjacentSame = (prev && prev.id === d.id) || (next && next.id === d.id);
-          if (adjacentSame && base.length > 1) continue;
-          const samePositions = arr.map((x, idx) => x.id === d.id ? idx : -1).filter(idx => idx >= 0);
-          const nearest = samePositions.length ? Math.min(...samePositions.map(idx => Math.abs(idx - pos))) : arr.length + 1;
-          const score = nearest * 10 - Math.abs(pos - target);
-          if (score > bestScore) { bestScore = score; bestPos = pos; }
-        }
-        if (bestPos < 0) bestPos = arr.length;
-        arr.splice(bestPos, 0, d);
-      }
-    });
-    return arr;
+    while (remaining.some(x => x.left > 0)) {
+      const last = out[out.length - 1];
+      let candidates = remaining.filter(x => x.left > 0 && (!last || x.disc.id !== last.id));
+      if (!candidates.length) candidates = remaining.filter(x => x.left > 0);
+      candidates.sort((a, b) => b.left - a.left || a.order - b.order || a.disc.name.localeCompare(b.disc.name, 'pt-BR'));
+      const chosen = candidates[0];
+      out.push(chosen.disc);
+      chosen.left -= 1;
+    }
+    return out;
   }
 
   function suggestedSessions() {
@@ -8309,7 +8380,7 @@
 
   function renderLayout(content) {
     const navItems = [
-      ['hoje', 'Hoje'], ['registrar', 'Registrar'], ['sessao', 'Sessão'], ['ciclo', 'Ciclo'], ['conteudo', 'Conteúdo'], ['progresso', 'Progresso'], ['ataque', 'Ataque'], ['erros', 'Erros'], ['fontes', 'Fontes'], ['backup', 'Backup'], ['config', 'Config.'], ['ajuda', 'Ajuda']
+      ['hoje', 'Hoje'], ['registrar', 'Registrar'], ['sessao', 'Sessão'], ['ciclo', 'Ciclo'], ['conteudo', 'Conteúdo'], ['progresso', 'Progresso'], ['questoes', 'Questões'], ['ataque', 'Ataque'], ['erros', 'Erros'], ['fontes', 'Fontes'], ['backup', 'Backup'], ['config', 'Config.'], ['ajuda', 'Ajuda']
     ];
     $app.innerHTML = `
       <header class="hero">
@@ -8330,8 +8401,9 @@
         </div>
       </header>
       <main class="container">${content}</main>
+      <div class="app-version">${APP_VERSION_LABEL}</div>
       <div class="footer-nav"><div class="footer-nav-inner">
-        ${[['hoje','Hoje'],['registrar','Registrar'],['historico','Histórico'],['progresso','Progresso'],['ataque','Ataque']].map(([route,label]) => `<button class="${currentRoute===route?'active':''}" data-nav="${route}">${label}</button>`).join('')}
+        ${[['hoje','Hoje'],['registrar','Registrar'],['historico','Histórico'],['progresso','Progresso'],['questoes','Questões'],['ataque','Ataque']].map(([route,label]) => `<button class="${currentRoute===route?'active':''}" data-nav="${route}">${label}</button>`).join('')}
       </div></div>
     `;
     attachGlobalEvents();
@@ -8472,6 +8544,151 @@
   }
 
 
+
+  function groupSessionsBy(keyFn) {
+    const map = new Map();
+    state.sessions.forEach(s => {
+      const key = keyFn(s);
+      if (!key) return;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(s);
+    });
+    return map;
+  }
+
+  function bestDailyHours() {
+    const grouped = groupSessionsBy(s => s.date);
+    let best = { key: '', hours: 0, sessions: 0 };
+    grouped.forEach((list, key) => {
+      const hours = sum(list, 'hours');
+      if (hours > best.hours) best = { key, hours, sessions: list.length };
+    });
+    return best;
+  }
+
+  function bestMonthStats() {
+    const grouped = groupSessionsBy(s => monthKey(s.date));
+    let best = { key: '', hours: 0, sessions: 0 };
+    grouped.forEach((list, key) => {
+      const hours = sum(list, 'hours');
+      if (hours > best.hours) best = { key, hours, sessions: list.length };
+    });
+    return best;
+  }
+
+  function bestWeekStats() {
+    const grouped = groupSessionsBy(s => weekStartISO(new Date(String(s.date || todayISO()) + 'T12:00:00')));
+    let best = { key: '', hours: 0, sessions: 0 };
+    grouped.forEach((list, key) => {
+      const hours = sum(list, 'hours');
+      if (hours > best.hours) best = { key, hours, sessions: list.length };
+    });
+    return best;
+  }
+
+  function bestAccuracyDay() {
+    const grouped = groupSessionsBy(s => s.date);
+    let best = { key: '', pct: 0, questions: 0, correct: 0 };
+    grouped.forEach((list, key) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      const pct = questions ? Math.round((correct / questions) * 100) : 0;
+      if (questions > 0 && (pct > best.pct || (pct === best.pct && questions > best.questions))) {
+        best = { key, pct, questions, correct };
+      }
+    });
+    return best;
+  }
+
+  function bestQuestionDay() {
+    const grouped = groupSessionsBy(s => s.date);
+    let best = { key: '', questions: 0, correct: 0 };
+    grouped.forEach((list, key) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      if (questions > best.questions) best = { key, questions, correct };
+    });
+    return best;
+  }
+
+  function bestDisciplineAccuracy() {
+    const grouped = groupSessionsBy(s => s.disciplineId || normalizeName(s.disciplineName));
+    let best = { name: '', pct: 0, questions: 0, correct: 0 };
+    grouped.forEach((list, key) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      const pct = questions ? Math.round((correct / questions) * 100) : 0;
+      const name = list[0] && list[0].disciplineName ? list[0].disciplineName : key;
+      if (questions > 0 && (pct > best.pct || (pct === best.pct && questions > best.questions))) {
+        best = { name, pct, questions, correct };
+      }
+    });
+    return best;
+  }
+
+  function activeCycleProgressStats() {
+    const active = activeDisciplines();
+    const rows = active.map(d => {
+      const topics = topicsForDiscipline(d);
+      const total = topics.length;
+      const progressed = topics.filter(t => t.status !== 'Em espera').length;
+      const score = total ? Math.round(topics.reduce((acc, t) => acc + topicProgressValue(t.status), 0) / total) : 0;
+      return { d, total, progressed, score };
+    });
+    const totalTopics = rows.reduce((acc, r) => acc + r.total, 0);
+    const progressedTopics = rows.reduce((acc, r) => acc + r.progressed, 0);
+    const weightedScore = totalTopics ? Math.round(rows.reduce((acc, r) => acc + r.score * r.total, 0) / totalTopics) : 0;
+    const simplePct = totalTopics ? Math.round((progressedTopics / totalTopics) * 100) : 0;
+    return { rows, totalTopics, progressedTopics, weightedScore, simplePct };
+  }
+
+  function recordCardsHTML() {
+    const daily = bestDailyHours();
+    const month = bestMonthStats();
+    const week = bestWeekStats();
+    const accDay = bestAccuracyDay();
+    const qDay = bestQuestionDay();
+    const discAcc = bestDisciplineAccuracy();
+    return `
+      <section class="grid cards-3" style="margin-top:18px">
+        <div class="card record-card"><div class="label">Maior CH diária</div><div class="value">${fmt(daily.hours)}h</div><div class="hint">${daily.key ? formatDate(daily.key) + ' · ' + daily.sessions + ' sessão(ões)' : 'sem registro'}</div></div>
+        <div class="card record-card"><div class="label">Melhor mês</div><div class="value">${fmt(month.hours)}h</div><div class="hint">${month.key || 'sem registro'}</div></div>
+        <div class="card record-card"><div class="label">Melhor semana</div><div class="value">${fmt(week.hours)}h</div><div class="hint">início ${week.key ? formatDate(week.key) : '—'}</div></div>
+        <div class="card record-card"><div class="label">Maior % diário</div><div class="value">${accDay.questions ? accDay.pct + '%' : '—'}</div><div class="hint">${accDay.questions ? formatDate(accDay.key) + ' · ' + accDay.correct + '/' + accDay.questions : 'sem questões'}</div></div>
+        <div class="card record-card"><div class="label">Mais questões em um dia</div><div class="value">${qDay.questions}</div><div class="hint">${qDay.key ? formatDate(qDay.key) + ' · ' + qDay.correct + ' acertos' : 'sem questões'}</div></div>
+        <div class="card record-card"><div class="label">Melhor disciplina</div><div class="value">${discAcc.questions ? discAcc.pct + '%' : '—'}</div><div class="hint">${discAcc.questions ? escapeHTML(discAcc.name) + ' · ' + discAcc.questions + ' questões' : 'sem questões'}</div></div>
+      </section>`;
+  }
+
+  function activeCycleProgressHTML() {
+    const stats = activeCycleProgressStats();
+    if (!stats.rows.length) return `<section class="card" style="margin-top:18px"><h3>Avanço do ciclo ativo</h3><p class="empty">Ative disciplinas no Ciclo para acompanhar o avanço.</p></section>`;
+    return `
+      <section class="card" style="margin-top:18px">
+        <div class="section-title compact"><h3>Avanço do ciclo ativo</h3><span class="badge dark">${stats.weightedScore}% maturidade</span></div>
+        <div class="progress-bar big"><span style="width:${stats.weightedScore}%"></span></div>
+        <p class="muted">${stats.progressedTopics}/${stats.totalTopics} tópico(s) já saíram de “Em espera”. O percentual considera somente disciplinas ativas no ciclo.</p>
+        <div class="cycle-progress-list">
+          ${stats.rows.map(r => `<div class="cycle-progress-row"><strong>${escapeHTML(r.d.name)}</strong><span>${r.progressed}/${r.total} tópicos · ${r.score}%</span><div class="progress-bar"><span style="width:${r.score}%"></span></div></div>`).join('')}
+        </div>
+      </section>`;
+  }
+
+  function achievementsHTML() {
+    const totalHours = sum(state.sessions, 'hours');
+    const totalQuestions = sum(state.sessions, 'questions');
+    const streak = constancyStats();
+    const goals = [
+      ['Primeiras 10h', totalHours >= 10, `${fmt(totalHours)}/10h`],
+      ['50h líquidas', totalHours >= 50, `${fmt(totalHours)}/50h`],
+      ['100h líquidas', totalHours >= 100, `${fmt(totalHours)}/100h`],
+      ['500 questões', totalQuestions >= 500, `${totalQuestions}/500`],
+      ['1.000 questões', totalQuestions >= 1000, `${totalQuestions}/1000`],
+      ['7 dias sem falhar', streak.best >= 7, `${streak.best}/7 dias`]
+    ];
+    return `<section class="card" style="margin-top:18px"><h3>Conquistas</h3><div class="achievement-grid">${goals.map(g => `<div class="achievement ${g[1] ? 'done' : ''}"><strong>${g[1] ? '✓' : '•'} ${g[0]}</strong><span>${g[2]}</span></div>`).join('')}</div></section>`;
+  }
+
   function backupNoticeHTML() {
     const due = backupIsDue();
     const days = daysSinceBackup();
@@ -8518,6 +8735,7 @@
         <div class="card constancy-card"><div class="section-title compact"><h3>Constância</h3><span class="badge">sem falhar</span></div><div class="constancy-values"><div><strong>${streak.current}</strong><span>dias atuais</span></div><div><strong>${streak.best}</strong><span>recorde</span></div><div><strong>${streak.studiedDays}</strong><span>dias estudados</span></div></div><p class="muted">Domingos não quebram a sequência quando estiverem configurados como descanso.</p></div>
         ${renderCyclePizza()}
       </section>
+      ${activeCycleProgressHTML()}
       <div class="section-title"><h3>Sessões recomendadas</h3><button class="primary-btn" data-nav="registrar">+ Registrar sessão</button></div>
       <section class="grid cards-2">
         ${suggestions.length ? suggestions.map((s, idx) => renderSessionCard(s, idx)).join('') : `<div class="card span-12"><p class="empty">Nenhuma sessão automática agora. Você ainda pode registrar qualquer estudo em <strong>Registrar</strong>.</p></div>`}
@@ -8708,7 +8926,11 @@
         state.sessions.push({ id: uid('sess'), createdAt: new Date().toISOString(), ...payload }); toast(`Sessão registrada: ${disc.name} · ${fmt(hours)}h`);
       }
       saveState();
-      if (backupIsDue()) setTimeout(() => toast('Backup recomendado: exporte seu JSON hoje.'), 900);
+      if (state.settings.autoExportAfterRegister) {
+        setTimeout(() => { exportBackupFile(); toast('Backup JSON exportado automaticamente. Salve no iCloud/Drive.'); }, 120);
+      } else if (backupIsDue()) {
+        setTimeout(() => toast('Backup recomendado: exporte seu JSON hoje.'), 900);
+      }
       editingSessionId = null; lastDraft = null; renderRegister();
     });
     attachSessionActions();
@@ -8973,23 +9195,31 @@
 
   function renderProgress() {
     const periods = sessionsByPeriod();
+    const activeStats = activeCycleProgressStats();
     const content = `
-      <section class="banner"><h2>Progresso</h2><p>Horas, questões, acertos e evolução real.</p></section>
+      <section class="banner"><h2>Progresso</h2><p>Horas, questões, acertos, recordes e avanço real do ciclo.</p></section>
       <section class="grid cards-4">
-        <div class="card kpi"><div class="label">Hoje</div><div class="value">${fmt(sum(periods.today, 'hours'))}h</div><div class="hint">${periods.today.length} sessões</div></div>
+        <div class="card kpi"><div class="label">Hoje</div><div class="value">${fmt(sum(periods.today, 'hours'))}h</div><div class="hint">${periods.today.length} sessão(ões)</div></div>
         <div class="card kpi"><div class="label">Semana</div><div class="value">${fmt(sum(periods.week, 'hours'))}h</div><div class="hint">meta ${fmt(state.settings.weeklyGoal)}h</div></div>
         <div class="card kpi"><div class="label">Mês</div><div class="value">${fmt(sum(periods.month, 'hours'))}h</div><div class="hint">meta ${fmt(state.settings.monthlyGoal)}h</div></div>
-        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(periods.total)}%</div><div class="hint">${sum(periods.total, 'questions')} questões</div></div>
+        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(state.sessions)}%</div><div class="hint">${sum(state.sessions, 'questions')} questões</div></div>
       </section>
-      <section class="card" style="margin-top:18px">
-        <h3>Por disciplina</h3>${renderProgressTable()}
+      <section class="grid cards-3" style="margin-top:18px">
+        <div class="card kpi"><div class="label">Avanço do ciclo</div><div class="value">${activeStats.weightedScore}%</div><div class="hint">disciplinas ativas</div></div>
+        <div class="card kpi"><div class="label">Tópicos ativos</div><div class="value">${activeStats.progressedTopics}/${activeStats.totalTopics}</div><div class="hint">fora de “Em espera”</div></div>
+        <div class="card kpi"><div class="label">Constância</div><div class="value">${constancyStats().current}</div><div class="hint">recorde ${constancyStats().best} dia(s)</div></div>
       </section>
+      ${activeCycleProgressHTML()}
+      <section class="card" style="margin-top:18px"><h3>Recordes pessoais</h3><p class="muted">Marcos para manter motivação e visualizar evolução acumulada.</p>${recordCardsHTML()}</section>
+      ${achievementsHTML()}
+      <section class="card" style="margin-top:18px"><h3>Por disciplina</h3>${renderProgressTable()}</section>
     `;
     renderLayout(content);
   }
 
   function renderProgressTable() {
-    const rows = state.disciplines.map(d => {
+    const activeIds = new Set(activeDisciplines().map(d => d.id));
+    const rows = state.disciplines.filter(d => activeIds.has(d.id)).map(d => {
       const list = state.sessions.filter(s => s.disciplineId === d.id || s.disciplineName === d.name);
       const monthList = list.filter(s => monthKey(s.date) === monthKey(todayISO()));
       const hrs = sum(list, 'hours');
@@ -9002,10 +9232,64 @@
       const topicScore = topics.length ? Math.round(topics.reduce((acc,t)=>acc+topicProgressValue(t.status),0)/topics.length) : 0;
       const activeTopics = topics.filter(t => t.status !== 'Em espera').length;
       return { d, hrs, monthHrs: sum(monthList, 'hours'), q, c, pct, days, topicScore, activeTopics, topicTotal: topics.length };
-    }).filter(r => r.d.active || r.hrs > 0 || r.topicTotal > 0).sort((a,b) => b.hrs - a.hrs || a.d.name.localeCompare(b.d.name, 'pt-BR'));
-    if (!rows.length) return '<p class="empty">Sem dados de progresso ainda.</p>';
-    const maxHrs = Math.max(...rows.map(r => r.hrs), 1);
-    return `<div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Modo</th><th>Horas mês</th><th>Horas total</th><th>Questões</th><th>%</th><th>Tópicos</th><th>Progresso conteúdo</th><th>Último contato</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${escapeHTML(r.d.name)}</strong></td><td>${escapeHTML(r.d.mode)}</td><td>${fmt(r.monthHrs)}h</td><td>${fmt(r.hrs)}h</td><td>${r.q}</td><td>${r.pct}%</td><td>${r.activeTopics}/${r.topicTotal}</td><td><div class="progress-bar"><span style="width:${r.topicScore}%"></span></div><span class="muted">${r.topicScore}%</span></td><td>${r.days === null ? '—' : `${r.days} dia(s)`}</td></tr>`).join('')}</tbody></table></div>`;
+    }).sort((a,b) => b.topicScore - a.topicScore || b.hrs - a.hrs || a.d.name.localeCompare(b.d.name, 'pt-BR'));
+    if (!rows.length) return '<p class="empty">Nenhuma disciplina ativa no ciclo. Ative disciplinas na aba Ciclo.</p>';
+    return `<p class="muted">Esta tabela mostra apenas disciplinas ativas do ciclo. Disciplinas em espera ficam fora do cálculo motivacional.</p><div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Modo</th><th>Horas mês</th><th>Horas total</th><th>Questões</th><th>%</th><th>Tópicos</th><th>Progresso conteúdo</th><th>Último contato</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${escapeHTML(r.d.name)}</strong></td><td>${escapeHTML(r.d.mode)}</td><td>${fmt(r.monthHrs)}h</td><td>${fmt(r.hrs)}h</td><td>${r.q}</td><td>${r.pct}%</td><td>${r.activeTopics}/${r.topicTotal}</td><td><div class="progress-bar"><span style="width:${r.topicScore}%"></span></div><span class="muted">${r.topicScore}%</span></td><td>${r.days === null ? '—' : `${r.days} dia(s)`}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+
+
+  function questionsByActiveDiscipline() {
+    const active = activeDisciplines();
+    return active.map(d => {
+      const list = state.sessions.filter(s => s.disciplineId === d.id || normalizeName(s.disciplineName) === normalizeName(d.name));
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      const pct = questions ? Math.round((correct / questions) * 100) : 0;
+      return { name: d.name, questions, correct, pct, hours: sum(list, 'hours') };
+    }).filter(row => row.questions > 0 || row.hours > 0 || activeDisciplines().length <= 8);
+  }
+
+  function questionsByMonth() {
+    const grouped = groupSessionsBy(s => monthKey(s.date));
+    return Array.from(grouped.entries()).map(([key, list]) => {
+      const questions = sum(list, 'questions');
+      const correct = sum(list, 'correct');
+      const pct = questions ? Math.round((correct / questions) * 100) : 0;
+      return { key, questions, correct, pct };
+    }).filter(r => r.questions > 0).sort((a, b) => a.key.localeCompare(b.key));
+  }
+
+  function barWidth(value, max) {
+    if (!max || max <= 0) return 0;
+    return Math.max(2, Math.round((Number(value || 0) / max) * 100));
+  }
+
+  function renderQuestions() {
+    const totalQuestions = sum(state.sessions, 'questions');
+    const totalCorrect = sum(state.sessions, 'correct');
+    const totalPct = totalQuestions ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+    const monthRows = questionsByMonth();
+    const discRows = questionsByActiveDiscipline().sort((a, b) => b.questions - a.questions || a.name.localeCompare(b.name, 'pt-BR'));
+    const maxDisc = Math.max(1, ...discRows.map(r => r.questions));
+    const maxMonth = Math.max(1, ...monthRows.map(r => r.questions));
+    const content = `
+      <section class="banner"><h2>Questões</h2><p>Volume, distribuição por disciplina ativa e evolução mensal de questões.</p></section>
+      <section class="grid cards-4">
+        <div class="card kpi"><div class="label">Questões totais</div><div class="value">${totalQuestions}</div><div class="hint">até o momento</div></div>
+        <div class="card kpi"><div class="label">Acertos totais</div><div class="value">${totalCorrect}</div><div class="hint">respostas corretas</div></div>
+        <div class="card kpi"><div class="label">% geral</div><div class="value">${totalPct}%</div><div class="hint">acertos / questões</div></div>
+        <div class="card kpi"><div class="label">Disciplinas ativas</div><div class="value">${activeDisciplines().length}</div><div class="hint">em estudo no ciclo</div></div>
+      </section>
+      <section class="card" style="margin-top:18px">
+        <div class="section-title compact"><h3>Questões por disciplina ativa</h3><span class="badge dark">sem disciplinas em espera</span></div>
+        ${discRows.length ? `<div class="bar-list">${discRows.map(r => `<div class="bar-row"><div class="bar-label"><strong>${escapeHTML(r.name)}</strong><span>${r.questions} questões · ${r.correct} acertos · ${r.pct}%</span></div><div class="bar-track"><span style="width:${barWidth(r.questions, maxDisc)}%"></span></div></div>`).join('')}</div>` : '<p class="empty">Nenhuma questão registrada nas disciplinas ativas.</p>'}
+      </section>
+      <section class="card" style="margin-top:18px">
+        <div class="section-title compact"><h3>Questões por mês</h3><span class="badge dark">histórico mensal</span></div>
+        ${monthRows.length ? `<div class="bar-list">${monthRows.map(r => `<div class="bar-row"><div class="bar-label"><strong>${escapeHTML(r.key)}</strong><span>${r.questions} questões · ${r.correct} acertos · ${r.pct}%</span></div><div class="bar-track alt"><span style="width:${barWidth(r.questions, maxMonth)}%"></span></div></div>`).join('')}</div>` : '<p class="empty">Nenhuma questão registrada por mês ainda.</p>'}
+      </section>
+    `;
+    renderLayout(content);
   }
 
   function renderAttack() {
@@ -9096,6 +9380,7 @@
           <div class="field span-3"><label>% mínimo de acerto</label><input id="cfg-acc" value="${s.minAccuracy}" type="number"></div>
           <div class="field span-3"><label>Dias sem contato</label><input id="cfg-days" value="${s.neglectDays}" type="number"></div>
           <div class="field span-3"><label>Lembrete de backup (dias)</label><input id="cfg-backup-days" value="${s.backupReminderDays || 1}" type="number" min="1"></div>
+          <div class="field span-3"><label>Auto-exportar após registro?</label><select id="cfg-auto-export"><option ${s.autoExportAfterRegister?'':'selected'}>Não</option><option ${s.autoExportAfterRegister?'selected':''}>Sim</option></select></div>
           <div class="span-12"><button class="primary-btn" type="submit">Salvar configurações</button></div>
         </form>
       </section>
@@ -9110,6 +9395,7 @@
       state.settings.minAccuracy = parseIntSafe(document.getElementById('cfg-acc').value) || 70;
       state.settings.neglectDays = parseIntSafe(document.getElementById('cfg-days').value) || 7;
       state.settings.backupReminderDays = Math.max(1, parseIntSafe(document.getElementById('cfg-backup-days').value) || 1);
+      state.settings.autoExportAfterRegister = document.getElementById('cfg-auto-export').value === 'Sim';
       state.settings.updatedAt = new Date().toISOString();
       saveState(); toast('Configurações salvas.'); renderConfig();
     });
@@ -9128,7 +9414,7 @@
       </section>
       ${backupIsDue() ? `<section class="notice warn" style="margin-top:18px"><strong>Atenção:</strong> backup externo recomendado. Exporte e salve no iCloud Drive ou Google Drive.</section>` : `<section class="notice ok" style="margin-top:18px"><strong>Backup em dia.</strong> Mantenha o JSON em local seguro.</section>`}
       <section class="grid cards-2" style="margin-top:18px">
-        <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive ou Google Drive.</p><button class="primary-btn" id="export-json">Exportar backup agora</button></div>
+        <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive ou Google Drive.</p><button class="primary-btn" id="export-json">Exportar backup agora</button><p class="muted" style="margin-top:10px">Auto-exportação após registro: <strong>${state.settings.autoExportAfterRegister ? 'ativada' : 'desativada'}</strong>. Ajuste em Configurações.</p></div>
         <div class="card"><h3>Importar</h3><p class="muted">Escolha se deseja substituir tudo ou mesclar com o que já existe.</p><input type="file" id="import-file" accept="application/json,.json" class="inline-input"><div class="table-actions" style="margin-top:12px"><button class="subtle-btn" id="import-merge">Importar mesclando</button><button class="danger-btn" id="import-replace">Substituir tudo</button></div></div>
       </section>
       <section class="card" style="margin-top:18px"><h3>Backup automático local</h3><p class="muted">A cada alteração importante, o app mantém até ${MAX_SNAPSHOTS} snapshots no próprio navegador. Isso não substitui o JSON salvo fora do navegador.</p>${snapshots.length ? `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Registros</th><th>Tópicos</th><th>Ação</th></tr></thead><tbody>${snapshots.map((snp, idx) => `<tr><td>${new Date(snp.createdAt).toLocaleString('pt-BR')}</td><td>${snp.sessions}</td><td>${snp.topics}</td><td><button class="subtle-btn mini" data-restore-snapshot="${idx}">Restaurar</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">Nenhum snapshot local ainda.</p>'}</section>
@@ -9198,6 +9484,7 @@
     if (currentRoute === 'ciclo') return renderCycle();
     if (currentRoute === 'conteudo') return renderTopics();
     if (currentRoute === 'progresso') return renderProgress();
+    if (currentRoute === 'questoes') return renderQuestions();
     if (currentRoute === 'ataque') return renderAttack();
     if (currentRoute === 'erros') return renderErrors();
     if (currentRoute === 'fontes') return renderSources();

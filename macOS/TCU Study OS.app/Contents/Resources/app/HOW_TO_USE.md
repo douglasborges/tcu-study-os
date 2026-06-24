@@ -1,26 +1,29 @@
-# Como usar — TCU Study OS PWA v7
+# Como usar o TCU Study OS v8
 
-## Rotina diária
+## Fluxo recomendado
 
-1. Abra **Hoje**.
-2. Veja o ciclo, a constância, as metas e as sessões sugeridas.
-3. Estude uma disciplina.
-4. Clique em **Registrar** e salve uma disciplina por vez.
-5. Confira **Progresso**.
-6. Ao fim do dia, se o app indicar, vá em **Backup** e exporte o JSON para iCloud Drive ou Google Drive.
+Use o app assim:
 
-## Registrar a partir de um tópico
+**Hoje → Registrar → Progresso → Backup**
 
-1. Abra **Conteúdo**.
-2. Escolha a disciplina.
-3. Use filtros por status ou busca.
-4. Clique em **Registrar** na linha do tópico.
-5. O app abre a tela Registrar já com disciplina e assunto preenchidos.
-6. Complete horas, questões, acertos e observação.
+Você registra **uma disciplina por vez**. Exemplo:
+
+- DCON — Teoria — 2,5h — 25 questões — 17 acertos
+- Português — Questões — 2h — 40 questões — 31 acertos
+
+## Ciclo
+
+Na tela **Ciclo**, deixe ativas as disciplinas que estão sendo estudadas. A frequência indica quantas vezes a disciplina aparece no ciclo, mas o app separa as repetições.
+
+Exemplo:
+
+**Português 2x + DCON 1x + DAD 1x** vira:
+
+**Português → DCON → Português → DAD**
 
 ## Conteúdo
 
-Cada tópico pode ter status:
+Na tela **Conteúdo**, cada tópico pode ter status:
 
 - Estudando
 - Revisado
@@ -28,38 +31,42 @@ Cada tópico pode ter status:
 - Questões
 - Caderno de Erros
 
-Também é possível cadastrar a URL do caderno TEC do tópico.
+O avanço do ciclo ativo usa apenas disciplinas ativas e considera a maturidade dos tópicos.
 
-## Histórico
+## Progresso motivacional
 
-Use **Histórico** para:
+A tela **Progresso** mostra:
 
-- filtrar por disciplina;
-- filtrar por modo;
-- filtrar por data;
-- buscar por assunto ou observação;
-- editar ou excluir registros.
+- horas hoje, semana, mês;
+- percentual de acertos;
+- avanço do ciclo ativo;
+- tópicos ativos;
+- constância;
+- recordes pessoais;
+- conquistas;
+- progresso por disciplina ativa.
 
-## Backup seguro
+## Backup
 
-A aba **Backup** mostra:
+O app faz snapshots locais no navegador, mas isso não substitui backup externo.
 
-- último backup externo;
-- total de registros;
-- total de tópicos;
-- snapshots locais no navegador.
+Use:
 
-Use **Exportar backup agora** e salve o arquivo JSON no iCloud Drive ou Google Drive.
+**Backup → Exportar backup agora**
 
-## Importar backups
+Guarde o JSON no iCloud Drive ou Google Drive.
 
-- **Importar mesclando**: junta registros/tópicos sem apagar o que já existe.
-- **Substituir tudo**: troca toda a base atual pelo backup.
+Na v8, você pode ativar em **Configurações**:
 
-## Ciclo
+**Auto-exportar após registro = Sim**
 
-O ciclo atual recomendado é:
+Quando ativado, o app baixa um JSON automaticamente depois de salvar uma sessão. Salve esse arquivo em uma pasta segura.
 
-**Português → DCON → Português → DAD**
+## Atualizar no GitHub Pages
 
-Português aparece 2x, mas separado. Frequência 2x nunca significa duas sessões grudadas quando houver outras disciplinas no ciclo.
+1. Exporte backup JSON.
+2. Substitua todos os arquivos no repositório.
+3. Faça commit.
+4. Abra a URL do app.
+5. Use Command + Shift + R se o navegador mantiver cache antigo.
+6. Importe o backup se necessário.

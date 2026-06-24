@@ -1,65 +1,28 @@
-# Como usar — TCU Study OS PWA v7
+# Como usar — TCU Study OS PWA v9
 
-## Rotina diária
+## Registro diário
 
-1. Abra **Hoje**.
-2. Veja o ciclo, a constância, as metas e as sessões sugeridas.
-3. Estude uma disciplina.
-4. Clique em **Registrar** e salve uma disciplina por vez.
-5. Confira **Progresso**.
-6. Ao fim do dia, se o app indicar, vá em **Backup** e exporte o JSON para iCloud Drive ou Google Drive.
+Registre **uma disciplina por vez** na tela **Registrar**. Informe disciplina, modo, tópico/assunto, horas, questões e acertos. Para 2h30, use `2.5` ou `2,5`.
 
-## Registrar a partir de um tópico
+## Conteúdo de DCON
 
-1. Abra **Conteúdo**.
-2. Escolha a disciplina.
-3. Use filtros por status ou busca.
-4. Clique em **Registrar** na linha do tópico.
-5. O app abre a tela Registrar já com disciplina e assunto preenchidos.
-6. Complete horas, questões, acertos e observação.
+A disciplina **DCON** foi atualizada com 21 tópicos, de Aplicabilidade das normas constitucionais a Ordem Social. Ao abrir/importar dados antigos, o app migra DCON para essa nova lista.
 
-## Conteúdo
+## Questões
 
-Cada tópico pode ter status:
+A tela **Questões** mostra:
 
-- Estudando
-- Revisado
-- Em espera
-- Questões
-- Caderno de Erros
+1. questões totais até o momento;
+2. acertos totais e percentual geral;
+3. questões por disciplina ativa no ciclo;
+4. questões por mês.
 
-Também é possível cadastrar a URL do caderno TEC do tópico.
+Disciplinas em espera não entram na lista de questões por disciplina ativa.
 
-## Histórico
+## Progresso
 
-Use **Histórico** para:
+Use **Progresso** para acompanhar horas, recordes, constância e avanço do ciclo ativo.
 
-- filtrar por disciplina;
-- filtrar por modo;
-- filtrar por data;
-- buscar por assunto ou observação;
-- editar ou excluir registros.
+## Backup
 
-## Backup seguro
-
-A aba **Backup** mostra:
-
-- último backup externo;
-- total de registros;
-- total de tópicos;
-- snapshots locais no navegador.
-
-Use **Exportar backup agora** e salve o arquivo JSON no iCloud Drive ou Google Drive.
-
-## Importar backups
-
-- **Importar mesclando**: junta registros/tópicos sem apagar o que já existe.
-- **Substituir tudo**: troca toda a base atual pelo backup.
-
-## Ciclo
-
-O ciclo atual recomendado é:
-
-**Português → DCON → Português → DAD**
-
-Português aparece 2x, mas separado. Frequência 2x nunca significa duas sessões grudadas quando houver outras disciplinas no ciclo.
+Antes de atualizar o GitHub Pages, faça **Backup > Exportar JSON**. Depois de atualizar, se os dados não aparecerem, use **Backup > Importar JSON**.
