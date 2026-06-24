@@ -1,0 +1,5 @@
+#!/bin/bash
+DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_HTML="$DIR/../Resources/app/index.html"
+# Abre o app local no Safari. Troque -a Safari por seu navegador favorito, se quiser.
+open -a Safari "$APP_HTML"

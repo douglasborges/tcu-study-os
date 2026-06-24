@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleName</key>
+  <string>TCU Study OS</string>
+  <key>CFBundleDisplayName</key>
+  <string>TCU Study OS</string>
+  <key>CFBundleIdentifier</key>
+  <string>br.com.tcustudyos.local</string>
+  <key>CFBundleVersion</key>
+  <string>4.0</string>
+  <key>CFBundleShortVersionString</key>
+  <string>4.0</string>
+  <key>CFBundleExecutable</key>
+  <string>TCU Study OS</string>
+  <key>CFBundleIconFile</key>
+  <string>TCUStudyOS</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>10.13</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
