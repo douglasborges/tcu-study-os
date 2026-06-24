@@ -1,62 +1,65 @@
-# Como usar — TCU Study OS v5
+# Como usar — TCU Study OS PWA v7
 
-## 1. Backup antes de atualizar
+## Rotina diária
 
-Antes de substituir a versão antiga, abra o app atual e use:
+1. Abra **Hoje**.
+2. Veja o ciclo, a constância, as metas e as sessões sugeridas.
+3. Estude uma disciplina.
+4. Clique em **Registrar** e salve uma disciplina por vez.
+5. Confira **Progresso**.
+6. Ao fim do dia, se o app indicar, vá em **Backup** e exporte o JSON para iCloud Drive ou Google Drive.
 
-**Backup → Exportar JSON**
+## Registrar a partir de um tópico
 
-Depois de atualizar, se algo não aparecer, use **Backup → Importar JSON**.
+1. Abra **Conteúdo**.
+2. Escolha a disciplina.
+3. Use filtros por status ou busca.
+4. Clique em **Registrar** na linha do tópico.
+5. O app abre a tela Registrar já com disciplina e assunto preenchidos.
+6. Complete horas, questões, acertos e observação.
 
-## 2. Português no lugar de Port
+## Conteúdo
 
-A v5 migra automaticamente a disciplina **Port** para **Português**. Os tópicos, registros, erros e histórico continuam preservados.
+Cada tópico pode ter status:
 
-## 3. Ciclo inicial
+- Estudando
+- Revisado
+- Em espera
+- Questões
+- Caderno de Erros
 
-O ciclo foi ajustado para:
+Também é possível cadastrar a URL do caderno TEC do tópico.
+
+## Histórico
+
+Use **Histórico** para:
+
+- filtrar por disciplina;
+- filtrar por modo;
+- filtrar por data;
+- buscar por assunto ou observação;
+- editar ou excluir registros.
+
+## Backup seguro
+
+A aba **Backup** mostra:
+
+- último backup externo;
+- total de registros;
+- total de tópicos;
+- snapshots locais no navegador.
+
+Use **Exportar backup agora** e salve o arquivo JSON no iCloud Drive ou Google Drive.
+
+## Importar backups
+
+- **Importar mesclando**: junta registros/tópicos sem apagar o que já existe.
+- **Substituir tudo**: troca toda a base atual pelo backup.
+
+## Ciclo
+
+O ciclo atual recomendado é:
 
 **Português → DCON → Português → DAD**
 
-Isso significa que Português aparece duas vezes no ciclo. Exemplo prático:
-
-- Dia/rodada 1: Português + DCON
-- Dia/rodada 2: Português + DAD
-
-O app usa a carga horária disponível em **Configurações** para decidir quantas sessões cabem no dia.
-
-## 4. Registrar estudo
-
-Registre uma disciplina por vez:
-
-1. Abra **Registrar**.
-2. Escolha a disciplina.
-3. Escolha o tópico.
-4. Informe modo, horas, questões, acertos e observação.
-5. Salve.
-
-Para 2h30, use **2.5** ou **2,5**.
-
-## 5. Constância
-
-Na tela **Hoje**, o bloco **Constância** mostra:
-
-- sequência atual de dias estudados;
-- recorde de sequência;
-- total de dias com registro.
-
-Se domingo estiver configurado como descanso, domingo sem registro não quebra a sequência.
-
-## 6. Ciclo em pizza
-
-A tela **Hoje** também mostra um gráfico de pizza com a participação das disciplinas no ciclo. Como Português aparece duas vezes, ele terá uma fatia maior.
-
-## 7. Conteúdo por disciplina
-
-Use **Conteúdo** para editar, incluir ou remover tópicos de cada disciplina. Cada tópico pode ficar como:
-
-- Estudando;
-- Revisado;
-- Em espera;
-- Questões;
-- Caderno de Erros.
+Português aparece 2x, mas separado. Frequência 2x nunca significa duas sessões grudadas quando houver outras disciplinas no ciclo.

@@ -1,34 +1,13 @@
-# Publicar online no GitHub Pages
+# Publicar no GitHub Pages
 
-Este app é estático: basta publicar os arquivos do ZIP em um repositório GitHub Pages.
+1. Abra o repositório `tcu-study-os`.
+2. Faça backup JSON do app atual antes de atualizar.
+3. Envie todos os arquivos desta pasta para o repositório, substituindo os antigos.
+4. Não envie seu arquivo de backup JSON para o GitHub.
+5. Aguarde o GitHub Pages atualizar.
+6. Abra `https://douglasborges.github.io/tcu-study-os/`.
+7. Se necessário, importe seu backup JSON.
 
-## Opção mais simples
+## Atualização de versão
 
-1. Crie uma conta gratuita no GitHub, caso ainda não tenha.
-2. Crie um novo repositório, por exemplo: `tcu-study-os`.
-3. Envie todos os arquivos da pasta do app para a raiz do repositório:
-   - `index.html`
-   - `app.js`
-   - `styles.css`
-   - `manifest.webmanifest`
-   - `sw.js`
-   - pasta `assets/`
-4. Abra o repositório no GitHub.
-5. Vá em **Settings > Pages**.
-6. Em **Build and deployment**, escolha **Deploy from a branch**.
-7. Em **Branch**, escolha `main` e `/root`.
-8. Clique em **Save**.
-9. Aguarde alguns minutos.
-10. O GitHub mostrará a URL publicada.
-
-## Instalar no iPad
-
-1. Abra a URL do GitHub Pages no Safari.
-2. Toque em **Compartilhar**.
-3. Toque em **Adicionar à Tela de Início**.
-4. Abra pelo ícone criado.
-
-## Importante
-
-O app online continua sendo **local-first**. Os dados ficam no navegador do dispositivo. Para levar dados do Mac para o iPad, use **Backup > Exportar JSON** e salve no iCloud Drive; depois use **Backup > Importar JSON** no outro dispositivo.
-
+Se o app parecer antigo, limpe o cache do navegador ou aguarde alguns minutos. Esta versão usa cache `v7`, então o Service Worker deve atualizar automaticamente após recarregar.

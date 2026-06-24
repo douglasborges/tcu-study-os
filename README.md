@@ -1,17 +1,20 @@
-# TCU Study OS PWA v6 — Ciclo Separado + TEC por Tópico
+# TCU Study OS PWA v7
 
-App local-first para controle de estudos do TCU.
+App local-first para estudo do TCU com ciclo vivo, conteúdo por disciplina, registro diário, progresso, constância e backup seguro.
 
-## Destaques
+## Funciona com
 
-- Registro de uma disciplina por vez.
-- Ciclo vivo com disciplinas repetidas sem agrupamento.
-- Exemplo: Português → DCON → Português → DAD.
-- Pizza do ciclo em ordem real.
-- Conteúdo por disciplina.
-- Campo de URL do caderno TEC por tópico.
-- Progresso, constância, histórico, erros, backup e fontes.
+- macOS
+- Safari/Chrome
+- GitHub Pages
+- modo offline após primeiro carregamento
 
-## Atualização
+## Dados
 
-Antes de atualizar, faça backup JSON no app atual.
+Os dados ficam no navegador do dispositivo. O GitHub Pages hospeda apenas os arquivos do app.
+
+Para proteger seus dados, exporte backup JSON e salve no iCloud Drive ou Google Drive.
+
+## Fluxo recomendado
+
+**Hoje → Conteúdo/Registrar → Progresso → Backup**

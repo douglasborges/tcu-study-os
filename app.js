@@ -2,7 +2,9 @@
   'use strict';
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
-  const BACKUP_VERSION = 4;
+  const BACKUP_VERSION = 7;
+  const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
+  const MAX_SNAPSHOTS = 3;
   const MODES = ['Teoria', 'Revisão', 'Questões', 'Caderno de Erros', 'Em espera'];
   const TOPIC_STATUSES = ['Estudando', 'Revisado', 'Em espera', 'Questões', 'Caderno de Erros'];
   const PRIORITIES = ['Alta', 'Média', 'Baixa'];
@@ -7727,6 +7729,9 @@
   let lastDraft = null;
   let editingSessionId = null;
   let topicFilterDiscipline = null;
+  let topicStatusFilter = 'Todos';
+  let topicSearch = '';
+  let historyFilters = { discipline: '', mode: '', from: '', to: '', q: '' };
 
   const $app = document.getElementById('app');
 
@@ -7811,8 +7816,80 @@
     }
   }
 
-  function saveState() {
+  function saveState(options = {}) {
+    state.updatedAt = new Date().toISOString();
     localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    if (!options.skipSnapshot) autoSnapshot_();
+  }
+
+  function autoSnapshot_() {
+    try {
+      const minimal = {
+        createdAt: new Date().toISOString(),
+        sessions: state.sessions.length,
+        topics: state.topics.length,
+        payload: state
+      };
+      const list = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]');
+      list.unshift(minimal);
+      localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(list.slice(0, MAX_SNAPSHOTS)));
+    } catch (err) {
+      console.warn('Auto snapshot ignorado:', err);
+    }
+  }
+
+  function lastBackupDateLabel() {
+    const v = state.settings && state.settings.lastBackupAt;
+    return v ? formatDate(String(v).slice(0,10)) : 'nunca';
+  }
+
+  function daysSinceBackup() {
+    const v = state.settings && state.settings.lastBackupAt;
+    if (!v) return null;
+    const dt = new Date(v);
+    if (Number.isNaN(dt.getTime())) return null;
+    return Math.max(0, Math.floor((Date.now() - dt.getTime()) / 86400000));
+  }
+
+  function backupIsDue() {
+    const days = daysSinceBackup();
+    const limit = Number(state.settings.backupReminderDays || 1);
+    return days === null || days >= limit;
+  }
+
+  function exportBackupFile() {
+    state.settings.lastBackupAt = new Date().toISOString();
+    saveState({ skipSnapshot: true });
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tcu-study-os-backup-${todayISO()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function mergeByIdOrKey(existing, incoming, keyFn) {
+    const out = Array.isArray(existing) ? existing.slice() : [];
+    const idxById = new Map(out.map((item, idx) => [item.id, idx]).filter(x => x[0]));
+    const idxByKey = new Map(out.map((item, idx) => [keyFn(item), idx]).filter(x => x[0]));
+    (incoming || []).forEach(item => {
+      const idx = item.id && idxById.has(item.id) ? idxById.get(item.id) : idxByKey.get(keyFn(item));
+      if (idx !== undefined) out[idx] = { ...out[idx], ...item };
+      else out.push(item);
+    });
+    return out;
+  }
+
+  function mergeState(importedRaw) {
+    const imported = migrateState(importedRaw);
+    const base = migrateState(state);
+    base.disciplines = mergeByIdOrKey(base.disciplines, imported.disciplines, d => normalizeName(d.name));
+    base.topics = mergeByIdOrKey(base.topics, imported.topics, t => `${normalizeName(t.disciplineName)}|${normalizeName(t.title)}`);
+    base.sessions = mergeByIdOrKey(base.sessions, imported.sessions, s => s.id || `${s.date}|${normalizeName(s.disciplineName)}|${normalizeName(s.subject)}|${s.hours}|${s.questions}|${s.correct}|${s.createdAt || ''}`);
+    base.errors = mergeByIdOrKey(base.errors, imported.errors, e => e.id || `${e.date}|${normalizeName(e.disciplineName)}|${normalizeName(e.subject)}|${normalizeName(e.description)}`);
+    base.settings = { ...base.settings, ...imported.settings, lastBackupAt: base.settings.lastBackupAt || imported.settings.lastBackupAt || '' };
+    return migrateState(base);
   }
 
   function seedState() {
@@ -7829,7 +7906,9 @@
         sundayStudy: false,
         minAccuracy: 70,
         neglectDays: 7,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        lastBackupAt: '',
+        backupReminderDays: 1
       },
       disciplines,
       topics,
@@ -7856,6 +7935,8 @@
       sessions: Array.isArray(data.sessions) ? data.sessions : [],
       errors: Array.isArray(data.errors) ? data.errors : []
     };
+    clean.settings.lastBackupAt = clean.settings.lastBackupAt || '';
+    clean.settings.backupReminderDays = Number.isFinite(Number(clean.settings.backupReminderDays)) ? Number(clean.settings.backupReminderDays) : 1;
     clean.disciplines = clean.disciplines.map((d, idx) => ({
       id: d.id || slugify(d.name) || uid('disc'),
       name: d.name || `Disciplina ${idx + 1}`,
@@ -8033,7 +8114,7 @@
     if (topic) return topic;
     const maxOrder = topicsForDiscipline(disc).reduce((m, t) => Math.max(m, Number(t.order) || 0), 0);
     topic = {
-      id: uid('topic'), disciplineId: disc.id, disciplineName: disc.name, title: cleanTitle, details: String(details || '').trim(), status: 'Estudando', priority: disc.priority || 'Média', order: maxOrder + 1, notes: '', sourceUrl: ''
+      id: uid('topic'), disciplineId: disc.id, disciplineName: disc.name, title: cleanTitle, details: String(details || '').trim(), status: 'Estudando', priority: disc.priority || 'Média', order: maxOrder + 1, notes: '', sourceUrl: '', tecUrl: ''
     };
     state.topics.push(topic);
     return topic;
@@ -8390,6 +8471,30 @@
       </div>`;
   }
 
+
+  function backupNoticeHTML() {
+    const due = backupIsDue();
+    const days = daysSinceBackup();
+    if (!due) {
+      return `<section class="notice ok" style="margin:16px 0"><strong>Backup em dia:</strong> último backup em ${lastBackupDateLabel()}.</section>`;
+    }
+    const text = days === null ? 'Você ainda não exportou backup.' : `Último backup há ${days} dia(s).`;
+    return `<section class="notice warn" style="margin:16px 0"><strong>Backup recomendado:</strong> ${text} <button class="subtle-btn mini" id="home-export-backup" style="margin-left:8px">Exportar agora</button></section>`;
+  }
+
+  function liveGoalsHTML(periods) {
+    const weekH = sum(periods.week, 'hours');
+    const monthH = sum(periods.month, 'hours');
+    const wGoal = Number(state.settings.weeklyGoal || 0);
+    const mGoal = Number(state.settings.monthlyGoal || 0);
+    const wPct = wGoal ? Math.min(100, Math.round((weekH / wGoal) * 100)) : 0;
+    const mPct = mGoal ? Math.min(100, Math.round((monthH / mGoal) * 100)) : 0;
+    return `<section class="grid cards-2" style="margin-top:16px">
+      <div class="card"><div class="section-title compact"><h3>Meta semanal</h3><span class="badge">${fmt(weekH)}h / ${fmt(wGoal)}h</span></div><div class="progress-bar goal"><span style="width:${wPct}%"></span></div><p class="muted">Faltam ${fmt(Math.max(0, wGoal - weekH))}h para bater a meta da semana.</p></div>
+      <div class="card"><div class="section-title compact"><h3>Meta mensal</h3><span class="badge">${fmt(monthH)}h / ${fmt(mGoal)}h</span></div><div class="progress-bar goal"><span style="width:${mPct}%"></span></div><p class="muted">Faltam ${fmt(Math.max(0, mGoal - monthH))}h para bater a meta do mês.</p></div>
+    </section>`;
+  }
+
   function renderHome() {
     const periods = sessionsByPeriod();
     const suggestions = suggestedSessions();
@@ -8417,6 +8522,8 @@
       <section class="grid cards-2">
         ${suggestions.length ? suggestions.map((s, idx) => renderSessionCard(s, idx)).join('') : `<div class="card span-12"><p class="empty">Nenhuma sessão automática agora. Você ainda pode registrar qualquer estudo em <strong>Registrar</strong>.</p></div>`}
       </section>
+      ${liveGoalsHTML(periods)}
+      ${backupNoticeHTML()}
       <section class="card soft" style="margin-top:18px">
         <strong>Registro livre:</strong> estudou DCON 2h30 e Português 2h? Vá em <strong>Registrar</strong> e lance uma disciplina por vez.
       </section>
@@ -8438,6 +8545,8 @@
         navigate('sessao');
       });
     });
+    const homeBackup = document.getElementById('home-export-backup');
+    if (homeBackup) homeBackup.addEventListener('click', () => { exportBackupFile(); toast('Backup exportado. Salve no iCloud/Drive.'); renderHome(); });
   }
 
   function renderSessionCard(s, idx) {
@@ -8598,7 +8707,9 @@
       } else {
         state.sessions.push({ id: uid('sess'), createdAt: new Date().toISOString(), ...payload }); toast(`Sessão registrada: ${disc.name} · ${fmt(hours)}h`);
       }
-      saveState(); editingSessionId = null; lastDraft = null; renderRegister();
+      saveState();
+      if (backupIsDue()) setTimeout(() => toast('Backup recomendado: exporte seu JSON hoje.'), 900);
+      editingSessionId = null; lastDraft = null; renderRegister();
     });
     attachSessionActions();
   }
@@ -8610,21 +8721,54 @@
   }
 
   function renderHistory() {
-    const sessions = state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-    const totalHours = sum(sessions, 'hours');
+    const sorted = state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    const filtered = sorted.filter(sess => {
+      if (historyFilters.discipline && normalizeName(sess.disciplineName) !== normalizeName(historyFilters.discipline)) return false;
+      if (historyFilters.mode && sess.mode !== historyFilters.mode) return false;
+      if (historyFilters.from && String(sess.date) < historyFilters.from) return false;
+      if (historyFilters.to && String(sess.date) > historyFilters.to) return false;
+      const q = normalizeName(historyFilters.q || '');
+      if (q && !`${normalizeName(sess.subject)} ${normalizeName(sess.notes)} ${normalizeName(sess.disciplineName)}`.includes(q)) return false;
+      return true;
+    });
+    const totalHours = sum(filtered, 'hours');
     const content = `
-      <section class="banner"><h2>Histórico</h2><p>Revise, edite ou exclua registros já lançados. Use esta tela para corrigir erros de digitação, assunto, horas ou questões.</p></section>
-      <section class="grid cards-4">
-        <div class="card kpi"><div class="label">Sessões</div><div class="value">${sessions.length}</div><div class="hint">registros salvos</div></div>
-        <div class="card kpi"><div class="label">Horas</div><div class="value">${fmt(totalHours)}h</div><div class="hint">total registrado</div></div>
-        <div class="card kpi"><div class="label">Questões</div><div class="value">${sum(sessions, 'questions')}</div><div class="hint">total</div></div>
-        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(sessions)}%</div><div class="hint">geral</div></div>
+      <section class="banner"><h2>Histórico</h2><p>Filtre, revise, edite ou exclua registros já lançados.</p></section>
+      <section class="card">
+        <div class="form-grid">
+          <div class="field span-3"><label>Disciplina</label><select id="hist-disc"><option value="">Todas</option>${state.disciplines.map(d => `<option value="${escapeHTML(d.name)}" ${historyFilters.discipline===d.name?'selected':''}>${escapeHTML(d.name)}</option>`).join('')}</select></div>
+          <div class="field span-2"><label>Modo</label><select id="hist-mode"><option value="">Todos</option>${MODES.filter(m=>m!=='Em espera').map(m => `<option ${historyFilters.mode===m?'selected':''}>${m}</option>`).join('')}</select></div>
+          <div class="field span-2"><label>De</label><input id="hist-from" type="date" value="${escapeHTML(historyFilters.from)}"></div>
+          <div class="field span-2"><label>Até</label><input id="hist-to" type="date" value="${escapeHTML(historyFilters.to)}"></div>
+          <div class="field span-3"><label>Busca</label><input id="hist-q" value="${escapeHTML(historyFilters.q)}" placeholder="assunto/obs."></div>
+          <div class="span-12 table-actions"><button class="primary-btn" id="apply-history-filter">Aplicar filtros</button><button class="subtle-btn" id="clear-history-filter">Limpar</button></div>
+        </div>
+      </section>
+      <section class="grid cards-4" style="margin-top:18px">
+        <div class="card kpi"><div class="label">Sessões</div><div class="value">${filtered.length}</div><div class="hint">no filtro</div></div>
+        <div class="card kpi"><div class="label">Horas</div><div class="value">${fmt(totalHours)}h</div><div class="hint">no filtro</div></div>
+        <div class="card kpi"><div class="label">Questões</div><div class="value">${sum(filtered, 'questions')}</div><div class="hint">no filtro</div></div>
+        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(filtered)}%</div><div class="hint">no filtro</div></div>
       </section>
       <section class="card" style="margin-top:18px">
-        ${sessions.length ? `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Disciplina</th><th>Modo</th><th>Assunto</th><th>Horas</th><th>Questões</th><th>Acertos</th><th>Obs.</th><th>Ações</th></tr></thead><tbody>${sessions.map(s => `<tr><td>${formatDate(s.date)}</td><td>${escapeHTML(s.disciplineName)}</td><td>${escapeHTML(s.mode)}</td><td>${escapeHTML(s.subject || '-')}</td><td>${fmt(s.hours)}h</td><td>${s.questions || 0}</td><td>${s.correct || 0}</td><td>${escapeHTML(s.notes || '')}</td><td><button class="subtle-btn mini" data-edit-session="${escapeHTML(s.id)}">Editar</button> <button class="danger-btn mini" data-delete-session="${escapeHTML(s.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">Nenhum registro ainda.</p>'}
+        ${filtered.length ? `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Disciplina</th><th>Modo</th><th>Assunto</th><th>Horas</th><th>Questões</th><th>Acertos</th><th>Obs.</th><th>Ações</th></tr></thead><tbody>${filtered.map(s => `<tr><td>${formatDate(s.date)}</td><td>${escapeHTML(s.disciplineName)}</td><td>${escapeHTML(s.mode)}</td><td>${escapeHTML(s.subject || '-')}</td><td>${fmt(s.hours)}h</td><td>${s.questions || 0}</td><td>${s.correct || 0}</td><td>${escapeHTML(s.notes || '')}</td><td><button class="subtle-btn mini" data-edit-session="${escapeHTML(s.id)}">Editar</button> <button class="danger-btn mini" data-delete-session="${escapeHTML(s.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">Nenhum registro encontrado com os filtros atuais.</p>'}
       </section>
     `;
     renderLayout(content);
+    document.getElementById('apply-history-filter').addEventListener('click', () => {
+      historyFilters = {
+        discipline: document.getElementById('hist-disc').value,
+        mode: document.getElementById('hist-mode').value,
+        from: document.getElementById('hist-from').value,
+        to: document.getElementById('hist-to').value,
+        q: document.getElementById('hist-q').value.trim()
+      };
+      renderHistory();
+    });
+    document.getElementById('clear-history-filter').addEventListener('click', () => {
+      historyFilters = { discipline: '', mode: '', from: '', to: '', q: '' };
+      renderHistory();
+    });
     attachSessionActions();
   }
 
@@ -8749,14 +8893,22 @@
     const selected = topicFilterDiscipline || (discRows.find(d => d.active)?.id) || (discRows[0] ? discRows[0].id : '');
     const selectedDisc = getDisciplineById(selected) || discRows[0];
     const topics = selectedDisc ? topicsForDiscipline(selectedDisc) : [];
+    const visibleTopics = topics.filter(t => {
+      if (topicStatusFilter !== 'Todos' && t.status !== topicStatusFilter) return false;
+      const q = normalizeName(topicSearch);
+      if (q && !`${normalizeName(t.title)} ${normalizeName(t.details)} ${normalizeName(t.notes)}`.includes(q)) return false;
+      return true;
+    });
     const content = `
-      <section class="banner"><h2>Conteúdo</h2><p>Cadastre e acompanhe cada tópico de cada disciplina.</p></section>
+      <section class="banner"><h2>Conteúdo</h2><p>Seu edital vivo: tópicos, status, prioridade e caderno TEC.</p></section>
       <section class="card">
         <div class="form-grid">
-          <div class="field span-4"><label>Disciplina</label><select id="topic-discipline">${discRows.map(d => `<option value="${escapeHTML(d.id)}" ${selectedDisc && d.id === selectedDisc.id ? 'selected' : ''}>${escapeHTML(d.name)}</option>`).join('')}</select></div>
-          <div class="field span-4"><label>Novo tópico</label><input id="new-topic-title" placeholder="Ex.: Controle de constitucionalidade" /></div>
-          <div class="field span-2"><label>Status inicial</label><select id="new-topic-status">${topicStatusOptions('Em espera')}</select></div>
-          <div class="span-2"><button class="primary-btn" id="add-topic-btn">Adicionar tópico</button></div>
+          <div class="field span-3"><label>Disciplina</label><select id="topic-discipline">${discRows.map(d => `<option value="${escapeHTML(d.id)}" ${selectedDisc && d.id === selectedDisc.id ? 'selected' : ''}>${escapeHTML(d.name)}</option>`).join('')}</select></div>
+          <div class="field span-2"><label>Status</label><select id="topic-status-filter"><option>Todos</option>${TOPIC_STATUSES.map(s => `<option ${topicStatusFilter===s?'selected':''}>${s}</option>`).join('')}</select></div>
+          <div class="field span-3"><label>Buscar</label><input id="topic-search" value="${escapeHTML(topicSearch)}" placeholder="filtrar tópico"></div>
+          <div class="field span-3"><label>Novo tópico</label><input id="new-topic-title" placeholder="Ex.: Controle de constitucionalidade" /></div>
+          <div class="field span-1"><label>Status</label><select id="new-topic-status">${topicStatusOptions('Em espera')}</select></div>
+          <div class="span-12 table-actions"><button class="primary-btn" id="add-topic-btn">Adicionar tópico</button><button class="subtle-btn" id="apply-topic-filter">Aplicar filtro</button><button class="subtle-btn" id="next-topic-btn">Próximo tópico</button></div>
         </div>
       </section>
       <section class="grid cards-4" style="margin-top:18px">
@@ -8766,12 +8918,21 @@
         <div class="card kpi"><div class="label">Caderno de Erros</div><div class="value">${topics.filter(t=>t.status==='Caderno de Erros').length}</div><div class="hint">ataque</div></div>
       </section>
       <section class="card" style="margin-top:18px">
-        ${topics.length ? `<div class="table-wrap"><table><thead><tr><th>Ordem</th><th>Tópico</th><th>Status</th><th>Prior.</th><th>Caderno TEC URL</th><th>Detalhes/observação</th><th></th></tr></thead><tbody>${topics.map(t => `<tr data-topic-id="${escapeHTML(t.id)}"><td><input class="inline-input topic-order" type="number" min="1" value="${escapeHTML(t.order)}"></td><td><input class="inline-input topic-title" value="${escapeHTML(t.title)}"></td><td><select class="inline-select topic-status">${topicStatusOptions(t.status)}</select></td><td><select class="inline-select topic-priority">${PRIORITIES.map(p => `<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select></td><td><input class="inline-input topic-tec-url" value="${escapeHTML(t.tecUrl || '')}" placeholder="https://tecconcursos.com.br/...">${t.tecUrl ? `<a class="source-link mini-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir TEC</a>` : ''}</td><td><textarea class="inline-input topic-notes" rows="2">${escapeHTML(t.notes || t.details || '')}</textarea></td><td><button class="danger-btn mini" data-delete-topic="${escapeHTML(t.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div><div class="table-actions" style="margin-top:16px"><button class="primary-btn" id="save-topics">Salvar tópicos</button></div>` : '<p class="empty">Nenhum tópico cadastrado para esta disciplina. Adicione o primeiro tópico acima.</p>'}
+        ${visibleTopics.length ? `<div class="table-wrap"><table><thead><tr><th>Ordem</th><th>Tópico</th><th>Status</th><th>Prior.</th><th>Caderno TEC URL</th><th>Detalhes/observação</th><th>Ações</th></tr></thead><tbody>${visibleTopics.map(t => `<tr data-topic-id="${escapeHTML(t.id)}"><td><input class="inline-input topic-order" type="number" min="1" value="${escapeHTML(t.order)}"></td><td><input class="inline-input topic-title" value="${escapeHTML(t.title)}"></td><td><select class="inline-select topic-status">${topicStatusOptions(t.status)}</select></td><td><select class="inline-select topic-priority">${PRIORITIES.map(p => `<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select></td><td><input class="inline-input topic-tec-url" value="${escapeHTML(t.tecUrl || '')}" placeholder="https://tecconcursos.com.br/...">${t.tecUrl ? `<a class="source-link mini-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir TEC</a>` : ''}</td><td><textarea class="inline-input topic-notes" rows="2">${escapeHTML(t.notes || t.details || '')}</textarea></td><td><button class="primary-btn mini" data-register-topic="${escapeHTML(t.id)}">Registrar</button> <button class="danger-btn mini" data-delete-topic="${escapeHTML(t.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div><div class="table-actions" style="margin-top:16px"><button class="primary-btn" id="save-topics">Salvar tópicos</button></div>` : '<p class="empty">Nenhum tópico encontrado para os filtros atuais. Adicione um tópico ou limpe os filtros.</p>'}
       </section>
     `;
     renderLayout(content);
     const discSelect = document.getElementById('topic-discipline');
+    const statusSelect = document.getElementById('topic-status-filter');
+    const searchInput = document.getElementById('topic-search');
     discSelect.addEventListener('change', () => { topicFilterDiscipline = discSelect.value; renderTopics(); });
+    document.getElementById('apply-topic-filter').addEventListener('click', () => { topicStatusFilter = statusSelect.value; topicSearch = searchInput.value.trim(); renderTopics(); });
+    document.getElementById('next-topic-btn').addEventListener('click', () => {
+      const next = topics.find(t => ['Em espera','Estudando'].includes(t.status)) || topics[0];
+      if (!next || !selectedDisc) { toast('Nenhum tópico disponível.'); return; }
+      lastDraft = { discipline: selectedDisc.name, mode: selectedDisc.mode === 'Em espera' ? 'Teoria' : selectedDisc.mode, hours: defaultHoursForMode(selectedDisc.mode === 'Em espera' ? 'Teoria' : selectedDisc.mode), subject: next.title, topicId: next.id };
+      navigate('registrar');
+    });
     document.getElementById('add-topic-btn').addEventListener('click', () => {
       const disc = getDisciplineById(discSelect.value);
       const title = document.getElementById('new-topic-title').value.trim();
@@ -8794,6 +8955,13 @@
       });
       saveState(); toast('Tópicos salvos.'); renderTopics();
     });
+    document.querySelectorAll('[data-register-topic]').forEach(btn => btn.addEventListener('click', () => {
+      const topic = getTopicById(btn.dataset.registerTopic);
+      if (!topic) return;
+      const disc = getDisciplineById(topic.disciplineId) || getDisciplineByName(topic.disciplineName);
+      lastDraft = { discipline: disc ? disc.name : topic.disciplineName, mode: disc && disc.mode !== 'Em espera' ? disc.mode : 'Teoria', hours: disc ? effectiveHours(disc) || 2 : 2, subject: topic.title, topicId: topic.id };
+      navigate('registrar');
+    }));
     document.querySelectorAll('[data-delete-topic]').forEach(btn => btn.addEventListener('click', () => {
       const topic = getTopicById(btn.dataset.deleteTopic);
       if (topic && confirm(`Excluir tópico "${topic.title}"?`)) {
@@ -8927,6 +9095,7 @@
           <div class="field span-3"><label>Domingo estuda?</label><select id="cfg-sunday"><option ${s.sundayStudy?'':'selected'}>Não</option><option ${s.sundayStudy?'selected':''}>Sim</option></select></div>
           <div class="field span-3"><label>% mínimo de acerto</label><input id="cfg-acc" value="${s.minAccuracy}" type="number"></div>
           <div class="field span-3"><label>Dias sem contato</label><input id="cfg-days" value="${s.neglectDays}" type="number"></div>
+          <div class="field span-3"><label>Lembrete de backup (dias)</label><input id="cfg-backup-days" value="${s.backupReminderDays || 1}" type="number" min="1"></div>
           <div class="span-12"><button class="primary-btn" type="submit">Salvar configurações</button></div>
         </form>
       </section>
@@ -8940,40 +9109,69 @@
       state.settings.sundayStudy = document.getElementById('cfg-sunday').value === 'Sim';
       state.settings.minAccuracy = parseIntSafe(document.getElementById('cfg-acc').value) || 70;
       state.settings.neglectDays = parseIntSafe(document.getElementById('cfg-days').value) || 7;
+      state.settings.backupReminderDays = Math.max(1, parseIntSafe(document.getElementById('cfg-backup-days').value) || 1);
       state.settings.updatedAt = new Date().toISOString();
       saveState(); toast('Configurações salvas.'); renderConfig();
     });
   }
 
   function renderBackup() {
+    let snapshots = [];
+    try { snapshots = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]'); } catch (_) { snapshots = []; }
     const content = `
-      <section class="banner"><h2>Backup</h2><p>Exporte para iCloud Drive e importe em outro dispositivo.</p></section>
-      <section class="grid cards-2">
-        <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive.</p><button class="primary-btn" id="export-json">Exportar backup</button></div>
-        <div class="card"><h3>Importar</h3><p class="muted">Importe um backup salvo. Isso substituirá os dados atuais.</p><input type="file" id="import-file" accept="application/json,.json" class="inline-input"><button class="subtle-btn" id="import-json" style="margin-top:12px">Importar backup</button></div>
+      <section class="banner"><h2>Backup seguro</h2><p>Seus dados ficam no navegador. Exporte JSON para iCloud Drive/Google Drive como cofre.</p></section>
+      <section class="grid cards-4">
+        <div class="card kpi"><div class="label">Último backup</div><div class="value small-kpi">${lastBackupDateLabel()}</div><div class="hint">exportação manual</div></div>
+        <div class="card kpi"><div class="label">Registros</div><div class="value">${state.sessions.length}</div><div class="hint">sessões salvas</div></div>
+        <div class="card kpi"><div class="label">Tópicos</div><div class="value">${state.topics.length}</div><div class="hint">conteúdo cadastrado</div></div>
+        <div class="card kpi"><div class="label">Snapshots locais</div><div class="value">${snapshots.length}</div><div class="hint">cópias no navegador</div></div>
       </section>
+      ${backupIsDue() ? `<section class="notice warn" style="margin-top:18px"><strong>Atenção:</strong> backup externo recomendado. Exporte e salve no iCloud Drive ou Google Drive.</section>` : `<section class="notice ok" style="margin-top:18px"><strong>Backup em dia.</strong> Mantenha o JSON em local seguro.</section>`}
+      <section class="grid cards-2" style="margin-top:18px">
+        <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive ou Google Drive.</p><button class="primary-btn" id="export-json">Exportar backup agora</button></div>
+        <div class="card"><h3>Importar</h3><p class="muted">Escolha se deseja substituir tudo ou mesclar com o que já existe.</p><input type="file" id="import-file" accept="application/json,.json" class="inline-input"><div class="table-actions" style="margin-top:12px"><button class="subtle-btn" id="import-merge">Importar mesclando</button><button class="danger-btn" id="import-replace">Substituir tudo</button></div></div>
+      </section>
+      <section class="card" style="margin-top:18px"><h3>Backup automático local</h3><p class="muted">A cada alteração importante, o app mantém até ${MAX_SNAPSHOTS} snapshots no próprio navegador. Isso não substitui o JSON salvo fora do navegador.</p>${snapshots.length ? `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Registros</th><th>Tópicos</th><th>Ação</th></tr></thead><tbody>${snapshots.map((snp, idx) => `<tr><td>${new Date(snp.createdAt).toLocaleString('pt-BR')}</td><td>${snp.sessions}</td><td>${snp.topics}</td><td><button class="subtle-btn mini" data-restore-snapshot="${idx}">Restaurar</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">Nenhum snapshot local ainda.</p>'}</section>
       <section class="card" style="margin-top:18px"><h3>Zona de segurança</h3><p class="muted">Use apenas se quiser limpar tudo e recomeçar.</p><button class="danger-btn" id="reset-data">Apagar todos os dados</button></section>
     `;
     renderLayout(content);
     document.getElementById('export-json').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `tcu-study-os-backup-${todayISO()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      exportBackupFile();
+      toast('Backup exportado. Salve no iCloud/Drive.');
+      renderBackup();
     });
-    document.getElementById('import-json').addEventListener('click', async () => {
+    async function readImportFile() {
       const file = document.getElementById('import-file').files[0];
-      if (!file) { toast('Selecione um arquivo JSON.'); return; }
+      if (!file) { toast('Selecione um arquivo JSON.'); return null; }
       const text = await file.text();
+      return JSON.parse(text);
+    }
+    document.getElementById('import-merge').addEventListener('click', async () => {
       try {
-        const imported = JSON.parse(text);
-        state = migrateState(imported);
-        saveState(); toast('Backup importado.'); renderHome();
-      } catch (err) { toast('Arquivo inválido.'); }
+        const imported = await readImportFile();
+        if (!imported) return;
+        state = mergeState(imported);
+        saveState(); toast('Backup importado e mesclado.'); renderHome();
+      } catch (err) { console.error(err); toast('Arquivo inválido.'); }
     });
+    document.getElementById('import-replace').addEventListener('click', async () => {
+      try {
+        const imported = await readImportFile();
+        if (!imported) return;
+        if (!confirm('Substituir todos os dados atuais pelo backup?')) return;
+        state = migrateState(imported);
+        saveState(); toast('Backup importado, substituindo dados.'); renderHome();
+      } catch (err) { console.error(err); toast('Arquivo inválido.'); }
+    });
+    document.querySelectorAll('[data-restore-snapshot]').forEach(btn => btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.restoreSnapshot);
+      const snp = snapshots[idx];
+      if (!snp || !snp.payload) return;
+      if (!confirm('Restaurar este snapshot local?')) return;
+      state = migrateState(snp.payload);
+      saveState({ skipSnapshot: true });
+      toast('Snapshot restaurado.'); renderHome();
+    }));
     document.getElementById('reset-data').addEventListener('click', () => {
       if (confirm('Apagar todos os dados locais?')) { state = seedState(); saveState(); renderHome(); }
     });

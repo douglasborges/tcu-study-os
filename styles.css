@@ -175,3 +175,11 @@ tr:last-child td { border-bottom: 0; }
 .cycle-legend i { width: 16px; height: 16px; border-radius: 99px; display: block; box-shadow: 0 0 18px rgba(117,255,82,.2); }
 .cycle-legend span { color: var(--muted); font-weight: 800; font-size: 13px; }
 @media (max-width: 720px) { .cycle-pizza-wrap { grid-template-columns: 1fr; } .cycle-pizza { margin: 0 auto; } .constancy-card .constancy-values { grid-template-columns: 1fr; } }
+
+
+/* v7 — rotina inteligente + backup seguro */
+.small-kpi { font-size: clamp(22px, 3.2vw, 34px) !important; letter-spacing: -.03em !important; }
+.progress-bar.goal { height: 14px; margin: 10px 0 12px; }
+.notice.ok { background:#ecfff2; border-color:#bdf2cd; color:#0b5a2f; }
+.field-help { margin-top: 8px; font-weight: 800; }
+.table-actions .mini, .mini { min-height: 36px; padding: 7px 10px; }

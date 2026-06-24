@@ -1,21 +1,15 @@
-# Changelog — v6 Ciclo Separado + TEC por Tópico
+# TCU Study OS PWA v7 — Rotina Inteligente + Backup Seguro
 
 ## Novidades
 
-- Corrigida a lógica visual do ciclo quando uma disciplina aparece mais de uma vez.
-- Agora frequência **2x** significa presença repetida, mas **não agrupada**.
-- Exemplo correto: **Português → DCON → Português → DAD**.
-- A pizza do ciclo agora desenha as etapas na ordem real do ciclo, em vez de agrupar visualmente tudo em um único bloco.
-- A legenda continua mostrando a proporção total: Português 2x, DCON 1x, DAD 1x.
-- A tela **Conteúdo** ganhou campo **Caderno TEC URL** para cada tópico.
-- Na tela **Registrar**, ao escolher um tópico que tenha link TEC, aparece o atalho **Abrir caderno TEC deste tópico**.
+- Tela Hoje mais estratégica, com metas vivas e alerta de backup.
+- Backup inteligente: último backup, saúde dos dados, snapshots locais e importação com mesclagem.
+- Histórico com filtros por disciplina, modo, data e busca.
+- Conteúdo mais forte: filtros por status/busca, botão Próximo tópico e botão Registrar tópico.
+- Registro a partir de tópico já vem pré-preenchido com disciplina, modo e assunto.
+- Ciclo em pizza mantém disciplinas repetidas separadas na ordem real do ciclo.
+- Configurações agora incluem lembrete de backup.
 
-## Compatibilidade
+## Observação
 
-- Mantém os dados anteriores do app.
-- Mantém a migração de **Port** para **Português**.
-- Mantém backups JSON das versões anteriores.
-
-## Antes de atualizar
-
-Faça **Backup → Exportar JSON** no app atual.
+Backup automático real para iCloud/Google Drive ainda exige ação do usuário ou integração autenticada. Esta versão cria snapshots locais e facilita a exportação JSON para salvar no iCloud Drive/Google Drive.

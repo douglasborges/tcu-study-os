@@ -1,21 +1,20 @@
-# TCU Study OS PWA v5 — Constância + Ciclo corrigido
+# TCU Study OS PWA v7
 
-App local-first para estudos do TCU.
+App local-first para estudo do TCU com ciclo vivo, conteúdo por disciplina, registro diário, progresso, constância e backup seguro.
 
-## Destaques
+## Funciona com
 
-- Registro de uma disciplina por vez.
-- Conteúdo/tópicos por disciplina.
-- Migração automática de **Port** para **Português**.
-- Ciclo padrão: **Português → DCON → Português → DAD**.
-- Painel de **Constância**.
-- Gráfico em pizza do ciclo ativo.
-- Backup/importação em JSON.
+- macOS
+- Safari/Chrome
+- GitHub Pages
+- modo offline após primeiro carregamento
 
-## Uso local
+## Dados
 
-Abra `index.html` no navegador.
+Os dados ficam no navegador do dispositivo. O GitHub Pages hospeda apenas os arquivos do app.
 
-## Uso online
+Para proteger seus dados, exporte backup JSON e salve no iCloud Drive ou Google Drive.
 
-Publique os arquivos no GitHub Pages e acesse a URL pelo Safari/Chrome.
+## Fluxo recomendado
+
+**Hoje → Conteúdo/Registrar → Progresso → Backup**

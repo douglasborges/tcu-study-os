@@ -1,57 +1,65 @@
-# Como usar — TCU Study OS v6
+# Como usar — TCU Study OS PWA v7
 
-## Fluxo principal
+## Rotina diária
 
-1. Abra o app.
-2. Vá em **Hoje** para ver o ciclo sugerido.
-3. Estude uma disciplina por vez.
-4. Vá em **Registrar** e salve a sessão.
-5. Confira evolução em **Progresso**.
+1. Abra **Hoje**.
+2. Veja o ciclo, a constância, as metas e as sessões sugeridas.
+3. Estude uma disciplina.
+4. Clique em **Registrar** e salve uma disciplina por vez.
+5. Confira **Progresso**.
+6. Ao fim do dia, se o app indicar, vá em **Backup** e exporte o JSON para iCloud Drive ou Google Drive.
 
-## Ciclo com disciplina repetida
+## Registrar a partir de um tópico
 
-Quando uma disciplina aparece 2x no ciclo, ela não deve ficar agrupada.
+1. Abra **Conteúdo**.
+2. Escolha a disciplina.
+3. Use filtros por status ou busca.
+4. Clique em **Registrar** na linha do tópico.
+5. O app abre a tela Registrar já com disciplina e assunto preenchidos.
+6. Complete horas, questões, acertos e observação.
 
-Exemplo configurado:
+## Conteúdo
+
+Cada tópico pode ter status:
+
+- Estudando
+- Revisado
+- Em espera
+- Questões
+- Caderno de Erros
+
+Também é possível cadastrar a URL do caderno TEC do tópico.
+
+## Histórico
+
+Use **Histórico** para:
+
+- filtrar por disciplina;
+- filtrar por modo;
+- filtrar por data;
+- buscar por assunto ou observação;
+- editar ou excluir registros.
+
+## Backup seguro
+
+A aba **Backup** mostra:
+
+- último backup externo;
+- total de registros;
+- total de tópicos;
+- snapshots locais no navegador.
+
+Use **Exportar backup agora** e salve o arquivo JSON no iCloud Drive ou Google Drive.
+
+## Importar backups
+
+- **Importar mesclando**: junta registros/tópicos sem apagar o que já existe.
+- **Substituir tudo**: troca toda a base atual pelo backup.
+
+## Ciclo
+
+O ciclo atual recomendado é:
 
 **Português → DCON → Português → DAD**
 
-Isso significa que Português aparece duas vezes, mas distribuído. A pizza mostra as quatro etapas em ordem real, e a legenda mostra a proporção:
-
-- Português: 2x / 50%
-- DCON: 1x / 25%
-- DAD: 1x / 25%
-
-## Conteúdo e Caderno TEC
-
-Na tela **Conteúdo**:
-
-1. Escolha a disciplina.
-2. Edite ou crie um tópico.
-3. Preencha o campo **Caderno TEC URL** com o link do caderno do TEC Concursos.
-4. Clique em **Salvar tópicos**.
-
-Depois, na tela **Registrar**, ao selecionar esse tópico, o app mostrará o link **Abrir caderno TEC deste tópico**.
-
-## Registro de sessão
-
-Registre uma disciplina por vez:
-
-- Disciplina: Português
-- Tópico: Sintaxe — Funções sintáticas
-- Modo: Questões
-- Horas: 1
-- Questões: 30
-- Acertos: 24
-
-Para 2h30min, use **2.5** ou **2,5**.
-
-## Backup
-
-Antes de trocar versão:
-
-**Backup → Exportar JSON**
-
-Depois de atualizar:
-
-**Backup → Importar JSON**, se necessário.
+Português aparece 2x, mas separado. Frequência 2x nunca significa duas sessões grudadas quando houver outras disciplinas no ciclo.

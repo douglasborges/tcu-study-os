@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v5-constancia-ciclo';
+const CACHE_NAME = 'tcu-study-os-pwa-v7-rotina-inteligente-backup';
 const APP_SHELL = [
   './',
   './index.html',
