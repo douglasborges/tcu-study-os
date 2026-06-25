@@ -1,18 +1,14 @@
-# TCU Study OS PWA v9 — DCON + Painel de Questões
+# TCU Study OS PWA v10
 
-## Novidades da v9
+Versão de estabilidade com diagnóstico de ambiente, salvamento reforçado e correção de migração de dados.
 
-- Conteúdo de DCON atualizado para a nova sequência de 21 tópicos/aulas.
-- Nova tela **Questões**, com total de questões, acertos, percentual geral, questões por disciplina ativa e questões por mês.
-- Versão do app exibida no canto inferior direito.
-- Migração automática de DCON: dados antigos são ajustados para a nova estrutura de tópicos.
-- Mantida a lógica de ciclo separado: disciplinas com frequência 2x são distribuídas no ciclo, não agrupadas.
+## Ponto principal
 
-## Uso recomendado
+O app é local-first: os dados ficam no armazenamento do ambiente em que você abriu o app. No macOS, o app aberto pelo Dock pode ter armazenamento separado do Safari/Chrome. Escolha um ambiente principal.
 
-1. Abra o app.
-2. Registre cada disciplina estudada em **Registrar**.
-3. Acompanhe evolução em **Progresso** e volume em **Questões**.
-4. Use **Backup** antes e depois de atualizar versões.
+## Fluxo seguro
 
-Não envie arquivos de backup JSON para o GitHub.
+1. Use sempre o mesmo ambiente, preferencialmente o app do Dock.
+2. Registre uma disciplina por vez.
+3. Exporte backup JSON ao final do dia.
+4. Para migrar entre navegador e Dock, exporte no ambiente com dados e importe no ambiente principal.

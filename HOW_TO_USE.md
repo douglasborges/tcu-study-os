@@ -1,28 +1,41 @@
-# Como usar — TCU Study OS PWA v9
+# Como usar — TCU Study OS v10
 
-## Registro diário
+## 1. Escolha um ambiente principal
 
-Registre **uma disciplina por vez** na tela **Registrar**. Informe disciplina, modo, tópico/assunto, horas, questões e acertos. Para 2h30, use `2.5` ou `2,5`.
+Use **apenas um**: Dock ou navegador. Eles podem ter bancos separados no macOS.
 
-## Conteúdo de DCON
+Se seus dados estão no navegador e você quer usar o Dock:
 
-A disciplina **DCON** foi atualizada com 21 tópicos, de Aplicabilidade das normas constitucionais a Ordem Social. Ao abrir/importar dados antigos, o app migra DCON para essa nova lista.
+1. Abra no navegador.
+2. Vá em **Backup > Exportar backup agora**.
+3. Abra pelo Dock.
+4. Vá em **Backup > Importar > Substituir tudo** ou **Importar mesclando**.
 
-## Questões
+## 2. Registrar estudo
 
-A tela **Questões** mostra:
+Vá em **Registrar** e salve uma disciplina por vez. Exemplo:
 
-1. questões totais até o momento;
-2. acertos totais e percentual geral;
-3. questões por disciplina ativa no ciclo;
-4. questões por mês.
+- Disciplina: DAD
+- Tópico: Aula demo — Regime jurídico-administrativo
+- Modo: Teoria
+- Horas: 2
+- Questões: 13
+- Acertos: 12
 
-Disciplinas em espera não entram na lista de questões por disciplina ativa.
+Ao salvar, o app grava a sessão e altera o status do tópico conforme o modo.
 
-## Progresso
+## 3. Conferir se salvou
 
-Use **Progresso** para acompanhar horas, recordes, constância e avanço do ciclo ativo.
+Após salvar, confira em **Histórico** e **Progresso**.
 
-## Backup
+## 4. Backup
 
-Antes de atualizar o GitHub Pages, faça **Backup > Exportar JSON**. Depois de atualizar, se os dados não aparecerem, use **Backup > Importar JSON**.
+A tela **Backup** mostra:
+
+- Ambiente atual;
+- quantidade de registros;
+- quantidade de tópicos;
+- último backup;
+- snapshots locais.
+
+Exporte o JSON para iCloud Drive ou Google Drive.

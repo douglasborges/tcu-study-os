@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v9-questoes-dcon';
+const CACHE_NAME = 'tcu-study-os-pwa-v10-estabilidade';
 const APP_SHELL = [
   './',
   './index.html',

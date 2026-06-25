@@ -2,9 +2,10 @@
   'use strict';
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
-  const BACKUP_VERSION = 9;
-  const APP_VERSION_LABEL = 'v9.0 — DCON + Questões';
+  const BACKUP_VERSION = 10;
+  const APP_VERSION_LABEL = 'v10.0 — Estabilidade + Diagnóstico';
   const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
+  const ENV_KEY = 'tcu-study-os-env-id';
   const MAX_SNAPSHOTS = 3;
   const MODES = ['Teoria', 'Revisão', 'Questões', 'Caderno de Erros', 'Em espera'];
   const TOPIC_STATUSES = ['Estudando', 'Revisado', 'Em espera', 'Questões', 'Caderno de Erros'];
@@ -7750,6 +7751,25 @@
     return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
   }
 
+  function getEnvId() {
+    try {
+      let id = localStorage.getItem(ENV_KEY);
+      if (!id) {
+        id = `amb-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+        localStorage.setItem(ENV_KEY, id);
+      }
+      return id;
+    } catch (_) {
+      return 'amb-local';
+    }
+  }
+
+  function storageLabel() {
+    const href = location.href || '';
+    const mode = window.navigator && window.navigator.standalone ? 'App/Dock' : 'Navegador';
+    return `${mode} · ${getEnvId()}`;
+  }
+
   function slugify(value) {
     return String(value || '')
       .toLowerCase()
@@ -7829,8 +7849,17 @@
 
   function saveState(options = {}) {
     state.updatedAt = new Date().toISOString();
-    localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    if (!options.skipSnapshot) autoSnapshot_();
+    const payload = JSON.stringify(state);
+    try {
+      localStorage.setItem(STORE_KEY, payload);
+      localStorage.setItem(`${STORE_KEY}-mirror`, payload);
+      const check = localStorage.getItem(STORE_KEY);
+      if (!check) throw new Error('localStorage não confirmou a gravação.');
+      if (!options.skipSnapshot) autoSnapshot_();
+    } catch (err) {
+      console.error('Falha ao salvar dados locais:', err);
+      alert('Não consegui salvar no armazenamento deste ambiente. Exporte um backup JSON e evite alternar entre Dock e navegador.');
+    }
   }
 
   function autoSnapshot_() {
@@ -7925,7 +7954,8 @@
       disciplines,
       topics,
       sessions: [],
-      errors: []
+      errors: [],
+      contentVersions: { dcon: 9 }
     };
   }
 
@@ -7945,7 +7975,8 @@
       disciplines: Array.isArray(data.disciplines) ? data.disciplines : seeded.disciplines,
       topics: Array.isArray(data.topics) ? data.topics : [],
       sessions: Array.isArray(data.sessions) ? data.sessions : [],
-      errors: Array.isArray(data.errors) ? data.errors : []
+      errors: Array.isArray(data.errors) ? data.errors : [],
+      contentVersions: { ...(data.contentVersions || {}) }
     };
     clean.settings.lastBackupAt = clean.settings.lastBackupAt || '';
     clean.settings.backupReminderDays = Number.isFinite(Number(clean.settings.backupReminderDays)) ? Number(clean.settings.backupReminderDays) : 1;
@@ -7972,7 +8003,9 @@
     });
     clean.topics = normalizedTopics;
     canonicalizePortuguese_(clean);
-    canonicalizeDconTopics_(clean);
+    if (clean.contentVersions.dcon !== 9 || !clean.topics.some(t => String(t.id || '').startsWith('topic_dcon_v9_'))) {
+      canonicalizeDconTopics_(clean);
+    }
     return clean;
   }
 
@@ -8021,7 +8054,8 @@
 
     const fixEntity = item => {
       if (!item) return;
-      if (normalizeName(item.disciplineName) === 'port' || oldIds.includes(item.disciplineId)) {
+      const idNorm = normalizeName(item.disciplineId);
+      if (normalizeName(item.disciplineName) === 'port' || normalizeName(item.disciplineName) === 'portugues' || idNorm === 'port' || idNorm.startsWith('portugues_') || oldIds.includes(item.disciplineId)) {
         item.disciplineName = 'Português';
         item.disciplineId = portuguese.id;
       }
@@ -8097,6 +8131,7 @@
     });
     (clean.sessions || []).forEach(s => { if (normalizeName(s.disciplineName) === 'dcon') { s.disciplineId = dcon.id; s.disciplineName = dcon.name; } });
     (clean.errors || []).forEach(e => { if (normalizeName(e.disciplineName) === 'dcon') { e.disciplineId = dcon.id; e.disciplineName = dcon.name; } });
+    clean.contentVersions = { ...(clean.contentVersions || {}), dcon: 9 };
   }
 
   function getInitialRoute() {
@@ -8401,7 +8436,7 @@
         </div>
       </header>
       <main class="container">${content}</main>
-      <div class="app-version">${APP_VERSION_LABEL}</div>
+      <div class="app-version">${APP_VERSION_LABEL} · ${getEnvId()}</div>
       <div class="footer-nav"><div class="footer-nav-inner">
         ${[['hoje','Hoje'],['registrar','Registrar'],['historico','Histórico'],['progresso','Progresso'],['questoes','Questões'],['ataque','Ataque']].map(([route,label]) => `<button class="${currentRoute===route?'active':''}" data-nav="${route}">${label}</button>`).join('')}
       </div></div>
@@ -8464,7 +8499,7 @@
   }
 
   function studyDatesSet() {
-    return new Set(state.sessions.map(s => s.date).filter(Boolean));
+    return new Set(state.sessions.map(s => String(s.date || '').slice(0, 10)).filter(Boolean));
   }
 
   function constancyStats() {
@@ -9405,13 +9440,14 @@
     let snapshots = [];
     try { snapshots = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]'); } catch (_) { snapshots = []; }
     const content = `
-      <section class="banner"><h2>Backup seguro</h2><p>Seus dados ficam no navegador. Exporte JSON para iCloud Drive/Google Drive como cofre.</p></section>
+      <section class="banner"><h2>Backup seguro</h2><p>Seus dados ficam no armazenamento deste ambiente. Dock e navegador podem ter bancos separados; use um ambiente principal e exporte JSON.</p></section>
       <section class="grid cards-4">
-        <div class="card kpi"><div class="label">Último backup</div><div class="value small-kpi">${lastBackupDateLabel()}</div><div class="hint">exportação manual</div></div>
-        <div class="card kpi"><div class="label">Registros</div><div class="value">${state.sessions.length}</div><div class="hint">sessões salvas</div></div>
+        <div class="card kpi"><div class="label">Ambiente atual</div><div class="value small-kpi">${escapeHTML(storageLabel())}</div><div class="hint">identificador deste banco</div></div>
+        <div class="card kpi"><div class="label">Registros</div><div class="value">${state.sessions.length}</div><div class="hint">sessões no ambiente atual</div></div>
         <div class="card kpi"><div class="label">Tópicos</div><div class="value">${state.topics.length}</div><div class="hint">conteúdo cadastrado</div></div>
-        <div class="card kpi"><div class="label">Snapshots locais</div><div class="value">${snapshots.length}</div><div class="hint">cópias no navegador</div></div>
+        <div class="card kpi"><div class="label">Último backup</div><div class="value small-kpi">${lastBackupDateLabel()}</div><div class="hint">exportação manual</div></div>
       </section>
+      <section class="notice warn" style="margin-top:18px"><strong>Importante:</strong> se você abrir pelo Dock e pelo Safari/Chrome, cada um pode mostrar dados diferentes. Isso é limitação de armazenamento do navegador, não perda de dados. Exporte no ambiente com dados e importe no ambiente que você vai usar.</section>
       ${backupIsDue() ? `<section class="notice warn" style="margin-top:18px"><strong>Atenção:</strong> backup externo recomendado. Exporte e salve no iCloud Drive ou Google Drive.</section>` : `<section class="notice ok" style="margin-top:18px"><strong>Backup em dia.</strong> Mantenha o JSON em local seguro.</section>`}
       <section class="grid cards-2" style="margin-top:18px">
         <div class="card"><h3>Exportar</h3><p class="muted">Baixe um arquivo JSON com todos os dados. Guarde no iCloud Drive ou Google Drive.</p><button class="primary-btn" id="export-json">Exportar backup agora</button><p class="muted" style="margin-top:10px">Auto-exportação após registro: <strong>${state.settings.autoExportAfterRegister ? 'ativada' : 'desativada'}</strong>. Ajuste em Configurações.</p></div>
@@ -9466,6 +9502,7 @@
   function renderHelp() {
     const content = `
       <section class="banner"><h2>Como usar</h2><p>Fluxo simples para estudar por meses, até a aprovação.</p></section>
+      <section class="notice warn"><strong>Escolha um ambiente principal:</strong> use o app pelo Dock ou pelo navegador, mas evite alternar. Eles podem ter bancos separados. Para migrar, exporte JSON no ambiente com dados e importe no ambiente principal.</section>
       <section class="grid cards-2">
         <div class="card"><h3>Rotina diária</h3><ol><li>Abra <strong>Hoje</strong> para ver sugestões do ciclo.</li><li>Estude uma disciplina.</li><li>Vá em <strong>Registrar</strong>.</li><li>Selecione a disciplina e o <strong>tópico cadastrado</strong>.</li><li>Salve <strong>uma disciplina por vez</strong>.</li><li>Se errar algum dado, abra <strong>Histórico</strong> e clique em Editar.</li><li>Confira <strong>Progresso</strong>.</li></ol></div>
         <div class="card"><h3>Conteúdo por disciplina</h3><p>A tela <strong>Conteúdo</strong> guarda os tópicos importados da planilha. Para cada tópico, marque: <strong>Estudando</strong>, <strong>Revisado</strong>, <strong>Em espera</strong>, <strong>Questões</strong> ou <strong>Caderno de Erros</strong>.</p><p>Você pode editar, incluir e remover tópicos a qualquer momento.</p></div>

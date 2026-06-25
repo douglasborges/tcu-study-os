@@ -1,12 +1,11 @@
-# Changelog — v9
+# Changelog
 
-## v9 — DCON + Questões
+## v10.0 — Estabilidade + Diagnóstico
 
-- Atualização completa dos tópicos de DCON conforme nova lista fornecida.
-- Inclusão da tela **Questões**.
-- Gráficos de barras simples, sem bibliotecas externas.
-- Indicadores de questões totais, acertos e percentual geral.
-- Questões por disciplina considerando somente disciplinas ativas no ciclo.
-- Questões por mês.
-- Versão do app no canto inferior direito.
-- Cache atualizado para v9.
+- Exibe identificador do ambiente no canto inferior direito.
+- Explica diferença entre Dock e navegador no Backup/Ajuda.
+- Salva dados também em uma chave espelho local.
+- Corrige sessões antigas de Português com disciplineId divergente.
+- Evita migração repetida de DCON a cada abertura.
+- Mantém DCON atualizado com 21 tópicos canônicos.
+- Atualiza service worker/cache para forçar nova versão.
