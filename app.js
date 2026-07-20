@@ -2,8 +2,8 @@
   'use strict';
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
-  const BACKUP_VERSION = 10;
-  const APP_VERSION_LABEL = 'v10.0 — Estabilidade + Diagnóstico';
+  const BACKUP_VERSION = 11;
+  const APP_VERSION_LABEL = 'v11.0 — Azul & Dourado + Novo Ciclo';
   const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
   const ENV_KEY = 'tcu-study-os-env-id';
   const MAX_SNAPSHOTS = 3;
@@ -11,26 +11,27 @@
   const TOPIC_STATUSES = ['Estudando', 'Revisado', 'Em espera', 'Questões', 'Caderno de Erros'];
   const PRIORITIES = ['Alta', 'Média', 'Baixa'];
   const DEFAULT_DISCIPLINES = [
-    ['portugues', 'Português', true, 'Teoria', 1, 2, 'Alta'],
-    ['dcon', 'DCON', true, 'Teoria', 2, 1, 'Alta'],
-    ['dad', 'DAD', true, 'Teoria', 3, 1, 'Alta'],
-    ['afo', 'AFO', false, 'Em espera', 4, 1, 'Alta'],
-    ['controle-externo', 'Controle Externo', false, 'Em espera', 5, 1, 'Alta'],
-    ['auditoria-governamental', 'Auditoria Governamental', false, 'Em espera', 6, 1, 'Alta'],
-    ['ti', 'TI', false, 'Em espera', 7, 1, 'Alta'],
-    ['cont-publica', 'Cont. Pública', false, 'Em espera', 8, 1, 'Alta'],
-    ['ingles', 'Inglês', false, 'Em espera', 9, 1, 'Média'],
-    ['anticorrupcao', 'Anticorrupção', false, 'Em espera', 10, 1, 'Média'],
-    ['estatistica-cespe', 'Estatística CESPE', false, 'Em espera', 11, 1, 'Média'],
-    ['alfabetizacao-matematica', 'Alfabetização Matemática', false, 'Em espera', 12, 1, 'Baixa'],
-    ['raciocinio-logico', 'Raciocínio Lógico', false, 'Em espera', 13, 1, 'Média'],
-    ['mat-financeira', 'Mat. Financeira', false, 'Em espera', 14, 1, 'Média'],
-    ['adm-publica', 'Administração Pública', false, 'Em espera', 15, 1, 'Média'],
-    ['direito-civil', 'Direito Civil', false, 'Em espera', 16, 1, 'Média'],
-    ['proc-civil', 'Direito Processual Civil', false, 'Em espera', 17, 1, 'Média'],
-    ['analise-dados', 'Análise de Dados', false, 'Em espera', 18, 1, 'Alta'],
-    ['analise-demonstracoes', 'Análise das Demonstrações Contábeis', false, 'Em espera', 19, 1, 'Média'],
-    ['economia-setor-publico', 'Economia do Setor Público', false, 'Em espera', 20, 1, 'Média']
+    ['afo', 'AFO', true, 'Teoria', 1, 1, 'Alta'],
+    ['portugues', 'Português', true, 'Teoria', 2, 1, 'Alta'],
+    ['dcon', 'DCON', true, 'Teoria', 3, 1, 'Alta'],
+    ['dad', 'DAD', false, 'Em espera', 4, 1, 'Alta'],
+    ['licitacoes', 'Licitações', false, 'Em espera', 5, 1, 'Alta'],
+    ['controle-externo', 'Controle Externo', false, 'Em espera', 6, 1, 'Alta'],
+    ['auditoria-governamental', 'Auditoria Governamental', false, 'Em espera', 7, 1, 'Alta'],
+    ['ti', 'TI', false, 'Em espera', 8, 1, 'Alta'],
+    ['cont-publica', 'Cont. Pública', false, 'Em espera', 9, 1, 'Alta'],
+    ['ingles', 'Inglês', false, 'Em espera', 10, 1, 'Média'],
+    ['anticorrupcao', 'Anticorrupção', false, 'Em espera', 11, 1, 'Média'],
+    ['estatistica-cespe', 'Estatística CESPE', false, 'Em espera', 12, 1, 'Média'],
+    ['alfabetizacao-matematica', 'Alfabetização Matemática', false, 'Em espera', 13, 1, 'Baixa'],
+    ['raciocinio-logico', 'Raciocínio Lógico', false, 'Em espera', 14, 1, 'Média'],
+    ['mat-financeira', 'Mat. Financeira', false, 'Em espera', 15, 1, 'Média'],
+    ['adm-publica', 'Administração Pública', false, 'Em espera', 16, 1, 'Média'],
+    ['direito-civil', 'Direito Civil', false, 'Em espera', 17, 1, 'Média'],
+    ['proc-civil', 'Direito Processual Civil', false, 'Em espera', 18, 1, 'Média'],
+    ['analise-dados', 'Análise de Dados', false, 'Em espera', 19, 1, 'Alta'],
+    ['analise-demonstracoes', 'Análise das Demonstrações Contábeis', false, 'Em espera', 20, 1, 'Média'],
+    ['economia-setor-publico', 'Economia do Setor Público', false, 'Em espera', 21, 1, 'Média']
   ];
 
   const DEFAULT_TOPICS = [
@@ -7823,6 +7824,18 @@
     return new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(new Date());
   }
 
+  function isWaitingMode(mode) {
+    return mode === 'Em espera' || mode === 'Aguardando';
+  }
+
+  function displayModeLabel(mode) {
+    return isWaitingMode(mode) ? 'Aguardando' : mode;
+  }
+
+  function modeOptionHTML(mode, selected) {
+    return `<option value="${escapeHTML(mode)}" ${mode === selected ? 'selected' : ''}>${escapeHTML(displayModeLabel(mode))}</option>`;
+  }
+
   function defaultHoursForMode(mode) {
     if (mode === 'Teoria') return 2;
     if (mode === 'Revisão' || mode === 'Questões' || mode === 'Caderno de Erros') return 1;
@@ -7838,12 +7851,12 @@
   function loadState() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (!raw) return seedState();
+      if (!raw) return migrateState(seedState());
       const parsed = JSON.parse(raw);
       return migrateState(parsed);
     } catch (err) {
       console.warn('Falha ao carregar dados. Recriando base.', err);
-      return seedState();
+      return migrateState(seedState());
     }
   }
 
@@ -7933,6 +7946,9 @@
   }
 
   function seedState() {
+    if (window.TCU_STUDY_OS_INITIAL_STATE && typeof window.TCU_STUDY_OS_INITIAL_STATE === 'object') {
+      return JSON.parse(JSON.stringify(window.TCU_STUDY_OS_INITIAL_STATE));
+    }
     const disciplines = DEFAULT_DISCIPLINES.map(row => ({
       id: row[0], name: row[1], active: row[2], mode: row[3], order: row[4], frequency: row[5], priority: row[6], manualHours: '', source: '', sourceUrl: '', notes: ''
     }));
@@ -8006,6 +8022,7 @@
     if (clean.contentVersions.dcon !== 9 || !clean.topics.some(t => String(t.id || '').startsWith('topic_dcon_v9_'))) {
       canonicalizeDconTopics_(clean);
     }
+    canonicalizeV11Structure_(clean);
     return clean;
   }
 
@@ -8063,6 +8080,134 @@
     (clean.topics || []).forEach(fixEntity);
     (clean.sessions || []).forEach(fixEntity);
     (clean.errors || []).forEach(fixEntity);
+  }
+
+
+  function licitacoesCanonicalTopics_() {
+    return [
+    [
+        "Visão geral da nova Lei de Licitações. Abrangência federativa e normas gerais. Aplicação. Princípios e objetivos da licitação. Vigência. Regras de transição",
+        "Visão geral da nova Lei de Licitações. Abrangência federativa e normas gerais. Aplicação. Princípios e objetivos da licitação. Vigência. Regras de transição",
+        "Alta"
+    ],
+    [
+        "Impedimentos para participação nas licitações. Consórcios e cooperativas nas licitações. Função regulatória da licitação e margem de preferência",
+        "Impedimentos para participação nas licitações. Consórcios e cooperativas nas licitações. Função regulatória da licitação e margem de preferência",
+        "Alta"
+    ],
+    [
+        "Objeto da licitação: compras, obras, serviços, serviços de engenharia, locação de imóveis e alienações",
+        "Objeto da licitação: compras, obras, serviços, serviços de engenharia, locação de imóveis e alienações",
+        "Alta"
+    ],
+    [
+        "Procedimento da licitação: fases interna e externa",
+        "Procedimento da licitação: fases interna e externa",
+        "Alta"
+    ],
+    [
+        "Modalidades de licitação e critérios de julgamento",
+        "Modalidades de licitação e critérios de julgamento",
+        "Alta"
+    ],
+    [
+        "Contratação direta: inexigibilidade e dispensa de licitação",
+        "Contratação direta: inexigibilidade e dispensa de licitação",
+        "Alta"
+    ],
+    [
+        "Procedimentos auxiliares: credenciamento, pré-qualificação, PMI, sistema de registro de preços e registro cadastral",
+        "Procedimentos auxiliares: credenciamento, pré-qualificação, PMI, sistema de registro de preços e registro cadastral",
+        "Alta"
+    ],
+    [
+        "Contratos administrativos. Cláusulas exorbitantes. Garantias. Alocação de riscos",
+        "Contratos administrativos. Cláusulas exorbitantes. Garantias. Alocação de riscos",
+        "Alta"
+    ],
+    [
+        "Duração e extinção dos contratos administrativos. Meios alternativos de resolução de controvérsias contratuais",
+        "Duração e extinção dos contratos administrativos. Meios alternativos de resolução de controvérsias contratuais",
+        "Alta"
+    ],
+    [
+        "Responsabilidade civil contratual. Infrações e sanções administrativas. Controle. Portal Nacional de Contratações Públicas (PNCP)",
+        "Responsabilidade civil contratual. Infrações e sanções administrativas. Controle. Portal Nacional de Contratações Públicas (PNCP)",
+        "Alta"
+    ],
+    [
+        "Comentários aos vetos da Nova Lei de Licitações",
+        "Comentários aos vetos da Nova Lei de Licitações",
+        "Alta"
+    ]
+    ];
+  }
+
+  function canonicalizeV11Structure_(clean) {
+    if (!clean || !Array.isArray(clean.disciplines) || !Array.isArray(clean.topics)) return;
+    const find = id => clean.disciplines.find(d => normalizeName(d.id) === id || normalizeName(d.name) === id);
+    const ensure = (id, name) => {
+      let d = find(id);
+      if (!d) {
+        d = { id, name, active: false, mode: 'Em espera', order: 999, frequency: 1, priority: 'Alta', manualHours: '', source: '', sourceUrl: '', notes: '' };
+        clean.disciplines.push(d);
+      }
+      d.id = id; d.name = name;
+      return d;
+    };
+
+    const afo = ensure('afo', 'AFO');
+    const port = ensure('portugues', 'Português');
+    const dcon = ensure('dcon', 'DCON');
+    const dad = ensure('dad', 'DAD');
+    const lic = ensure('licitacoes', 'Licitações');
+
+    clean.disciplines.forEach(d => {
+      if (![afo, port, dcon].includes(d)) {
+        d.active = false;
+        if (!isWaitingMode(d.mode)) d.mode = 'Em espera';
+      }
+    });
+    Object.assign(afo, { active: true, mode: 'Teoria', order: 1, frequency: 1, priority: 'Alta' });
+    Object.assign(port, { active: true, mode: 'Teoria', order: 2, frequency: 1, priority: 'Alta' });
+    Object.assign(dcon, { active: true, mode: 'Teoria', order: 3, frequency: 1, priority: 'Alta' });
+    Object.assign(dad, { active: false, mode: 'Em espera', order: 4, frequency: 1, priority: 'Alta' });
+    Object.assign(lic, { active: false, mode: 'Em espera', order: 5, frequency: 1, priority: 'Alta' });
+
+    const reserved = new Set(['afo','portugues','dcon','dad','licitacoes']);
+    clean.disciplines
+      .filter(d => !reserved.has(d.id))
+      .sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999) || a.name.localeCompare(b.name, 'pt-BR'))
+      .forEach((d, idx) => { d.order = idx + 6; });
+
+    const old = clean.topics.filter(t => t.disciplineId === lic.id || normalizeName(t.disciplineName) === 'licitacoes');
+    const byTitle = new Map(old.map(t => [normalizeName(t.title), t]));
+    clean.topics = clean.topics.filter(t => !(t.disciplineId === lic.id || normalizeName(t.disciplineName) === 'licitacoes'));
+    licitacoesCanonicalTopics_().forEach((row, idx) => {
+      const [title, details, priority] = row;
+      const prior = byTitle.get(normalizeName(title)) || {};
+      clean.topics.push(normalizeTopic({
+        id: `topic_licitacoes_v11_${idx + 1}_${slugify(title).slice(0, 52)}`,
+        disciplineId: lic.id,
+        disciplineName: lic.name,
+        title,
+        details,
+        status: prior.status || 'Em espera',
+        priority: prior.priority || priority || 'Alta',
+        order: idx + 1,
+        notes: prior.notes || '',
+        sourceUrl: prior.sourceUrl || '',
+        tecUrl: prior.tecUrl || ''
+      }, idx, clean.disciplines));
+    });
+
+    const afoTopics = clean.topics
+      .filter(t => t.disciplineId === afo.id || normalizeName(t.disciplineName) === 'afo')
+      .sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999));
+    if (afoTopics.length && !afoTopics.some(t => t.status && t.status !== 'Em espera')) {
+      afoTopics.slice(0, 3).forEach(t => { t.status = 'Estudando'; });
+    }
+    clean.contentVersions = { ...(clean.contentVersions || {}), licitacoes: 1 };
   }
 
 
@@ -8277,7 +8422,7 @@
 
   function activeDisciplines() {
     return state.disciplines
-      .filter(d => d.active && d.mode !== 'Em espera' && effectiveHours(d) > 0)
+      .filter(d => d.active && !isWaitingMode(d.mode) && effectiveHours(d) > 0)
       .sort((a, b) => (Number(a.order) || 999) - (Number(b.order) || 999) || a.name.localeCompare(b.name, 'pt-BR'));
   }
 
@@ -8288,7 +8433,7 @@
     const out = [];
 
     // Frequência significa presença distribuída, não repetição grudada.
-    // Ex.: Português 2x + DCON 1x + DAD 1x => Português → DCON → Português → DAD.
+    // v11: AFO → Português → DCON, uma passagem por disciplina.
     while (remaining.some(x => x.left > 0)) {
       const last = out[out.length - 1];
       let candidates = remaining.filter(x => x.left > 0 && (!last || x.disc.id !== last.id));
@@ -8410,7 +8555,7 @@
   }
 
   function modeOptions(selected) {
-    return MODES.filter(m => m !== 'Em espera').map(m => `<option value="${m}" ${m === selected ? 'selected' : ''}>${m}</option>`).join('');
+    return MODES.filter(m => !isWaitingMode(m)).map(m => modeOptionHTML(m, selected)).join('');
   }
 
   function renderLayout(content) {
@@ -8422,8 +8567,8 @@
         <div class="hero-inner">
           <div class="topbar">
             <div class="brand">
-              <img class="logo" src="assets/icons/icon-128.png" alt="TCU Study OS" />
-              <div><h1>TCU Study OS</h1><p>Sistema vivo de ciclo, progresso e aprovação</p></div>
+              <img class="logo" src="assets/icons/icon-128.png" alt="Study OS — TCU" />
+              <div><h1>Study OS</h1><p>Comprometa-se com a EXCELÊNCIA - todos os dias!</p></div>
             </div>
             <div class="top-actions">
               <button class="ghost-btn" data-action="refresh">Atualizar</button>
@@ -8541,13 +8686,13 @@
       if (!map.has(key)) map.set(key, { name: key, count: 0, color: '' });
       map.get(key).count += 1;
     });
-    const colors = ['#74ff52', '#00d8a6', '#b7ff63', '#1bbd72', '#0fae8d', '#d8ff7a', '#7be4ff', '#a5ff9d'];
+    const colors = ['#ffcb05', '#4056d6', '#8b99f5', '#e3a800', '#26247b', '#ffe071', '#7894ff', '#c9a933'];
     const total = arr.length || 1;
     return Array.from(map.values()).map((it, idx) => ({ ...it, color: colors[idx % colors.length], pct: Math.round((it.count / total) * 100) }));
   }
 
   function colorForCycleName(name, idx = 0) {
-    const colors = ['#74ff52', '#00d8a6', '#b7ff63', '#1bbd72', '#0fae8d', '#d8ff7a', '#7be4ff', '#a5ff9d'];
+    const colors = ['#ffcb05', '#4056d6', '#8b99f5', '#e3a800', '#26247b', '#ffe071', '#7894ff', '#c9a933'];
     const items = cycleShareItems();
     const found = items.find(it => it.name === name);
     if (found) return found.color;
@@ -8754,7 +8899,7 @@
     const totalPlanned = suggestions.reduce((acc, s) => acc + Number(s.hours || 0), 0);
     const streak = constancyStats();
     const content = `
-      <section class="banner"><h2>A Vaga [JÁ] é MINHA!!!</h2><p>Abra esta tela, execute as sessões sugeridas ou registre livremente o que estudou.</p></section>
+      <section class="banner home-banner"><p class="banner-identity">Douglas Borges - Auditor-Federal de Controle Externo do Tribunal de Contas da União</p><h2>A Vaga é MINHA!</h2><p>Abra esta tela, execute as sessões sugeridas ou registre livremente o que estudou.</p></section>
       <section class="card">
         <h3>Hoje</h3>
         <div class="badges"><span class="badge">${dayName()}</span><span class="badge">${formatDate(todayISO())}</span></div>
@@ -8994,7 +9139,7 @@
       <section class="card">
         <div class="form-grid">
           <div class="field span-3"><label>Disciplina</label><select id="hist-disc"><option value="">Todas</option>${state.disciplines.map(d => `<option value="${escapeHTML(d.name)}" ${historyFilters.discipline===d.name?'selected':''}>${escapeHTML(d.name)}</option>`).join('')}</select></div>
-          <div class="field span-2"><label>Modo</label><select id="hist-mode"><option value="">Todos</option>${MODES.filter(m=>m!=='Em espera').map(m => `<option ${historyFilters.mode===m?'selected':''}>${m}</option>`).join('')}</select></div>
+          <div class="field span-2"><label>Modo</label><select id="hist-mode"><option value="">Todos</option>${MODES.filter(m=>!isWaitingMode(m)).map(m => modeOptionHTML(m, historyFilters.mode)).join('')}</select></div>
           <div class="field span-2"><label>De</label><input id="hist-from" type="date" value="${escapeHTML(historyFilters.from)}"></div>
           <div class="field span-2"><label>Até</label><input id="hist-to" type="date" value="${escapeHTML(historyFilters.to)}"></div>
           <div class="field span-3"><label>Busca</label><input id="hist-q" value="${escapeHTML(historyFilters.q)}" placeholder="assunto/obs."></div>
@@ -9078,7 +9223,7 @@
       <section class="card">
         <form id="add-disc-form" class="form-grid">
           <div class="field span-5"><label>Nova disciplina</label><input id="new-disc-name" placeholder="Ex.: Administração Pública" /></div>
-          <div class="field span-3"><label>Modo inicial</label><select id="new-disc-mode">${MODES.map(m => `<option>${m}</option>`).join('')}</select></div>
+          <div class="field span-3"><label>Modo inicial</label><select id="new-disc-mode">${MODES.map(m => modeOptionHTML(m, '')).join('')}</select></div>
           <div class="field span-2"><label>Prioridade</label><select id="new-disc-priority">${PRIORITIES.map(p => `<option>${p}</option>`).join('')}</select></div>
           <div class="span-2"><button class="primary-btn" type="submit">Adicionar</button></div>
         </form>
@@ -9088,7 +9233,7 @@
           ${rows.map(d => `<tr data-id="${escapeHTML(d.id)}">
             <td><input class="checkbox cycle-active" type="checkbox" ${d.active ? 'checked' : ''}></td>
             <td><input class="inline-input cycle-name" value="${escapeHTML(d.name)}"></td>
-            <td><select class="inline-select cycle-mode">${MODES.map(m => `<option ${d.mode===m?'selected':''}>${m}</option>`).join('')}</select></td>
+            <td><select class="inline-select cycle-mode">${MODES.map(m => modeOptionHTML(m, d.mode)).join('')}</select></td>
             <td><strong>${fmt(effectiveHours(d))}h</strong></td>
             <td><input class="inline-input cycle-manual" value="${escapeHTML(d.manualHours || '')}" placeholder="auto"></td>
             <td><input class="inline-input cycle-order" type="number" min="1" value="${escapeHTML(d.order)}"></td>
@@ -9108,7 +9253,7 @@
       if (!name) { toast('Informe o nome da disciplina.'); return; }
       const mode = document.getElementById('new-disc-mode').value;
       const disc = ensureDiscipline(name, mode);
-      disc.active = mode !== 'Em espera';
+      disc.active = !isWaitingMode(mode);
       disc.priority = document.getElementById('new-disc-priority').value;
       saveState();
       toast(`${disc.name} adicionada.`);
@@ -9187,7 +9332,7 @@
     document.getElementById('next-topic-btn').addEventListener('click', () => {
       const next = topics.find(t => ['Em espera','Estudando'].includes(t.status)) || topics[0];
       if (!next || !selectedDisc) { toast('Nenhum tópico disponível.'); return; }
-      lastDraft = { discipline: selectedDisc.name, mode: selectedDisc.mode === 'Em espera' ? 'Teoria' : selectedDisc.mode, hours: defaultHoursForMode(selectedDisc.mode === 'Em espera' ? 'Teoria' : selectedDisc.mode), subject: next.title, topicId: next.id };
+      lastDraft = { discipline: selectedDisc.name, mode: isWaitingMode(selectedDisc.mode) ? 'Teoria' : selectedDisc.mode, hours: defaultHoursForMode(isWaitingMode(selectedDisc.mode) ? 'Teoria' : selectedDisc.mode), subject: next.title, topicId: next.id };
       navigate('registrar');
     });
     document.getElementById('add-topic-btn').addEventListener('click', () => {
@@ -9216,7 +9361,7 @@
       const topic = getTopicById(btn.dataset.registerTopic);
       if (!topic) return;
       const disc = getDisciplineById(topic.disciplineId) || getDisciplineByName(topic.disciplineName);
-      lastDraft = { discipline: disc ? disc.name : topic.disciplineName, mode: disc && disc.mode !== 'Em espera' ? disc.mode : 'Teoria', hours: disc ? effectiveHours(disc) || 2 : 2, subject: topic.title, topicId: topic.id };
+      lastDraft = { discipline: disc ? disc.name : topic.disciplineName, mode: disc && !isWaitingMode(disc.mode) ? disc.mode : 'Teoria', hours: disc ? effectiveHours(disc) || 2 : 2, subject: topic.title, topicId: topic.id };
       navigate('registrar');
     }));
     document.querySelectorAll('[data-delete-topic]').forEach(btn => btn.addEventListener('click', () => {

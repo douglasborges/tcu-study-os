@@ -1,24 +1,18 @@
-# TCU Study OS PWA v8 — Progresso, Recordes e Backup Assistido
+# Study OS — TCU PWA v11
 
-Aplicação local-first para controle de estudos do TCU. Roda no navegador, pode ser hospedada no GitHub Pages e salva os dados no armazenamento local do dispositivo.
+Versão personalizada com identidade azul-marinho e dourada, novo ciclo e migração segura da v10.
 
-## Novidades da v8
+## Alterações principais
 
-- Painel de progresso mais motivacional.
-- Recordes pessoais: maior carga horária diária, melhor semana, melhor mês, maior percentual diário, maior volume de questões e melhor disciplina em acertos.
-- Avanço do ciclo ativo: percentual calculado apenas para disciplinas ativas, ignorando disciplinas em espera.
-- Conquistas por marcos de horas, questões e constância.
-- Opção de autoexportar backup JSON após cada registro.
-- Ciclo com frequência distribuída: uma disciplina 2x aparece separada, não grudada.
+- Ciclo ativo: **AFO → Português → DCON**.
+- DAD e Licitações ficam em **Aguardando**.
+- Conteúdo programático de Licitações incluído com 11 tópicos.
+- Cabeçalho: **Study OS** e a mensagem **Comprometa-se com a EXCELÊNCIA - todos os dias!**
+- Painel inicial personalizado para Douglas Borges.
+- Logo, ícones, favicon, PWA e app do macOS atualizados para azul e dourado.
+- Dados do backup de 20/07/2026 incluídos para o primeiro acesso em um ambiente vazio.
+- Visual e ícones verdes da v10 preservados em `legacy-v10-verde/`.
 
-## Uso diário
+## Uso seguro
 
-1. Abra **Hoje**.
-2. Estude a disciplina sugerida ou escolha livremente.
-3. Vá em **Registrar** e salve uma disciplina por vez.
-4. Veja **Progresso** para acompanhar recordes e avanço.
-5. Faça **Backup** regularmente.
-
-## Dados
-
-Os dados ficam no navegador do dispositivo. O GitHub Pages hospeda apenas o app, não armazena seus registros. Use **Backup > Exportar JSON** para guardar seus dados no iCloud Drive ou Google Drive.
+O aplicativo continua local-first. Se o ambiente já possui dados da v10, a migração para a v11 preserva sessões, erros, progresso, fontes e configurações. O arquivo `backup-inicial-v11.json` também acompanha o pacote.
