@@ -3,7 +3,7 @@
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
   const BACKUP_VERSION = 11;
-  const APP_VERSION_LABEL = 'v11.0 — Azul & Dourado + Novo Ciclo';
+  const APP_VERSION_LABEL = 'v11.1 — Azul & Dourado + Correção de Publicação';
   const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
   const ENV_KEY = 'tcu-study-os-env-id';
   const MAX_SNAPSHOTS = 3;

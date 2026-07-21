@@ -1,18 +1,18 @@
 :root {
-  --bg: #061711;
-  --bg-2: #08271b;
+  --bg: #080a26;
+  --bg-2: #171d59;
   --panel: #ffffff;
-  --panel-2: #f2fbf5;
-  --ink: #071a12;
-  --muted: #64766d;
-  --line: #d7eadf;
-  --brand: #7CFF4F;
-  --brand-2: #57e886;
-  --brand-3: #00d6b3;
+  --panel-2: #f5f7ff;
+  --ink: #101331;
+  --muted: #697089;
+  --line: #d9def1;
+  --brand: #ffcb05;
+  --brand-2: #ffd85a;
+  --brand-3: #4056d6;
   --warning: #f9b54a;
   --danger: #d64545;
-  --ok: #15995e;
-  --shadow: 0 18px 60px rgba(4, 32, 18, .18);
+  --ok: #148053;
+  --shadow: 0 18px 60px rgba(16, 20, 71, .22);
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 14px;
@@ -223,3 +223,82 @@ tr:last-child td { border-bottom: 0; }
 .bar-track span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#74ff52,#00d8a6)}
 .bar-track.alt span{background:linear-gradient(90deg,#00d8a6,#b7ff63)}
 @media (max-width: 700px){.app-version{display:none}.bar-label{display:block}.bar-label span{display:block;margin-top:3px;white-space:normal}}
+
+
+/* v11 — Identidade azul-marinho + dourado, inspirada na paleta institucional do TCU */
+body {
+  background:
+    radial-gradient(circle at 86% 4%, rgba(255,203,5,.20), transparent 22%),
+    radial-gradient(circle at 10% 18%, rgba(64,86,214,.20), transparent 30%),
+    linear-gradient(180deg, #090b2b 0%, #e9edf9 36%, #f8f9fd 100%);
+}
+.hero {
+  background: linear-gradient(118deg, #26247b 0%, #15184f 48%, #080a26 100%);
+  border-bottom: 1px solid rgba(255,203,5,.34);
+}
+.logo {
+  background: #090b2b;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 0 0 3px rgba(255,203,5,.12), 0 12px 40px rgba(255,203,5,.24);
+}
+.brand p { color: rgba(255,255,255,.78); }
+.nav-btn { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.16); }
+.nav-btn.active { color: #11133d; background: linear-gradient(135deg, #ffe071, #ffcb05); box-shadow: 0 8px 24px rgba(255,203,5,.22); }
+.ghost-btn { background: rgba(255,255,255,.09); border-color: rgba(255,203,5,.24); }
+.primary-btn { color: #11133d; background: linear-gradient(135deg, #ffe071, #ffcb05); box-shadow: 0 8px 24px rgba(255,203,5,.24); }
+.subtle-btn { color: #20234d; background: #edf0fb; border-color: #d8def2; }
+.banner {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #272579 0%, #15184f 55%, #0a0c2e 100%);
+  border: 1px solid rgba(255,203,5,.24);
+  box-shadow: 0 22px 62px rgba(16,20,71,.25);
+}
+.banner::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: -100px;
+  top: -150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,203,5,.23), transparent 68%);
+  pointer-events: none;
+}
+.banner-identity {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px !important;
+  color: #ffdc55 !important;
+  font-size: clamp(15px, 2.1vw, 20px) !important;
+  font-weight: 950 !important;
+  letter-spacing: -.01em;
+}
+.banner h2, .banner > p { position: relative; z-index: 1; }
+.card { border-color: #dce1f2; box-shadow: 0 10px 32px rgba(27,31,88,.09); }
+.card.soft { background: #f3f5fd; }
+.badge { background: #fff4c4; color: #5d4600; border: 1px solid #f4dfa0; }
+.badge.dark { background: #26247b; color: #fff; }
+.badge.ok { background: #e1f6eb; color: #115c3b; }
+.source-link { color: #303da7; }
+.field label, th { color: #626b88; }
+.field input, .field select, .field textarea, .inline-input, .inline-select { border-color: #d5dbef; }
+th { background: #eef1fb; }
+td { border-bottom-color: #e5e8f3; }
+.checkbox { accent-color: #ffcb05; }
+.progress-bar, .bar-track { background: #e7eaf5; }
+.progress-bar > span, .bar-track span { background: linear-gradient(90deg, #ffcb05, #4056d6); }
+.bar-track.alt span { background: linear-gradient(90deg, #4056d6, #ffcb05); }
+.notice { background: #eff2fb; border-color: #d7ddef; color: #2a3159; }
+.footer-nav { background: rgba(9,11,43,.94); border-top-color: rgba(255,203,5,.28); }
+.footer-nav button.active { background: #ffcb05; color: #11133d; }
+.constancy-card .constancy-values div { background: rgba(64,86,214,.07); border-color: rgba(64,86,214,.17); }
+.cycle-pizza { box-shadow: inset 0 0 0 16px rgba(21,24,79,.10), 0 20px 50px rgba(16,20,71,.16); }
+.cycle-pizza::after { box-shadow: inset 0 0 0 1px rgba(38,36,123,.12); }
+.cycle-legend i { box-shadow: 0 0 18px rgba(255,203,5,.22); }
+.cycle-progress-row { border-color: #e1e5f2; background: #fbfcff; }
+.achievement { border-color: #dce1f1; background: #f8f9fd; }
+.achievement.done { background: linear-gradient(135deg, rgba(255,203,5,.18), rgba(64,86,214,.10)); border-color: rgba(255,203,5,.48); }
+.app-version { background: rgba(17,19,61,.88); color: #fff4c0; border-color: rgba(255,203,5,.32); }
+@media (max-width: 640px) {
+  .banner-identity { line-height: 1.25; }
+}

@@ -1,8 +1,8 @@
 {
-  "name": "TCU Study OS",
-  "short_name": "TCU Study OS",
-  "description": "Sistema vivo de estudos para TCU: ciclo, tópicos, progresso e aprovação.",
-  "start_url": "./index.html",
+  "name": "Study OS — TCU v11.1",
+  "short_name": "Study OS",
+  "description": "Comprometa-se com a EXCELÊNCIA - todos os dias!",
+  "start_url": "./?v=11.1",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -10,8 +10,8 @@
     "minimal-ui",
     "browser"
   ],
-  "background_color": "#071f16",
-  "theme_color": "#071f16",
+  "background_color": "#101447",
+  "theme_color": "#101447",
   "orientation": "any",
   "icons": [
     {
@@ -79,5 +79,6 @@
         }
       ]
     }
-  ]
+  ],
+  "id": "./"
 }

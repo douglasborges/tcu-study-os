@@ -1,0 +1,14 @@
+# Correção de publicação — Study OS v11.1
+
+O repositório publicado estava com `app.js`, `index.html` e `initial-data.js` novos, mas `styles.css`, `manifest.webmanifest` e `sw.js` ainda eram da versão anterior.
+
+Envie **todo o conteúdo desta pasta** para a raiz da branch `main`, confirmando a substituição dos arquivos existentes. Depois aguarde o GitHub Pages concluir o novo deployment e limpe os dados/cache do site no Safari.
+
+Arquivos essenciais que precisam aparecer no GitHub com horário recente:
+- `styles.css`
+- `sw.js`
+- `manifest.webmanifest`
+- `index.html`
+- `app.js`
+- `initial-data.js`
+- pasta `assets/icons`
