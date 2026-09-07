@@ -2,8 +2,8 @@
   'use strict';
 
   const STORE_KEY = 'tcu-study-os-pwa-v1'; // mantém compatibilidade com dados da v1
-  const BACKUP_VERSION = 11;
-  const APP_VERSION_LABEL = 'v11.1 — Azul & Dourado + Correção de Publicação';
+  const BACKUP_VERSION = 12;
+  const APP_VERSION_LABEL = 'v11.0 — Horas/Minutos + Revisão Noturna + Cursos 2026';
   const SNAPSHOT_KEY = 'tcu-study-os-pwa-snapshots';
   const ENV_KEY = 'tcu-study-os-env-id';
   const MAX_SNAPSHOTS = 3;
@@ -11,27 +11,26 @@
   const TOPIC_STATUSES = ['Estudando', 'Revisado', 'Em espera', 'Questões', 'Caderno de Erros'];
   const PRIORITIES = ['Alta', 'Média', 'Baixa'];
   const DEFAULT_DISCIPLINES = [
-    ['afo', 'AFO', true, 'Teoria', 1, 1, 'Alta'],
-    ['portugues', 'Português', true, 'Teoria', 2, 1, 'Alta'],
-    ['dcon', 'DCON', true, 'Teoria', 3, 1, 'Alta'],
-    ['dad', 'DAD', false, 'Em espera', 4, 1, 'Alta'],
-    ['licitacoes', 'Licitações', false, 'Em espera', 5, 1, 'Alta'],
-    ['controle-externo', 'Controle Externo', false, 'Em espera', 6, 1, 'Alta'],
-    ['auditoria-governamental', 'Auditoria Governamental', false, 'Em espera', 7, 1, 'Alta'],
-    ['ti', 'TI', false, 'Em espera', 8, 1, 'Alta'],
-    ['cont-publica', 'Cont. Pública', false, 'Em espera', 9, 1, 'Alta'],
-    ['ingles', 'Inglês', false, 'Em espera', 10, 1, 'Média'],
-    ['anticorrupcao', 'Anticorrupção', false, 'Em espera', 11, 1, 'Média'],
-    ['estatistica-cespe', 'Estatística CESPE', false, 'Em espera', 12, 1, 'Média'],
-    ['alfabetizacao-matematica', 'Alfabetização Matemática', false, 'Em espera', 13, 1, 'Baixa'],
-    ['raciocinio-logico', 'Raciocínio Lógico', false, 'Em espera', 14, 1, 'Média'],
-    ['mat-financeira', 'Mat. Financeira', false, 'Em espera', 15, 1, 'Média'],
-    ['adm-publica', 'Administração Pública', false, 'Em espera', 16, 1, 'Média'],
-    ['direito-civil', 'Direito Civil', false, 'Em espera', 17, 1, 'Média'],
-    ['proc-civil', 'Direito Processual Civil', false, 'Em espera', 18, 1, 'Média'],
-    ['analise-dados', 'Análise de Dados', false, 'Em espera', 19, 1, 'Alta'],
-    ['analise-demonstracoes', 'Análise das Demonstrações Contábeis', false, 'Em espera', 20, 1, 'Média'],
-    ['economia-setor-publico', 'Economia do Setor Público', false, 'Em espera', 21, 1, 'Média']
+    ['portugues', 'Português', true, 'Teoria', 1, 2, 'Alta'],
+    ['dcon', 'DCON', true, 'Teoria', 2, 1, 'Alta'],
+    ['dad', 'DAD', true, 'Teoria', 3, 1, 'Alta'],
+    ['afo', 'AFO', false, 'Em espera', 4, 1, 'Alta'],
+    ['controle-externo', 'Controle Externo', false, 'Em espera', 5, 1, 'Alta'],
+    ['auditoria-governamental', 'Auditoria Governamental', false, 'Em espera', 6, 1, 'Alta'],
+    ['ti', 'TI', false, 'Em espera', 7, 1, 'Alta'],
+    ['cont-publica', 'Cont. Pública', false, 'Em espera', 8, 1, 'Alta'],
+    ['ingles', 'Inglês', false, 'Em espera', 9, 1, 'Média'],
+    ['anticorrupcao', 'Anticorrupção', false, 'Em espera', 10, 1, 'Média'],
+    ['estatistica-cespe', 'Estatística CESPE', false, 'Em espera', 11, 1, 'Média'],
+    ['alfabetizacao-matematica', 'Alfabetização Matemática', false, 'Em espera', 12, 1, 'Baixa'],
+    ['raciocinio-logico', 'Raciocínio Lógico', false, 'Em espera', 13, 1, 'Média'],
+    ['mat-financeira', 'Mat. Financeira', false, 'Em espera', 14, 1, 'Média'],
+    ['adm-publica', 'Administração Pública', false, 'Em espera', 15, 1, 'Média'],
+    ['direito-civil', 'Direito Civil', false, 'Em espera', 16, 1, 'Média'],
+    ['proc-civil', 'Direito Processual Civil', false, 'Em espera', 17, 1, 'Média'],
+    ['analise-dados', 'Análise de Dados', false, 'Em espera', 18, 1, 'Alta'],
+    ['analise-demonstracoes', 'Análise das Demonstrações Contábeis', false, 'Em espera', 19, 1, 'Média'],
+    ['economia-setor-publico', 'Economia do Setor Público', false, 'Em espera', 20, 1, 'Média']
   ];
 
   const DEFAULT_TOPICS = [
@@ -7737,8 +7736,8 @@
   }
 ];
 
-  let state = loadState();
-  let currentRoute = getInitialRoute();
+  let state = null;
+  let currentRoute = 'hoje';
   let lastDraft = null;
   let editingSessionId = null;
   let topicFilterDiscipline = null;
@@ -7790,6 +7789,51 @@
     return Number.isFinite(n) && n >= 0 ? n : 0;
   }
 
+  function hoursToMinutes(value) {
+    return Math.max(0, Math.round(parseHours(value) * 60));
+  }
+
+  function durationFromParts(hours, minutes) {
+    const h = Math.max(0, parseIntSafe(hours));
+    const m = Math.max(0, parseIntSafe(minutes));
+    return h * 60 + m;
+  }
+
+  function splitDuration(totalMinutes) {
+    const total = Math.max(0, Math.round(Number(totalMinutes) || 0));
+    return { hours: Math.floor(total / 60), minutes: total % 60 };
+  }
+
+  function sessionMinutes(session) {
+    if (!session) return 0;
+    if (Number.isFinite(Number(session.durationMinutes))) return Math.max(0, Math.round(Number(session.durationMinutes)));
+    return hoursToMinutes(session.hours);
+  }
+
+  function formatDurationMinutes(totalMinutes, zeroLabel = '0h 00min') {
+    const { hours, minutes } = splitDuration(totalMinutes);
+    if (!hours && !minutes) return zeroLabel;
+    if (!hours) return `${minutes}min`;
+    return `${hours}h ${String(minutes).padStart(2, '0')}min`;
+  }
+
+  function formatDurationHours(hours) {
+    return formatDurationMinutes(hoursToMinutes(hours));
+  }
+
+  function settingsMinutes(keyMinutes, legacyHoursKey) {
+    const raw = Number(state && state.settings ? state.settings[keyMinutes] : 0);
+    if (Number.isFinite(raw) && raw >= 0) return Math.round(raw);
+    return hoursToMinutes(state && state.settings ? state.settings[legacyHoursKey] : 0);
+  }
+
+  function setSettingsDuration(keyMinutes, legacyHoursKey, hours, minutes) {
+    const total = durationFromParts(hours, minutes);
+    state.settings[keyMinutes] = total;
+    state.settings[legacyHoursKey] = total / 60;
+    return total;
+  }
+
   function parseIntSafe(value) {
     const n = Number(String(value ?? '').trim().replace(',', '.'));
     return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
@@ -7824,39 +7868,40 @@
     return new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(new Date());
   }
 
-  function isWaitingMode(mode) {
-    return mode === 'Em espera' || mode === 'Aguardando';
-  }
-
-  function displayModeLabel(mode) {
-    return isWaitingMode(mode) ? 'Aguardando' : mode;
-  }
-
-  function modeOptionHTML(mode, selected) {
-    return `<option value="${escapeHTML(mode)}" ${mode === selected ? 'selected' : ''}>${escapeHTML(displayModeLabel(mode))}</option>`;
-  }
-
-  function defaultHoursForMode(mode) {
-    if (mode === 'Teoria') return 2;
-    if (mode === 'Revisão' || mode === 'Questões' || mode === 'Caderno de Erros') return 1;
+  function defaultMinutesForMode(mode) {
+    if (mode === 'Teoria') return 120;
+    if (mode === 'Revisão' || mode === 'Questões' || mode === 'Caderno de Erros') return 60;
     return 0;
   }
 
+  function defaultHoursForMode(mode) {
+    return defaultMinutesForMode(mode) / 60;
+  }
+
+  function effectiveMinutes(disc) {
+    if (!disc) return 0;
+    if (disc.manualMinutes !== '' && disc.manualMinutes !== undefined && disc.manualMinutes !== null) {
+      const manual = Math.max(0, Math.round(Number(disc.manualMinutes) || 0));
+      if (manual > 0) return manual;
+    }
+    const legacyManual = parseHours(disc.manualHours);
+    if (legacyManual > 0) return hoursToMinutes(legacyManual);
+    return defaultMinutesForMode(disc.mode);
+  }
+
   function effectiveHours(disc) {
-    const manual = parseHours(disc.manualHours);
-    if (manual > 0) return manual;
-    return defaultHoursForMode(disc.mode);
+    return effectiveMinutes(disc) / 60;
   }
 
   function loadState() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (!raw) return migrateState(seedState());
+      if (!raw) return seedState();
       const parsed = JSON.parse(raw);
       return migrateState(parsed);
     } catch (err) {
       console.warn('Falha ao carregar dados. Recriando base.', err);
-      return migrateState(seedState());
+      return seedState();
     }
   }
 
@@ -7946,9 +7991,6 @@
   }
 
   function seedState() {
-    if (window.TCU_STUDY_OS_INITIAL_STATE && typeof window.TCU_STUDY_OS_INITIAL_STATE === 'object') {
-      return JSON.parse(JSON.stringify(window.TCU_STUDY_OS_INITIAL_STATE));
-    }
     const disciplines = DEFAULT_DISCIPLINES.map(row => ({
       id: row[0], name: row[1], active: row[2], mode: row[3], order: row[4], frequency: row[5], priority: row[6], manualHours: '', source: '', sourceUrl: '', notes: ''
     }));
@@ -7979,24 +8021,32 @@
     const byName = new Map(disciplines.map(d => [normalizeName(d.name), d]));
     return DEFAULT_TOPICS.map((t, idx) => {
       const disc = byName.get(normalizeName(t.disciplineName));
-      return normalizeTopic({ ...t, disciplineId: disc ? disc.id : '', disciplineName: disc ? disc.name : t.disciplineName }, idx, disciplines);
-    }).filter(t => t.title);
+      if (!disc) return null;
+      return normalizeTopic({ ...t, disciplineId: disc.id, disciplineName: disc.name }, idx, disciplines);
+    }).filter(t => t && t.title);
   }
 
   function migrateState(data) {
     const seeded = seedState();
     const clean = {
       version: BACKUP_VERSION,
-      settings: { ...seeded.settings, ...(data.settings || {}) },
-      disciplines: Array.isArray(data.disciplines) ? data.disciplines : seeded.disciplines,
-      topics: Array.isArray(data.topics) ? data.topics : [],
-      sessions: Array.isArray(data.sessions) ? data.sessions : [],
-      errors: Array.isArray(data.errors) ? data.errors : [],
-      contentVersions: { ...(data.contentVersions || {}) }
+      settings: { ...seeded.settings, ...(data && data.settings ? data.settings : {}) },
+      disciplines: Array.isArray(data && data.disciplines) ? data.disciplines : seeded.disciplines,
+      topics: Array.isArray(data && data.topics) ? data.topics : [],
+      sessions: Array.isArray(data && data.sessions) ? data.sessions : [],
+      errors: Array.isArray(data && data.errors) ? data.errors : [],
+      contentVersions: { ...((data && data.contentVersions) || {}) }
     };
     clean.settings.lastBackupAt = clean.settings.lastBackupAt || '';
     clean.settings.backupReminderDays = Number.isFinite(Number(clean.settings.backupReminderDays)) ? Number(clean.settings.backupReminderDays) : 1;
     clean.settings.autoExportAfterRegister = Boolean(clean.settings.autoExportAfterRegister);
+    clean.settings.dailyGoalMinutes = Number.isFinite(Number(clean.settings.dailyGoalMinutes)) ? Math.max(0, Math.round(Number(clean.settings.dailyGoalMinutes))) : hoursToMinutes(clean.settings.dailyHours || 4);
+    clean.settings.weeklyGoalMinutes = Number.isFinite(Number(clean.settings.weeklyGoalMinutes)) ? Math.max(0, Math.round(Number(clean.settings.weeklyGoalMinutes))) : hoursToMinutes(clean.settings.weeklyGoal || 24);
+    clean.settings.monthlyGoalMinutes = Number.isFinite(Number(clean.settings.monthlyGoalMinutes)) ? Math.max(0, Math.round(Number(clean.settings.monthlyGoalMinutes))) : hoursToMinutes(clean.settings.monthlyGoal || 100);
+    clean.settings.dailyHours = clean.settings.dailyGoalMinutes / 60;
+    clean.settings.weeklyGoal = clean.settings.weeklyGoalMinutes / 60;
+    clean.settings.monthlyGoal = clean.settings.monthlyGoalMinutes / 60;
+    clean.settings.nightReviewDefaultMinutes = Math.max(1, parseIntSafe(clean.settings.nightReviewDefaultMinutes || 20));
     clean.disciplines = clean.disciplines.map((d, idx) => ({
       id: d.id || slugify(d.name) || uid('disc'),
       name: d.name || `Disciplina ${idx + 1}`,
@@ -8006,9 +8056,8 @@
       frequency: Math.max(1, parseIntSafe(d.frequency || 1)),
       priority: PRIORITIES.includes(d.priority) ? d.priority : 'Média',
       manualHours: d.manualHours || '',
-      source: d.source || '',
-      sourceUrl: d.sourceUrl || '',
-      notes: d.notes || ''
+      manualMinutes: d.manualMinutes !== undefined && d.manualMinutes !== null && d.manualMinutes !== '' ? Math.max(0, Math.round(Number(d.manualMinutes) || 0)) : (parseHours(d.manualHours) > 0 ? hoursToMinutes(d.manualHours) : ''),
+      source: d.source || '', sourceUrl: d.sourceUrl || '', notes: d.notes || ''
     }));
     canonicalizePortuguese_(clean);
     const normalizedTopics = clean.topics.map((t, idx) => normalizeTopic(t, idx, clean.disciplines)).filter(t => t.title);
@@ -8019,10 +8068,13 @@
     });
     clean.topics = normalizedTopics;
     canonicalizePortuguese_(clean);
-    if (clean.contentVersions.dcon !== 9 || !clean.topics.some(t => String(t.id || '').startsWith('topic_dcon_v9_'))) {
-      canonicalizeDconTopics_(clean);
-    }
-    canonicalizeV11Structure_(clean);
+    if (clean.contentVersions.dcon !== 9 || !clean.topics.some(t => String(t.id || '').startsWith('topic_dcon_v9_'))) canonicalizeDconTopics_(clean);
+    clean.sessions = clean.sessions.map(s => {
+      const mins = Number.isFinite(Number(s.durationMinutes)) ? Math.max(0, Math.round(Number(s.durationMinutes))) : hoursToMinutes(s.hours);
+      return { ...s, durationMinutes: mins, hours: mins / 60, kind: s.kind || 'study' };
+    });
+    applyV11ContentMigrations_(clean);
+    clean.version = BACKUP_VERSION;
     return clean;
   }
 
@@ -8032,182 +8084,22 @@
     const isPortuguese = d => normalizeName(d && d.name) === 'portugues' || normalizeName(d && d.id) === 'portugues';
     let portuguese = clean.disciplines.find(isPortuguese);
     const legacyPort = clean.disciplines.find(isPortLegacy);
-
-    if (!portuguese && legacyPort) {
-      legacyPort.name = 'Português';
-      legacyPort.id = legacyPort.id === 'port' ? 'portugues' : legacyPort.id;
-      portuguese = legacyPort;
-    }
-    if (!portuguese) {
-      portuguese = { id: 'portugues', name: 'Português', active: true, mode: 'Teoria', order: 1, frequency: 2, priority: 'Alta', manualHours: '', source: '', sourceUrl: '', notes: 'Criada pela migração v6.' };
-      clean.disciplines.push(portuguese);
-    }
-
+    if (!portuguese && legacyPort) { legacyPort.name = 'Português'; legacyPort.id = 'portugues'; portuguese = legacyPort; }
+    if (!portuguese) { portuguese = { id:'portugues', name:'Português', active:false, mode:'Em espera', order:1, frequency:1, priority:'Alta', manualHours:'', manualMinutes:'', source:'', sourceUrl:'', notes:'' }; clean.disciplines.push(portuguese); }
     const oldIds = [];
     if (legacyPort && legacyPort !== portuguese) {
       oldIds.push(legacyPort.id);
-      portuguese.active = Boolean(portuguese.active || legacyPort.active);
-      portuguese.mode = portuguese.mode && portuguese.mode !== 'Em espera' ? portuguese.mode : (legacyPort.mode || 'Teoria');
-      portuguese.priority = portuguese.priority || legacyPort.priority || 'Alta';
-      portuguese.source = portuguese.source || legacyPort.source || '';
-      portuguese.sourceUrl = portuguese.sourceUrl || legacyPort.sourceUrl || '';
-      portuguese.notes = portuguese.notes || legacyPort.notes || '';
-      portuguese.manualHours = portuguese.manualHours || legacyPort.manualHours || '';
+      if (!portuguese.source) portuguese.source = legacyPort.source || '';
+      if (!portuguese.sourceUrl) portuguese.sourceUrl = legacyPort.sourceUrl || '';
       clean.disciplines = clean.disciplines.filter(d => d !== legacyPort);
     }
-
-    portuguese.id = 'portugues';
-    portuguese.name = 'Português';
-    portuguese.active = true;
-    portuguese.mode = portuguese.mode && portuguese.mode !== 'Em espera' ? portuguese.mode : 'Teoria';
-    portuguese.order = 1;
-    portuguese.frequency = Math.max(2, parseIntSafe(portuguese.frequency || 2));
-    portuguese.priority = 'Alta';
-
-    const dcon = clean.disciplines.find(d => normalizeName(d.name) === 'dcon');
-    if (dcon) { dcon.active = true; dcon.order = 2; dcon.frequency = 1; dcon.priority = dcon.priority || 'Alta'; dcon.mode = dcon.mode && dcon.mode !== 'Em espera' ? dcon.mode : 'Teoria'; }
-    const dad = clean.disciplines.find(d => normalizeName(d.name) === 'dad');
-    if (dad) { dad.active = true; dad.order = 3; dad.frequency = 1; dad.priority = dad.priority || 'Alta'; dad.mode = dad.mode && dad.mode !== 'Em espera' ? dad.mode : 'Teoria'; }
-
+    portuguese.id='portugues'; portuguese.name='Português'; portuguese.priority=portuguese.priority || 'Alta';
     const fixEntity = item => {
       if (!item) return;
       const idNorm = normalizeName(item.disciplineId);
-      if (normalizeName(item.disciplineName) === 'port' || normalizeName(item.disciplineName) === 'portugues' || idNorm === 'port' || idNorm.startsWith('portugues_') || oldIds.includes(item.disciplineId)) {
-        item.disciplineName = 'Português';
-        item.disciplineId = portuguese.id;
-      }
+      if (normalizeName(item.disciplineName) === 'port' || normalizeName(item.disciplineName) === 'portugues' || idNorm === 'port' || oldIds.includes(item.disciplineId)) { item.disciplineName='Português'; item.disciplineId='portugues'; }
     };
-    (clean.topics || []).forEach(fixEntity);
-    (clean.sessions || []).forEach(fixEntity);
-    (clean.errors || []).forEach(fixEntity);
-  }
-
-
-  function licitacoesCanonicalTopics_() {
-    return [
-    [
-        "Visão geral da nova Lei de Licitações. Abrangência federativa e normas gerais. Aplicação. Princípios e objetivos da licitação. Vigência. Regras de transição",
-        "Visão geral da nova Lei de Licitações. Abrangência federativa e normas gerais. Aplicação. Princípios e objetivos da licitação. Vigência. Regras de transição",
-        "Alta"
-    ],
-    [
-        "Impedimentos para participação nas licitações. Consórcios e cooperativas nas licitações. Função regulatória da licitação e margem de preferência",
-        "Impedimentos para participação nas licitações. Consórcios e cooperativas nas licitações. Função regulatória da licitação e margem de preferência",
-        "Alta"
-    ],
-    [
-        "Objeto da licitação: compras, obras, serviços, serviços de engenharia, locação de imóveis e alienações",
-        "Objeto da licitação: compras, obras, serviços, serviços de engenharia, locação de imóveis e alienações",
-        "Alta"
-    ],
-    [
-        "Procedimento da licitação: fases interna e externa",
-        "Procedimento da licitação: fases interna e externa",
-        "Alta"
-    ],
-    [
-        "Modalidades de licitação e critérios de julgamento",
-        "Modalidades de licitação e critérios de julgamento",
-        "Alta"
-    ],
-    [
-        "Contratação direta: inexigibilidade e dispensa de licitação",
-        "Contratação direta: inexigibilidade e dispensa de licitação",
-        "Alta"
-    ],
-    [
-        "Procedimentos auxiliares: credenciamento, pré-qualificação, PMI, sistema de registro de preços e registro cadastral",
-        "Procedimentos auxiliares: credenciamento, pré-qualificação, PMI, sistema de registro de preços e registro cadastral",
-        "Alta"
-    ],
-    [
-        "Contratos administrativos. Cláusulas exorbitantes. Garantias. Alocação de riscos",
-        "Contratos administrativos. Cláusulas exorbitantes. Garantias. Alocação de riscos",
-        "Alta"
-    ],
-    [
-        "Duração e extinção dos contratos administrativos. Meios alternativos de resolução de controvérsias contratuais",
-        "Duração e extinção dos contratos administrativos. Meios alternativos de resolução de controvérsias contratuais",
-        "Alta"
-    ],
-    [
-        "Responsabilidade civil contratual. Infrações e sanções administrativas. Controle. Portal Nacional de Contratações Públicas (PNCP)",
-        "Responsabilidade civil contratual. Infrações e sanções administrativas. Controle. Portal Nacional de Contratações Públicas (PNCP)",
-        "Alta"
-    ],
-    [
-        "Comentários aos vetos da Nova Lei de Licitações",
-        "Comentários aos vetos da Nova Lei de Licitações",
-        "Alta"
-    ]
-    ];
-  }
-
-  function canonicalizeV11Structure_(clean) {
-    if (!clean || !Array.isArray(clean.disciplines) || !Array.isArray(clean.topics)) return;
-    const find = id => clean.disciplines.find(d => normalizeName(d.id) === id || normalizeName(d.name) === id);
-    const ensure = (id, name) => {
-      let d = find(id);
-      if (!d) {
-        d = { id, name, active: false, mode: 'Em espera', order: 999, frequency: 1, priority: 'Alta', manualHours: '', source: '', sourceUrl: '', notes: '' };
-        clean.disciplines.push(d);
-      }
-      d.id = id; d.name = name;
-      return d;
-    };
-
-    const afo = ensure('afo', 'AFO');
-    const port = ensure('portugues', 'Português');
-    const dcon = ensure('dcon', 'DCON');
-    const dad = ensure('dad', 'DAD');
-    const lic = ensure('licitacoes', 'Licitações');
-
-    clean.disciplines.forEach(d => {
-      if (![afo, port, dcon].includes(d)) {
-        d.active = false;
-        if (!isWaitingMode(d.mode)) d.mode = 'Em espera';
-      }
-    });
-    Object.assign(afo, { active: true, mode: 'Teoria', order: 1, frequency: 1, priority: 'Alta' });
-    Object.assign(port, { active: true, mode: 'Teoria', order: 2, frequency: 1, priority: 'Alta' });
-    Object.assign(dcon, { active: true, mode: 'Teoria', order: 3, frequency: 1, priority: 'Alta' });
-    Object.assign(dad, { active: false, mode: 'Em espera', order: 4, frequency: 1, priority: 'Alta' });
-    Object.assign(lic, { active: false, mode: 'Em espera', order: 5, frequency: 1, priority: 'Alta' });
-
-    const reserved = new Set(['afo','portugues','dcon','dad','licitacoes']);
-    clean.disciplines
-      .filter(d => !reserved.has(d.id))
-      .sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999) || a.name.localeCompare(b.name, 'pt-BR'))
-      .forEach((d, idx) => { d.order = idx + 6; });
-
-    const old = clean.topics.filter(t => t.disciplineId === lic.id || normalizeName(t.disciplineName) === 'licitacoes');
-    const byTitle = new Map(old.map(t => [normalizeName(t.title), t]));
-    clean.topics = clean.topics.filter(t => !(t.disciplineId === lic.id || normalizeName(t.disciplineName) === 'licitacoes'));
-    licitacoesCanonicalTopics_().forEach((row, idx) => {
-      const [title, details, priority] = row;
-      const prior = byTitle.get(normalizeName(title)) || {};
-      clean.topics.push(normalizeTopic({
-        id: `topic_licitacoes_v11_${idx + 1}_${slugify(title).slice(0, 52)}`,
-        disciplineId: lic.id,
-        disciplineName: lic.name,
-        title,
-        details,
-        status: prior.status || 'Em espera',
-        priority: prior.priority || priority || 'Alta',
-        order: idx + 1,
-        notes: prior.notes || '',
-        sourceUrl: prior.sourceUrl || '',
-        tecUrl: prior.tecUrl || ''
-      }, idx, clean.disciplines));
-    });
-
-    const afoTopics = clean.topics
-      .filter(t => t.disciplineId === afo.id || normalizeName(t.disciplineName) === 'afo')
-      .sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999));
-    if (afoTopics.length && !afoTopics.some(t => t.status && t.status !== 'Em espera')) {
-      afoTopics.slice(0, 3).forEach(t => { t.status = 'Estudando'; });
-    }
-    clean.contentVersions = { ...(clean.contentVersions || {}), licitacoes: 1 };
+    (clean.topics || []).forEach(fixEntity); (clean.sessions || []).forEach(fixEntity); (clean.errors || []).forEach(fixEntity);
   }
 
 
@@ -8279,9 +8171,93 @@
     clean.contentVersions = { ...(clean.contentVersions || {}), dcon: 9 };
   }
 
+
+
+  const V11_LIC_NAME = '[LIC] Licitações e Contratos (Foco TCU) - Rafael Oliveira';
+  const V11_LIC_TOPICS = ["Visão geral da nova Lei de Licitações. Abrangência federativa e normas gerais. Aplicação. Princípios e objetivos da licitação. Vigência. Regras de transição", "Impedimentos para participação nas licitações. Consórcios e cooperativas nas licitações. Função regulatória da licitação e margem de preferência", "Objeto da licitação: compras, obras, serviços, serviços de engenharia, locação de imóveis e alienações", "Procedimento da licitação: fases interna e externa", "Modalidades de licitação e critérios de julgamento", "Contratação direta: inexigibilidade e dispensa de licitação", "Procedimentos auxiliares: credenciamento, pré-qualificação, PMI, sistema de registro de preços e registro cadastral", "Contratos administrativos. Cláusulas exorbitantes. Garantias. Alocação de riscos", "Duração e extinção dos contratos administrativos. Meios alternativos de resolução de controvérsias contratuais", "Responsabilidade civil contratual. Infrações e sanções administrativas. Controle. Portal Nacional de Contratações Públicas (PNCP)", "Comentários aos vetos (Nova Lei de Licitações)"];
+  const V11_PORT_COURSES = [{"id": "port-ceb-teorico-2026", "name": "[Port_Cebraspe] 1- Teórico [2026] [13 aulas]", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["Aula 1 | Acentuação Gráfica", "Aula 2 | Ortografia", "Aula 3 | Classes de Palavras", "Aula 4 | Classes de Palavras; Funções Sintáticas", "Aula 5 | Funções Sintáticas", "Aula 6 | Concordância Verbal; Concordância Nominal", "Aula 7 | Concordância Nominal; Regência Verbal", "Aula 8 | Regência Verbal; Crase; Colocação Pronominal", "Aula 9 | Colocação Pronominal", "Aula 10 | Colocação Pronominal; Verbos", "Aula 11 | Orações", "Aula 12 | Orações; Pontuação", "Aula 13 | Pontuação; Questões"]}, {"id": "port-ceb-sabadao", "name": "[Port_Cebraspe] 2.1- Sabadão Cebraspe - 100 questões resolvidas", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["Sabadão Cebraspe — 100 questões resolvidas"]}, {"id": "port-ceb-assuntos", "name": "[Port_Cebraspe] 2.2- Resolução de Questões por Assuntos [626 q]", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["Acentuação Gráfica", "Ortografia", "Classes de Palavras", "Funções Sintáticas - Parte 1", "Funções Sintáticas - Parte 2", "Concordância", "Regência", "Crase", "Pronomes", "Verbos", "Orações", "Pontuação", "Diversas e Reescrita", "Leitura"]}, {"id": "port-ceb-interpretacao", "name": "[Port_Cebraspe] 3.1- Interpretação de Texto [Curso Novo]", "priority": "Média", "source": "Andresan Machado — Novo Interpretação de Textos", "sourceUrl": "https://sala.andresan.com.br/curso/novo-interpretacao-de-textos-on-line/comprar?query=cebraspe", "topics": ["Interpretação de Textos"]}, {"id": "port-ceb-provas-superior-2026", "name": "[Port_Cebraspe] 3.2- Resolução de Questões Por Provas - Superior [2026]", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["CEBRASPE — SEPLAG-AL — Todos os Cargos [2026]", "CEBRASPE — PGE-RN — Analista Jurídico [2026]", "CEBRASPE — FUNPRESP-JUD — Advogado [2026]", "CEBRASPE — UNEAL — Analista Administrativo [2026]", "CEBRASPE — Prefeitura de Porto Velho — Auditor [2026]", "CEBRASPE — ANSA — Advocacia [2026]", "CEBRASPE — SEFAZ-RN — Auditor Fiscal [2026]", "CEBRASPE — TCE-RN — Auditor de Controle Externo [2026]", "CEBRASPE — TCU — Auditor Federal de Controle Externo [2026]", "CEBRASPE — TCE-MG — Todos os Cargos [2026]"]}, {"id": "port-ceb-provas-2024", "name": "[Port_Cebraspe] 4- Resolução de Questões por Provas [2024]", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["Prova 01 [2024]", "Prova 02 [2024]", "Prova 03 [2024]", "Prova 04 [2024]", "Prova 05 [2024]", "Prova 06 [2024]", "Prova 07 [2024]", "Prova 08 [2024]"]}, {"id": "port-ceb-provas-2023", "name": "[Port_Cebraspe] 5- Resolução de Questões por Provas [2023]", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["Prova 01 [2023]", "Prova 02 [2023]", "Prova 03 [2023]", "Prova 04 [2023]", "Prova 05 [2023]", "Prova 06 [2023]", "Prova 07 [2023]", "Prova 08 [2023]", "Prova 09 [2023]", "Prova 10 [2023]", "Prova 11 [2023]"]}, {"id": "port-ceb-provas-medio", "name": "[Port_Cebraspe] 6- Resolução de Questões Por Provas [Médio]", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["INSS — Técnico do Seguro Social", "SEMA/AM — Assistente Ambiental", "Câmara dos Deputados — Policial Legislativo", "ANSA — Administração e Controle", "TCE-RN — Técnico Administrativo", "UDESC — Técnico Universitário", "PC-MG — Técnico-Assistente da PCMG"]}, {"id": "port-ceb-redacao-oficial", "name": "[Port_Cebraspe] 7- Redação Oficial para Concurso", "priority": "Média", "source": "Andresan Machado — Missão Cebraspe", "sourceUrl": "https://sala.andresan.com.br/curso/missao-cebraspe-portugues/comprar?query=cebraspe", "topics": ["Material Redação Oficial"]}];
+  const V11_DAD_RAFAEL = { id:'dad-rafael-oliveira-vas-2026', name:'DAD - Rafael Oliveira [VAs] [2026]', source:'Rafael Oliveira — Grupo GEN', sourceUrl:'https://www.grupogen.com.br/curso-direito-administrativo-rafael-oliveira', topics:["Origem, Evolução e Princípios do Direito Administrativo", "Organização Administrativa - Desconcentração x Descentralização/ Setores/ Órgãos Públicos/ Administração Direta e Indireta", "Administração Pública Indireta - Introdução e Noções Gerais/ Autarquias/ Empresas Estatais/ Fundações Estatais", "Terceiro Setor: Serviço Social Autônomo, Organizações Sociais (OS), Organizações da Sociedade Civil de Interesse Público (OSCIPS) e Organizações da Sociedade Civil (OSC)", "Concessão e Permissão de Serviços Públicos - Conceito/ Princípios/ Classificações/ Concessão e Permissão/ Concessão Comum vs. Concessão Especial (PPP)/ Extinção da Concessão/ Discussão sobre Autorização de Serviço Público", "Código de Defesa do Usuário de Serviço Público", "Consórcios Públicos", "Parcerias Público-Privadas (PPPs)", "Poderes Administrativos - Visão Geral/ Poder Regulamentar/ Poder de Polícia/ Poder Hierárquico/ Poder Disciplinar", "Atos Administrativos", "Processo Administrativo", "Licitações e Contratos Administrativos", "Intervenção do Estado na Ordem Econômica", "Intervenção do Estado na Propriedade (Servidão Administrativa, Requisição, Ocupação Temporária, Limitações Administrativas e Tombamento)", "Desapropriação", "Bens Públicos", "Agentes Públicos", "Responsabilidade Civil do Estado", "Controle da Administração Pública", "Improbidade Administrativa", "Métodos Alternativos de Resolução de Conflitos nas Contratações Públicas: Conciliação/ Mediação/ Comitê de Resolução de Disputas/ Arbitragem", "Lei Anticorrupção"] };
+  const V11_TI_TOPICS = ["FD00 - Introdução à Fluência em Dados", "FD01 - Fundamentos de Dados", "FD02 - Fundamentos de Bancos de Dados", "FD03 - Modelo Entidade-Relacionamento", "FD04 - Modelo Relacional", "FD05 - Mapeamento ER-Relacional", "FD06 - Introdução ao SQL", "SI00 - Fundamentos de Segurança da Informação", "SI01 - Ataques e Ameaças", "TI01 - Parte I - Bancos de Dados - Versão 2.0", "TI01 - Parte II - Modelo Relacional - Versão 2.0", "TI02 - Modelo Entidade-Relacionamento - Versão 2.0", "TI03 - SQL (DML) - Versão 2.0", "TI04 - SQL (DDL)", "TI05 - SQL (DCL e DTL)", "TI06 - Business Intelligence - Versão 2.0", "TI07 - Data Mining - Versão 2.0", "TI08 - Big Data", "TI08.II - Big Data (temas avançados)", "TI09 - Teoria da Informação", "TI21.II - Computação em Nuvem", "TI23 - Segurança da Informação", "TI25 - ISO 27001:2022 (SGSI) - Versão 2.0", "TI34 - LAI", "TI35 - LGPD", "TI36 - Inteligência Artificial - Versão 2.0", "TI37 - Parte I - Aprendizado de Máquina (Machine Learning - ML)", "TI37 - Parte II - Processamento de Linguagem Natural (PLN)", "TI38 - Python", "TI38.II - Bibliotecas Python", "TI39 - R", "TI39.II - Tidyverse", "TI40 - Pareamento de dados", "TI41 - XML, JSON e CSV", "TI42 - Representação de Dados", "TI43 - NoSQL"];
+
+  function ensureCatalogDiscipline_(clean, spec) {
+    let d = clean.disciplines.find(x => x.id === spec.id || normalizeName(x.name) === normalizeName(spec.name));
+    if (!d) {
+      const maxOrder = clean.disciplines.reduce((m,x)=>Math.max(m,Number(x.order)||0),0);
+      d = { id:spec.id, name:spec.name, active:false, mode:'Em espera', order:maxOrder+1, frequency:1, priority:spec.priority || 'Média', manualHours:'', manualMinutes:'', source:spec.source||'', sourceUrl:spec.sourceUrl||'', notes:'' };
+      clean.disciplines.push(d);
+    }
+    d.id=spec.id; d.name=spec.name;
+    if (spec.source && !d.source) d.source=spec.source;
+    if (spec.sourceUrl && !d.sourceUrl) d.sourceUrl=spec.sourceUrl;
+    if (d.manualMinutes === undefined) d.manualMinutes = parseHours(d.manualHours)>0 ? hoursToMinutes(d.manualHours) : '';
+    return d;
+  }
+
+  function replaceDisciplineTopics_(clean, disc, titles, versionKey, versionValue=1, preserve=true) {
+    if (clean.contentVersions[versionKey] === versionValue && clean.topics.some(t => t.disciplineId === disc.id)) return;
+    const old = clean.topics.filter(t => t.disciplineId === disc.id || normalizeName(t.disciplineName) === normalizeName(disc.name));
+    const byOrder = new Map(old.map(t => [Number(t.order)||0,t]));
+    clean.topics = clean.topics.filter(t => !(t.disciplineId === disc.id || normalizeName(t.disciplineName) === normalizeName(disc.name)));
+    titles.forEach((title, idx) => {
+      const prev = preserve ? byOrder.get(idx+1) : null;
+      clean.topics.push(normalizeTopic({ id:(prev&&prev.id)||`topic_${disc.id}_${idx+1}_${slugify(title).slice(0,48)}`, disciplineId:disc.id, disciplineName:disc.name, title, details:title, status:(prev&&prev.status)||'Em espera', priority:(prev&&prev.priority)||disc.priority||'Média', order:idx+1, notes:(prev&&prev.notes)||'', sourceUrl:(prev&&prev.sourceUrl)||disc.sourceUrl||'', tecUrl:(prev&&prev.tecUrl)||'' }, idx, clean.disciplines));
+    });
+    clean.contentVersions[versionKey]=versionValue;
+  }
+
+  function addMissingCourseTopics_(clean, disc, titles) {
+    const current = clean.topics.filter(t => t.disciplineId === disc.id);
+    const keys = new Set(current.map(t => normalizeName(t.title)));
+    titles.forEach((title, idx) => { if (!keys.has(normalizeName(title))) clean.topics.push(normalizeTopic({ id:`topic_${disc.id}_${idx+1}_${slugify(title).slice(0,48)}`, disciplineId:disc.id, disciplineName:disc.name, title, details:title, status:'Em espera', priority:disc.priority||'Média', order:idx+1, notes:'', sourceUrl:disc.sourceUrl||'', tecUrl:'' }, idx, clean.disciplines)); });
+  }
+
+  function applyV11ContentMigrations_(clean) {
+    clean.contentVersions = { ...(clean.contentVersions || {}) };
+    // Corrige regressão antiga Port→Português que alterava palavras como Portaria.
+    const fixText = value => typeof value === 'string' ? value.replaceAll('Portuguêsaria','Portaria') : value;
+    clean.topics.forEach(t => { t.title=fixText(t.title); t.details=fixText(t.details); t.notes=fixText(t.notes); });
+    clean.sessions.forEach(s => { s.subject=fixText(s.subject); s.notes=fixText(s.notes); });
+
+    // Licitações: preserva ID e histórico, apenas canonicaliza nome/conteúdo.
+    let lic = clean.disciplines.find(d => d.id === 'licitacoes' || normalizeName(d.name)==='licitacoes' || normalizeName(d.name)===normalizeName(V11_LIC_NAME));
+    if (!lic) lic=ensureCatalogDiscipline_(clean,{id:'licitacoes',name:V11_LIC_NAME,priority:'Alta',source:'Rafael Oliveira — Licitações e Contratos (Foco TCU)'});
+    lic.id='licitacoes'; lic.name=V11_LIC_NAME; lic.source=lic.source || 'Rafael Oliveira — Licitações e Contratos (Foco TCU)';
+    clean.topics.forEach(t=>{ if(t.disciplineId==='licitacoes'||normalizeName(t.disciplineName)==='licitacoes'){t.disciplineId='licitacoes';t.disciplineName=V11_LIC_NAME;} });
+    clean.sessions.forEach(x=>{ if(x.disciplineId==='licitacoes'||normalizeName(x.disciplineName)==='licitacoes'){x.disciplineId='licitacoes';x.disciplineName=V11_LIC_NAME;} });
+    replaceDisciplineTopics_(clean,lic,V11_LIC_TOPICS,'licitacoesRafael',1,true);
+
+    // Remove o cadastro genérico antigo de Português Cebraspe sem disciplina e cria os cursos reais.
+    clean.topics = clean.topics.filter(t => !(normalizeName(t.disciplineName)==='portugues cebraspe' && !t.disciplineId));
+    V11_PORT_COURSES.forEach(spec => { const d=ensureCatalogDiscipline_(clean,spec); addMissingCourseTopics_(clean,d,spec.topics); });
+    clean.contentVersions.portCebraspe=1;
+
+    const dadR=ensureCatalogDiscipline_(clean,V11_DAD_RAFAEL); addMissingCourseTopics_(clean,dadR,V11_DAD_RAFAEL.topics); clean.contentVersions.dadRafael=1;
+
+    // TI Total: remoção integral dos tópicos antigos, uma única vez.
+    const ti=ensureCatalogDiscipline_(clean,{id:'ti',name:'TI - TCU [TI Total]',priority:'Alta',source:'TI Total — trilha TCU'});
+    const tiNeeds = clean.contentVersions.tiTotalTcu !== 1 || !clean.topics.some(t=>t.disciplineId==='ti' && normalizeName(t.title)===normalizeName(V11_TI_TOPICS[0]));
+    if (tiNeeds) {
+      clean.topics = clean.topics.filter(t => t.disciplineId!=='ti' && normalizeName(t.disciplineName)!=='ti' && normalizeName(t.disciplineName)!==normalizeName('TI - TCU [TI Total]'));
+      V11_TI_TOPICS.forEach((title,idx)=>clean.topics.push(normalizeTopic({id:`topic_ti_v11_${idx+1}_${slugify(title).slice(0,48)}`,disciplineId:'ti',disciplineName:ti.name,title,details:title,status:'Em espera',priority:'Alta',order:idx+1,notes:'',sourceUrl:'',tecUrl:''},idx,clean.disciplines)));
+      clean.contentVersions.tiTotalTcu=1;
+    }
+    ti.name='TI - TCU [TI Total]'; clean.topics.forEach(t=>{if(t.disciplineId==='ti')t.disciplineName=ti.name;}); clean.sessions.forEach(x=>{if(x.disciplineId==='ti')x.disciplineName=ti.name;});
+
+    // Repara tópicos órfãos conhecidos.
+    const alias={ 'economia setor publico':'economia-setor-publico', 'direito proc. civil':'proc-civil', 'analise demonstracoes':'analise-demonstracoes' };
+    const byId=new Map(clean.disciplines.map(d=>[d.id,d])); const byName=new Map(clean.disciplines.map(d=>[normalizeName(d.name),d]));
+    clean.topics.forEach(t=>{ if(!t.disciplineId){ const d=byName.get(normalizeName(t.disciplineName))||byId.get(alias[normalizeName(t.disciplineName)]); if(d){t.disciplineId=d.id;t.disciplineName=d.name;} } });
+    clean.topics.forEach(t=>{const d=byId.get(t.disciplineId); if(d)t.disciplineName=d.name;});
+    clean.sessions.forEach(x=>{const d=byId.get(x.disciplineId); if(d)x.disciplineName=d.name;});
+    clean.contentVersions.timeMinutes=1; clean.contentVersions.nightReview=1; clean.contentVersions.cleanupPortaria=1;
+  }
+
+  state = loadState();
+  currentRoute = getInitialRoute();
+
   function getInitialRoute() {
     const hash = (location.hash || '#hoje').replace('#', '');
-    return ['hoje', 'registrar', 'historico', 'ciclo', 'conteudo', 'progresso', 'questoes', 'ataque', 'erros', 'fontes', 'backup', 'config', 'ajuda', 'sessao'].includes(hash) ? hash : 'hoje';
+    return ['hoje', 'registrar', 'historico', 'revisao', 'ciclo', 'conteudo', 'progresso', 'questoes', 'ataque', 'erros', 'fontes', 'backup', 'config', 'ajuda', 'sessao'].includes(hash) ? hash : 'hoje';
   }
 
   window.addEventListener('hashchange', () => {
@@ -8396,8 +8372,12 @@
 
   function topicSelectOptions(disciplineName, selectedId = '') {
     const topics = topicsForDiscipline(disciplineName);
-    const options = ['<option value="">Selecionar tópico cadastrado...</option>'].concat(topics.map(t => `<option value="${escapeHTML(t.id)}" ${t.id === selectedId ? 'selected' : ''}>${escapeHTML(t.title)}</option>`));
-    return options.join('');
+    const pending = topics.filter(t => t.status === 'Em espera');
+    const worked = topics.filter(t => t.status !== 'Em espera');
+    let html = '<option value="">Selecionar tópico cadastrado...</option>';
+    if (pending.length) html += `<optgroup label="Próximos — ainda não estudados">${pending.map(t => `<option value="${escapeHTML(t.id)}" ${t.id===selectedId?'selected':''}>${escapeHTML(t.title)}</option>`).join('')}</optgroup>`;
+    if (worked.length) html += `<optgroup label="Já iniciados / trabalhados">${worked.map(t => `<option value="${escapeHTML(t.id)}" ${t.id===selectedId?'selected':''}>${escapeHTML(t.title)} — ${escapeHTML(t.status)}</option>`).join('')}</optgroup>`;
+    return html;
   }
 
   function updateTopicAfterSession(topicId, disc, subject, mode) {
@@ -8422,7 +8402,7 @@
 
   function activeDisciplines() {
     return state.disciplines
-      .filter(d => d.active && !isWaitingMode(d.mode) && effectiveHours(d) > 0)
+      .filter(d => d.active && d.mode !== 'Em espera' && effectiveHours(d) > 0)
       .sort((a, b) => (Number(a.order) || 999) - (Number(b.order) || 999) || a.name.localeCompare(b.name, 'pt-BR'));
   }
 
@@ -8433,7 +8413,7 @@
     const out = [];
 
     // Frequência significa presença distribuída, não repetição grudada.
-    // v11: AFO → Português → DCON, uma passagem por disciplina.
+    // Ex.: Português 2x + DCON 1x + DAD 1x => Português → DCON → Português → DAD.
     while (remaining.some(x => x.left > 0)) {
       const last = out[out.length - 1];
       let candidates = remaining.filter(x => x.left > 0 && (!last || x.disc.id !== last.id));
@@ -8448,7 +8428,7 @@
 
   function suggestedSessions() {
     const cycle = cycleArray();
-    const available = parseHours(state.settings.dailyHours);
+    const available = settingsMinutes('dailyGoalMinutes','dailyHours') / 60;
     if (!cycle.length || available <= 0) return [];
     const count = state.sessions.length;
     let cursor = count % cycle.length;
@@ -8481,7 +8461,7 @@
   function nextSubjectFor(disc) {
     const topics = topicsForDiscipline(disc);
     if (topics.length) {
-      const candidate = topics.find(t => t.status === 'Em espera' || t.status === 'Estudando') || topics[0];
+      const candidate = topics.find(t => t.status === 'Em espera') || topics.find(t => t.status === 'Estudando') || topics[0];
       return candidate.title;
     }
     const last = [...state.sessions].reverse().find(s => s.disciplineId === disc.id || s.disciplineName === disc.name);
@@ -8504,8 +8484,11 @@
   }
 
   function sum(list, key) {
-    return list.reduce((acc, item) => acc + Number(item[key] || 0), 0);
+    if (key === 'hours') return (list || []).reduce((acc,item)=>acc + sessionMinutes(item),0) / 60;
+    return (list || []).reduce((acc, item) => acc + Number(item[key] || 0), 0);
   }
+
+  function sumMinutes(list) { return (list || []).reduce((acc,item)=>acc + sessionMinutes(item),0); }
 
   function accuracy(list) {
     const q = sum(list, 'questions');
@@ -8555,20 +8538,20 @@
   }
 
   function modeOptions(selected) {
-    return MODES.filter(m => !isWaitingMode(m)).map(m => modeOptionHTML(m, selected)).join('');
+    return MODES.filter(m => m !== 'Em espera').map(m => `<option value="${m}" ${m === selected ? 'selected' : ''}>${m}</option>`).join('');
   }
 
   function renderLayout(content) {
     const navItems = [
-      ['hoje', 'Hoje'], ['registrar', 'Registrar'], ['sessao', 'Sessão'], ['ciclo', 'Ciclo'], ['conteudo', 'Conteúdo'], ['progresso', 'Progresso'], ['questoes', 'Questões'], ['ataque', 'Ataque'], ['erros', 'Erros'], ['fontes', 'Fontes'], ['backup', 'Backup'], ['config', 'Config.'], ['ajuda', 'Ajuda']
+      ['hoje', 'Hoje'], ['registrar', 'Registrar'], ['revisao', 'Revisão Noturna'], ['sessao', 'Sessão'], ['ciclo', 'Ciclo'], ['conteudo', 'Conteúdo'], ['progresso', 'Progresso'], ['questoes', 'Questões'], ['ataque', 'Ataque'], ['erros', 'Erros'], ['fontes', 'Fontes'], ['backup', 'Backup'], ['config', 'Config.'], ['ajuda', 'Ajuda']
     ];
     $app.innerHTML = `
       <header class="hero">
         <div class="hero-inner">
           <div class="topbar">
             <div class="brand">
-              <img class="logo" src="assets/icons/icon-128.png" alt="Study OS — TCU" />
-              <div><h1>Study OS</h1><p>Comprometa-se com a EXCELÊNCIA - todos os dias!</p></div>
+              <img class="logo" src="assets/icons/icon-128.png" alt="TCU Study OS" />
+              <div><h1>TCU Study OS</h1><p>Sistema vivo de ciclo, progresso e aprovação</p></div>
             </div>
             <div class="top-actions">
               <button class="ghost-btn" data-action="refresh">Atualizar</button>
@@ -8583,7 +8566,7 @@
       <main class="container">${content}</main>
       <div class="app-version">${APP_VERSION_LABEL} · ${getEnvId()}</div>
       <div class="footer-nav"><div class="footer-nav-inner">
-        ${[['hoje','Hoje'],['registrar','Registrar'],['historico','Histórico'],['progresso','Progresso'],['questoes','Questões'],['ataque','Ataque']].map(([route,label]) => `<button class="${currentRoute===route?'active':''}" data-nav="${route}">${label}</button>`).join('')}
+        ${[['hoje','Hoje'],['registrar','Registrar'],['revisao','Revisão'],['historico','Histórico'],['progresso','Progresso'],['questoes','Questões']].map(([route,label]) => `<button class="${currentRoute===route?'active':''}" data-nav="${route}">${label}</button>`).join('')}
       </div></div>
     `;
     attachGlobalEvents();
@@ -8686,13 +8669,13 @@
       if (!map.has(key)) map.set(key, { name: key, count: 0, color: '' });
       map.get(key).count += 1;
     });
-    const colors = ['#ffcb05', '#4056d6', '#8b99f5', '#e3a800', '#26247b', '#ffe071', '#7894ff', '#c9a933'];
+    const colors = ['#74ff52', '#00d8a6', '#b7ff63', '#1bbd72', '#0fae8d', '#d8ff7a', '#7be4ff', '#a5ff9d'];
     const total = arr.length || 1;
     return Array.from(map.values()).map((it, idx) => ({ ...it, color: colors[idx % colors.length], pct: Math.round((it.count / total) * 100) }));
   }
 
   function colorForCycleName(name, idx = 0) {
-    const colors = ['#ffcb05', '#4056d6', '#8b99f5', '#e3a800', '#26247b', '#ffe071', '#7894ff', '#c9a933'];
+    const colors = ['#74ff52', '#00d8a6', '#b7ff63', '#1bbd72', '#0fae8d', '#d8ff7a', '#7be4ff', '#a5ff9d'];
     const items = cycleShareItems();
     const found = items.find(it => it.name === name);
     if (found) return found.color;
@@ -8831,9 +8814,9 @@
     const discAcc = bestDisciplineAccuracy();
     return `
       <section class="grid cards-3" style="margin-top:18px">
-        <div class="card record-card"><div class="label">Maior CH diária</div><div class="value">${fmt(daily.hours)}h</div><div class="hint">${daily.key ? formatDate(daily.key) + ' · ' + daily.sessions + ' sessão(ões)' : 'sem registro'}</div></div>
-        <div class="card record-card"><div class="label">Melhor mês</div><div class="value">${fmt(month.hours)}h</div><div class="hint">${month.key || 'sem registro'}</div></div>
-        <div class="card record-card"><div class="label">Melhor semana</div><div class="value">${fmt(week.hours)}h</div><div class="hint">início ${week.key ? formatDate(week.key) : '—'}</div></div>
+        <div class="card record-card"><div class="label">Maior CH diária</div><div class="value">${formatDurationHours(daily.hours)}</div><div class="hint">${daily.key ? formatDate(daily.key) + ' · ' + daily.sessions + ' sessão(ões)' : 'sem registro'}</div></div>
+        <div class="card record-card"><div class="label">Melhor mês</div><div class="value">${formatDurationHours(month.hours)}</div><div class="hint">${month.key || 'sem registro'}</div></div>
+        <div class="card record-card"><div class="label">Melhor semana</div><div class="value">${formatDurationHours(week.hours)}</div><div class="hint">início ${week.key ? formatDate(week.key) : '—'}</div></div>
         <div class="card record-card"><div class="label">Maior % diário</div><div class="value">${accDay.questions ? accDay.pct + '%' : '—'}</div><div class="hint">${accDay.questions ? formatDate(accDay.key) + ' · ' + accDay.correct + '/' + accDay.questions : 'sem questões'}</div></div>
         <div class="card record-card"><div class="label">Mais questões em um dia</div><div class="value">${qDay.questions}</div><div class="hint">${qDay.key ? formatDate(qDay.key) + ' · ' + qDay.correct + ' acertos' : 'sem questões'}</div></div>
         <div class="card record-card"><div class="label">Melhor disciplina</div><div class="value">${discAcc.questions ? discAcc.pct + '%' : '—'}</div><div class="hint">${discAcc.questions ? escapeHTML(discAcc.name) + ' · ' + discAcc.questions + ' questões' : 'sem questões'}</div></div>
@@ -8859,9 +8842,9 @@
     const totalQuestions = sum(state.sessions, 'questions');
     const streak = constancyStats();
     const goals = [
-      ['Primeiras 10h', totalHours >= 10, `${fmt(totalHours)}/10h`],
-      ['50h líquidas', totalHours >= 50, `${fmt(totalHours)}/50h`],
-      ['100h líquidas', totalHours >= 100, `${fmt(totalHours)}/100h`],
+      ['Primeiras 10h', totalHours >= 10, `${formatDurationHours(totalHours)}/10h`],
+      ['50h líquidas', totalHours >= 50, `${formatDurationHours(totalHours)}/50h`],
+      ['100h líquidas', totalHours >= 100, `${formatDurationHours(totalHours)}/100h`],
       ['500 questões', totalQuestions >= 500, `${totalQuestions}/500`],
       ['1.000 questões', totalQuestions >= 1000, `${totalQuestions}/1000`],
       ['7 dias sem falhar', streak.best >= 7, `${streak.best}/7 dias`]
@@ -8882,93 +8865,47 @@
   function liveGoalsHTML(periods) {
     const weekH = sum(periods.week, 'hours');
     const monthH = sum(periods.month, 'hours');
-    const wGoal = Number(state.settings.weeklyGoal || 0);
-    const mGoal = Number(state.settings.monthlyGoal || 0);
+    const wGoal = settingsMinutes('weeklyGoalMinutes','weeklyGoal') / 60;
+    const mGoal = settingsMinutes('monthlyGoalMinutes','monthlyGoal') / 60;
     const wPct = wGoal ? Math.min(100, Math.round((weekH / wGoal) * 100)) : 0;
     const mPct = mGoal ? Math.min(100, Math.round((monthH / mGoal) * 100)) : 0;
     return `<section class="grid cards-2" style="margin-top:16px">
-      <div class="card"><div class="section-title compact"><h3>Meta semanal</h3><span class="badge">${fmt(weekH)}h / ${fmt(wGoal)}h</span></div><div class="progress-bar goal"><span style="width:${wPct}%"></span></div><p class="muted">Faltam ${fmt(Math.max(0, wGoal - weekH))}h para bater a meta da semana.</p></div>
-      <div class="card"><div class="section-title compact"><h3>Meta mensal</h3><span class="badge">${fmt(monthH)}h / ${fmt(mGoal)}h</span></div><div class="progress-bar goal"><span style="width:${mPct}%"></span></div><p class="muted">Faltam ${fmt(Math.max(0, mGoal - monthH))}h para bater a meta do mês.</p></div>
+      <div class="card"><div class="section-title compact"><h3>Meta semanal</h3><span class="badge">${formatDurationHours(weekH)} / ${formatDurationHours(wGoal)}</span></div><div class="progress-bar goal"><span style="width:${wPct}%"></span></div><p class="muted">Faltam ${formatDurationHours(Math.max(0, wGoal - weekH))} para bater a meta da semana.</p></div>
+      <div class="card"><div class="section-title compact"><h3>Meta mensal</h3><span class="badge">${formatDurationHours(monthH)} / ${formatDurationHours(mGoal)}</span></div><div class="progress-bar goal"><span style="width:${mPct}%"></span></div><p class="muted">Faltam ${formatDurationHours(Math.max(0, mGoal - monthH))} para bater a meta do mês.</p></div>
     </section>`;
   }
 
   function renderHome() {
-    const periods = sessionsByPeriod();
-    const suggestions = suggestedSessions();
-    const totalHoursToday = sum(periods.today, 'hours');
-    const totalPlanned = suggestions.reduce((acc, s) => acc + Number(s.hours || 0), 0);
+    const periods = sessionsByPeriod(); const suggestions = suggestedSessions();
+    const totalTodayMin = sumMinutes(periods.today); const plannedMin = suggestions.reduce((a,x)=>a+hoursToMinutes(x.hours),0);
     const streak = constancyStats();
     const content = `
-      <section class="banner home-banner"><p class="banner-identity">Douglas Borges - Auditor-Federal de Controle Externo do Tribunal de Contas da União</p><h2>A Vaga é MINHA!</h2><p>Abra esta tela, execute as sessões sugeridas ou registre livremente o que estudou.</p></section>
-      <section class="card">
-        <h3>Hoje</h3>
-        <div class="badges"><span class="badge">${dayName()}</span><span class="badge">${formatDate(todayISO())}</span></div>
-        <p class="muted">Ciclo atual: <strong>${cycleArray().map(d => escapeHTML(d.name)).join(' → ') || 'nenhuma disciplina ativa'}</strong></p>
-      </section>
+      <section class="banner"><h2>A Vaga [JÁ] é MINHA!!!</h2><p>Abra esta tela, execute as sessões sugeridas ou registre livremente o que estudou.</p></section>
+      <section class="card"><h3>Hoje</h3><div class="badges"><span class="badge">${dayName()}</span><span class="badge">${formatDate(todayISO())}</span></div><p class="muted">Ciclo atual: <strong>${cycleArray().map(d=>escapeHTML(d.name)).join(' → ')||'nenhuma disciplina ativa'}</strong></p></section>
       <section class="grid cards-4" style="margin-top:16px">
-        <div class="card kpi"><div class="label">CH disponível</div><div class="value">${parseHours(state.settings.dailyHours)}h</div><div class="hint">Editável em Configurações</div></div>
-        <div class="card kpi"><div class="label">Horas previstas</div><div class="value">${fmt(totalPlanned)}h</div><div class="hint">Sessões sugeridas</div></div>
-        <div class="card kpi"><div class="label">Horas hoje</div><div class="value">${fmt(totalHoursToday)}h</div><div class="hint">Já registradas</div></div>
-        <div class="card kpi"><div class="label">Acertos mês</div><div class="value">${accuracy(periods.month)}%</div><div class="hint">${sum(periods.month, 'questions')} questões</div></div>
+        <div class="card kpi"><div class="label">CH disponível</div><div class="value">${formatDurationMinutes(settingsMinutes('dailyGoalMinutes','dailyHours'))}</div><div class="hint">Editável em Configurações</div></div>
+        <div class="card kpi"><div class="label">Horas previstas</div><div class="value">${formatDurationMinutes(plannedMin)}</div><div class="hint">Sessões sugeridas</div></div>
+        <div class="card kpi"><div class="label">Tempo hoje</div><div class="value">${formatDurationMinutes(totalTodayMin)}</div><div class="hint">Inclui revisão noturna</div></div>
+        <div class="card kpi"><div class="label">Acertos mês</div><div class="value">${accuracy(periods.month)}%</div><div class="hint">${sum(periods.month,'questions')} questões</div></div>
       </section>
-      <section class="grid cards-2" style="margin-top:16px">
-        <div class="card constancy-card"><div class="section-title compact"><h3>Constância</h3><span class="badge">sem falhar</span></div><div class="constancy-values"><div><strong>${streak.current}</strong><span>dias atuais</span></div><div><strong>${streak.best}</strong><span>recorde</span></div><div><strong>${streak.studiedDays}</strong><span>dias estudados</span></div></div><p class="muted">Domingos não quebram a sequência quando estiverem configurados como descanso.</p></div>
-        ${renderCyclePizza()}
-      </section>
+      <section class="grid cards-2" style="margin-top:16px"><div class="card constancy-card"><div class="section-title compact"><h3>Constância</h3><span class="badge">sem falhar</span></div><div class="constancy-values"><div><strong>${streak.current}</strong><span>dias atuais</span></div><div><strong>${streak.best}</strong><span>recorde</span></div><div><strong>${streak.studiedDays}</strong><span>dias estudados</span></div></div><p class="muted">Domingos não quebram a sequência quando estiverem configurados como descanso.</p></div>${renderCyclePizza()}</section>
       ${activeCycleProgressHTML()}
-      <div class="section-title"><h3>Sessões recomendadas</h3><button class="primary-btn" data-nav="registrar">+ Registrar sessão</button></div>
-      <section class="grid cards-2">
-        ${suggestions.length ? suggestions.map((s, idx) => renderSessionCard(s, idx)).join('') : `<div class="card span-12"><p class="empty">Nenhuma sessão automática agora. Você ainda pode registrar qualquer estudo em <strong>Registrar</strong>.</p></div>`}
-      </section>
-      ${liveGoalsHTML(periods)}
-      ${backupNoticeHTML()}
-      <section class="card soft" style="margin-top:18px">
-        <strong>Registro livre:</strong> estudou DCON 2h30 e Português 2h? Vá em <strong>Registrar</strong> e lance uma disciplina por vez.
-      </section>
-    `;
+      <div class="section-title"><h3>Sessões recomendadas</h3><div class="table-actions"><button class="subtle-btn" data-nav="revisao">Revisão noturna</button><button class="primary-btn" data-nav="registrar">+ Registrar sessão</button></div></div>
+      <section class="grid cards-2">${suggestions.length?suggestions.map((x,i)=>renderSessionCard(x,i)).join(''):'<div class="card span-12"><p class="empty">Nenhuma sessão automática agora. Você ainda pode registrar qualquer estudo em <strong>Registrar</strong>.</p></div>'}</section>
+      ${liveGoalsHTML(periods)}${backupNoticeHTML()}
+      <section class="card soft" style="margin-top:18px"><strong>Registro livre:</strong> informe <strong>horas e minutos separadamente</strong>. Ex.: 1h35min = Horas 1 + Minutos 35.</section>`;
     renderLayout(content);
-    document.querySelectorAll('[data-register-suggestion]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = Number(btn.dataset.registerSuggestion);
-        const s = suggestions[idx];
-        lastDraft = { discipline: s.discipline.name, mode: s.mode, hours: s.hours, subject: '' };
-        navigate('registrar');
-      });
-    });
-    document.querySelectorAll('[data-start-session]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = Number(btn.dataset.startSession);
-        const s = suggestions[idx];
-        lastDraft = { discipline: s.discipline.name, mode: s.mode, hours: s.hours, subject: '' };
-        navigate('sessao');
-      });
-    });
-    const homeBackup = document.getElementById('home-export-backup');
-    if (homeBackup) homeBackup.addEventListener('click', () => { exportBackupFile(); toast('Backup exportado. Salve no iCloud/Drive.'); renderHome(); });
+    document.querySelectorAll('[data-register-suggestion]').forEach(btn=>btn.addEventListener('click',()=>{const x=suggestions[Number(btn.dataset.registerSuggestion)];lastDraft={discipline:x.discipline.name,mode:x.mode,durationMinutes:hoursToMinutes(x.hours),subject:''};navigate('registrar');}));
+    document.querySelectorAll('[data-start-session]').forEach(btn=>btn.addEventListener('click',()=>{const x=suggestions[Number(btn.dataset.startSession)];lastDraft={discipline:x.discipline.name,mode:x.mode,durationMinutes:hoursToMinutes(x.hours),subject:''};navigate('sessao');}));
+    const b=document.getElementById('home-export-backup'); if(b)b.addEventListener('click',()=>{exportBackupFile();toast('Backup exportado. Salve no iCloud/Drive.');renderHome();});
   }
 
   function renderSessionCard(s, idx) {
-    const d = s.discipline;
-    return `
-      <div class="card session-card">
-        <div>
-          <div class="session-title">${escapeHTML(d.name)} — ${escapeHTML(s.mode)}</div>
-          <div class="session-meta">${fmt(s.hours)}h · ${escapeHTML(s.action)}</div>
-          <div class="badges"><span class="badge dark">Sessão ${idx + 1}</span><span class="badge">${escapeHTML(d.priority)}</span></div>
-          <p class="muted"><strong>Assunto:</strong> ${escapeHTML(s.subject)}</p>
-          ${d.sourceUrl ? `<p><a class="source-link" href="${escapeHTML(d.sourceUrl)}" target="_blank" rel="noreferrer">Abrir fonte: ${escapeHTML(d.source || d.name)}</a></p>` : ''}
-        </div>
-        <div class="table-actions">
-          <button class="primary-btn" data-start-session="${idx}">Iniciar</button>
-          <button class="subtle-btn" data-register-suggestion="${idx}">Registrar</button>
-        </div>
-      </div>`;
+    const d=s.discipline; return `<div class="card session-card"><div><div class="session-title">${escapeHTML(d.name)} — ${escapeHTML(s.mode)}</div><div class="session-meta">${formatDurationHours(s.hours)} · ${escapeHTML(s.action)}</div><div class="badges"><span class="badge dark">Sessão ${idx+1}</span><span class="badge">${escapeHTML(d.priority)}</span></div><p class="muted"><strong>Assunto:</strong> ${escapeHTML(s.subject)}</p>${d.sourceUrl?`<p><a class="source-link" href="${escapeHTML(d.sourceUrl)}" target="_blank" rel="noreferrer">Abrir fonte: ${escapeHTML(d.source||d.name)}</a></p>`:''}</div><div class="table-actions"><button class="primary-btn" data-start-session="${idx}">Iniciar</button><button class="subtle-btn" data-register-suggestion="${idx}">Registrar</button></div></div>`;
   }
 
   function fmt(n) {
-    const value = Number(n || 0);
-    if (Number.isInteger(value)) return String(value);
-    return value.toFixed(1).replace('.', ',');
+    const value=Number(n||0); if(Number.isInteger(value))return String(value); return value.toFixed(1).replace('.',',');
   }
 
   function getSessionById(id) {
@@ -8984,7 +8921,7 @@
       discipline: sess.disciplineName || '',
       mode: sess.mode || 'Teoria',
       subject: sess.subject || '',
-      hours: sess.hours || '',
+      durationMinutes: sessionMinutes(sess),
       questions: sess.questions || '',
       correct: sess.correct || '',
       notes: sess.notes || ''
@@ -9014,171 +8951,67 @@
 
   function renderRegister() {
     const editing = editingSessionId ? getSessionById(editingSessionId) : null;
-    const draft = editing ? {
-      date: editing.date || todayISO(), discipline: editing.disciplineName || '', mode: editing.mode || 'Teoria', subject: editing.subject || '', hours: editing.hours || '', questions: editing.questions || '', correct: editing.correct || '', notes: editing.notes || '', topicId: editing.topicId || ''
-    } : (lastDraft || {});
-    const isEditing = Boolean(editing);
-    const content = `
-      <section class="banner"><h2>${isEditing ? 'Editar registro' : 'Registrar sessão'}</h2><p>Registre uma disciplina por vez e vincule a um tópico cadastrado.</p></section>
-      <section class="card">
-        <div class="notice"><strong>Exemplo:</strong> DCON por 2h30 = preencha <strong>2.5</strong> ou <strong>2,5</strong>. O tópico muda de status automaticamente conforme o modo.</div>
-        ${isEditing ? `<div class="notice" style="margin-top:12px"><strong>Modo edição:</strong> você está alterando um registro existente.</div>` : ''}
+    const draft = editing ? { date:editing.date||todayISO(), discipline:editing.disciplineName||'', mode:editing.mode||'Teoria', subject:editing.subject||'', durationMinutes:sessionMinutes(editing), questions:editing.questions||'', correct:editing.correct||'', notes:editing.notes||'', topicId:editing.topicId||'' } : (lastDraft||{});
+    const dm=splitDuration(draft.durationMinutes !== undefined ? draft.durationMinutes : hoursToMinutes(draft.hours||0)); const isEditing=Boolean(editing);
+    const content=`
+      <section class="banner"><h2>${isEditing?'Editar registro':'Registrar sessão'}</h2><p>Registre uma disciplina por vez e vincule a um tópico cadastrado.</p></section>
+      <section class="card"><div class="notice"><strong>Tempo:</strong> preencha horas e minutos em campos separados. Ex.: <strong>1h35min = 1 + 35</strong>. Os tópicos ainda não estudados aparecem primeiro.</div>${isEditing?'<div class="notice" style="margin-top:12px"><strong>Modo edição:</strong> você está alterando um registro existente.</div>':''}
         <datalist id="discipline-list">${disciplineOptions()}</datalist>
         <form id="register-form" class="form-grid" style="margin-top:18px">
-          <div class="field span-2"><label>Data</label><input id="reg-date" type="date" value="${escapeHTML(draft.date || todayISO())}" required /></div>
-          <div class="field span-3"><label>Disciplina</label><input id="reg-discipline" list="discipline-list" placeholder="Ex.: DCON" value="${escapeHTML(draft.discipline || '')}" required /></div>
-          <div class="field span-2"><label>Modo</label><select id="reg-mode">${modeOptions(draft.mode || 'Teoria')}</select></div>
+          <div class="field span-2"><label>Data</label><input id="reg-date" type="date" value="${escapeHTML(draft.date||todayISO())}" required /></div>
+          <div class="field span-3"><label>Disciplina</label><input id="reg-discipline" list="discipline-list" placeholder="Ex.: DCON" value="${escapeHTML(draft.discipline||'')}" required /></div>
+          <div class="field span-2"><label>Modo</label><select id="reg-mode">${modeOptions(draft.mode||'Teoria')}</select></div>
           <div class="field span-5"><label>Tópico cadastrado</label><select id="reg-topic"><option value="">Selecione a disciplina para carregar tópicos...</option></select><div id="reg-topic-tec-link" class="field-help"></div></div>
-          <div class="field span-6"><label>Assunto / ajuste livre</label><input id="reg-subject" placeholder="Ex.: Aplicabilidade das normas constitucionais" value="${escapeHTML(draft.subject || '')}" /></div>
-          <div class="field span-2"><label>Horas</label><input id="reg-hours" inputmode="decimal" type="text" placeholder="2.5" value="${draft.hours !== undefined && draft.hours !== '' ? fmt(draft.hours) : ''}" required /></div>
-          <div class="field span-2"><label>Questões</label><input id="reg-questions" type="number" min="0" step="1" placeholder="0" value="${draft.questions !== undefined && draft.questions !== '' ? escapeHTML(draft.questions) : ''}" /></div>
-          <div class="field span-2"><label>Acertos</label><input id="reg-correct" type="number" min="0" step="1" placeholder="0" value="${draft.correct !== undefined && draft.correct !== '' ? escapeHTML(draft.correct) : ''}" /></div>
-          <div class="field span-12"><label>Observação</label><textarea id="reg-notes" placeholder="Dificuldade, ponto fraco, fonte usada, próxima ação...">${escapeHTML(draft.notes || '')}</textarea></div>
-          <div class="span-12 table-actions">
-            <button class="primary-btn" type="submit">${isEditing ? 'Salvar alterações' : 'Salvar sessão'}</button>
-            ${isEditing ? `<button class="subtle-btn" type="button" id="cancel-edit">Cancelar edição</button>` : `<button class="subtle-btn" type="button" id="fill-example">Exemplo DCON 2,5h</button>`}
-            <button class="subtle-btn" type="button" data-nav="conteudo">Gerenciar conteúdo</button>
-          </div>
-        </form>
-      </section>
-      <section class="card" style="margin-top:18px"><div class="section-title"><h3>Últimos registros</h3><button class="subtle-btn" data-nav="historico">Ver histórico completo</button></div>${renderRecentSessions()}</section>
-    `;
+          <div class="field span-6"><label>Assunto / ajuste livre</label><input id="reg-subject" placeholder="Ex.: Aplicabilidade das normas constitucionais" value="${escapeHTML(draft.subject||'')}" /></div>
+          <div class="field span-2"><label>Horas</label><input id="reg-hours" type="number" min="0" step="1" value="${dm.hours}" required /></div>
+          <div class="field span-2"><label>Minutos</label><input id="reg-minutes" type="number" min="0" max="59" step="1" value="${dm.minutes}" required /></div>
+          <div class="field span-1"><label>Questões</label><input id="reg-questions" type="number" min="0" step="1" value="${draft.questions!==undefined&&draft.questions!==''?escapeHTML(draft.questions):''}" /></div>
+          <div class="field span-1"><label>Acertos</label><input id="reg-correct" type="number" min="0" step="1" value="${draft.correct!==undefined&&draft.correct!==''?escapeHTML(draft.correct):''}" /></div>
+          <div class="field span-12"><label>Observação</label><textarea id="reg-notes" placeholder="Dificuldade, ponto fraco, fonte usada, próxima ação...">${escapeHTML(draft.notes||'')}</textarea></div>
+          <div class="span-12 table-actions"><button class="primary-btn" type="submit">${isEditing?'Salvar alterações':'Salvar sessão'}</button>${isEditing?'<button class="subtle-btn" type="button" id="cancel-edit">Cancelar edição</button>':'<button class="subtle-btn" type="button" id="fill-example">Exemplo 1h35min</button>'}<button class="subtle-btn" type="button" data-nav="conteudo">Gerenciar conteúdo</button></div>
+        </form></section>
+      <section class="card" style="margin-top:18px"><h3>Últimos registros</h3>${renderRecentSessions()}</section>`;
     renderLayout(content);
-    const disciplineInput = document.getElementById('reg-discipline');
-    const topicSelect = document.getElementById('reg-topic');
-    const subjectInput = document.getElementById('reg-subject');
-    function refreshTopicTecLink() {
-      const linkBox = document.getElementById('reg-topic-tec-link');
-      if (!linkBox) return;
-      const topic = getTopicById(topicSelect.value);
-      linkBox.innerHTML = topic && topic.tecUrl ? `<a class="source-link mini-link" href="${escapeHTML(topic.tecUrl)}" target="_blank" rel="noreferrer">Abrir caderno TEC deste tópico</a>` : '';
-    }
-    function refreshTopics(selectedId = '') {
-      topicSelect.innerHTML = topicSelectOptions(disciplineInput.value, selectedId);
-      refreshTopicTecLink();
-    }
-    refreshTopics(draft.topicId || '');
-    disciplineInput.addEventListener('input', () => refreshTopics(''));
-    topicSelect.addEventListener('change', () => {
-      const topic = getTopicById(topicSelect.value);
-      if (topic) subjectInput.value = topic.title;
-      refreshTopicTecLink();
-    });
-    const example = document.getElementById('fill-example');
-    if (example) {
-      example.addEventListener('click', () => {
-        document.getElementById('reg-date').value = todayISO();
-        disciplineInput.value = 'DCON';
-        document.getElementById('reg-mode').value = 'Teoria';
-        refreshTopics('');
-        const first = topicsForDiscipline('DCON')[0];
-        if (first) { topicSelect.value = first.id; subjectInput.value = first.title; } else subjectInput.value = 'Aplicabilidade das normas constitucionais';
-        document.getElementById('reg-hours').value = '2,5';
-        document.getElementById('reg-questions').value = '25';
-        document.getElementById('reg-correct').value = '17';
-      });
-    }
-    const cancel = document.getElementById('cancel-edit');
-    if (cancel) {
-      cancel.addEventListener('click', () => { editingSessionId = null; lastDraft = null; renderRegister(); });
-    }
-    document.getElementById('register-form').addEventListener('submit', event => {
-      event.preventDefault();
-      const date = document.getElementById('reg-date').value || todayISO();
-      const disciplineName = disciplineInput.value.trim();
-      const mode = document.getElementById('reg-mode').value;
-      const hours = parseHours(document.getElementById('reg-hours').value);
-      const questions = parseIntSafe(document.getElementById('reg-questions').value);
-      const correct = parseIntSafe(document.getElementById('reg-correct').value);
-      if (!disciplineName || hours <= 0) { toast('Informe disciplina e horas.'); return; }
-      if (correct > questions) { toast('Acertos não podem ser maiores que questões.'); return; }
-      const disc = ensureDiscipline(disciplineName, mode);
-      const subject = subjectInput.value.trim();
-      const topic = updateTopicAfterSession(topicSelect.value, disc, subject, mode);
-      const payload = {
-        date, updatedAt: new Date().toISOString(), disciplineId: disc.id, disciplineName: disc.name, topicId: topic ? topic.id : '', mode, subject: subject || (topic ? topic.title : ''), hours, questions, correct, notes: document.getElementById('reg-notes').value.trim()
-      };
-      if (editingSessionId) {
-        const idx = state.sessions.findIndex(s => s.id === editingSessionId);
-        if (idx >= 0) { state.sessions[idx] = { ...state.sessions[idx], ...payload }; toast(`Registro atualizado: ${disc.name} · ${fmt(hours)}h`); }
-        else { state.sessions.push({ id: uid('sess'), createdAt: new Date().toISOString(), ...payload }); toast(`Sessão registrada: ${disc.name} · ${fmt(hours)}h`); }
-      } else {
-        state.sessions.push({ id: uid('sess'), createdAt: new Date().toISOString(), ...payload }); toast(`Sessão registrada: ${disc.name} · ${fmt(hours)}h`);
-      }
-      saveState();
-      if (state.settings.autoExportAfterRegister) {
-        setTimeout(() => { exportBackupFile(); toast('Backup JSON exportado automaticamente. Salve no iCloud/Drive.'); }, 120);
-      } else if (backupIsDue()) {
-        setTimeout(() => toast('Backup recomendado: exporte seu JSON hoje.'), 900);
-      }
-      editingSessionId = null; lastDraft = null; renderRegister();
-    });
-    attachSessionActions();
+    const disciplineInput=document.getElementById('reg-discipline'), topicSelect=document.getElementById('reg-topic'), subjectInput=document.getElementById('reg-subject'), tecLink=document.getElementById('reg-topic-tec-link');
+    function refreshTopics(selectedId=''){ const name=disciplineInput.value.trim(); topicSelect.innerHTML=name?topicSelectOptions(name,selectedId):'<option value="">Selecione a disciplina primeiro...</option>'; const sel=getTopicById(topicSelect.value); tecLink.innerHTML=sel&&sel.tecUrl?`<a class="source-link" target="_blank" rel="noreferrer" href="${escapeHTML(sel.tecUrl)}">Abrir caderno TEC deste tópico</a>`:''; }
+    if(draft.discipline){ refreshTopics(draft.topicId||''); if(draft.topicId&&getTopicById(draft.topicId))subjectInput.value=getTopicById(draft.topicId).title; }
+    disciplineInput.addEventListener('change',()=>refreshTopics('')); disciplineInput.addEventListener('input',()=>refreshTopics(''));
+    topicSelect.addEventListener('change',()=>{const t=getTopicById(topicSelect.value); if(t){subjectInput.value=t.title;tecLink.innerHTML=t.tecUrl?`<a class="source-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir caderno TEC deste tópico</a>`:'';}else tecLink.innerHTML='';});
+    const cancel=document.getElementById('cancel-edit'); if(cancel)cancel.addEventListener('click',()=>{editingSessionId=null;lastDraft=null;renderRegister();});
+    const ex=document.getElementById('fill-example'); if(ex)ex.addEventListener('click',()=>{disciplineInput.value='DCON';document.getElementById('reg-hours').value=1;document.getElementById('reg-minutes').value=35;document.getElementById('reg-questions').value=20;document.getElementById('reg-correct').value=15;refreshTopics('');});
+    document.getElementById('register-form').addEventListener('submit',e=>{
+      e.preventDefault(); const date=document.getElementById('reg-date').value||todayISO(), disciplineName=disciplineInput.value.trim(), mode=document.getElementById('reg-mode').value;
+      const durationMinutes=durationFromParts(document.getElementById('reg-hours').value,document.getElementById('reg-minutes').value), questions=parseIntSafe(document.getElementById('reg-questions').value), correct=parseIntSafe(document.getElementById('reg-correct').value);
+      if(!disciplineName||durationMinutes<=0){toast('Informe disciplina e um tempo maior que zero.');return;} if(correct>questions){toast('Acertos não podem ser maiores que questões.');return;}
+      const disc=ensureDiscipline(disciplineName,mode), subject=subjectInput.value.trim(), topic=updateTopicAfterSession(topicSelect.value,disc,subject,mode);
+      const payload={date,updatedAt:new Date().toISOString(),disciplineId:disc.id,disciplineName:disc.name,topicId:topic?topic.id:'',mode,subject:subject||(topic?topic.title:''),durationMinutes,hours:durationMinutes/60,questions,correct,notes:document.getElementById('reg-notes').value.trim(),kind:(editing&&editing.kind)||'study'};
+      if(editingSessionId){const idx=state.sessions.findIndex(x=>x.id===editingSessionId);if(idx>=0){state.sessions[idx]={...state.sessions[idx],...payload};toast(`Registro atualizado: ${disc.name} · ${formatDurationMinutes(durationMinutes)}`);}else state.sessions.push({id:uid('sess'),createdAt:new Date().toISOString(),...payload});}
+      else {state.sessions.push({id:uid('sess'),createdAt:new Date().toISOString(),...payload});toast(`Sessão registrada: ${disc.name} · ${formatDurationMinutes(durationMinutes)}`);}
+      saveState(); if(state.settings.autoExportAfterRegister)setTimeout(()=>{exportBackupFile();toast('Backup JSON exportado automaticamente.');},120); else if(backupIsDue())setTimeout(()=>toast('Backup recomendado: exporte seu JSON hoje.'),900);
+      editingSessionId=null; lastDraft=null; renderRegister();
+    }); attachSessionActions();
   }
 
   function renderRecentSessions() {
-    const recent = state.sessions.slice().reverse().slice(0, 8);
-    if (!recent.length) return '<p class="empty">Nenhum registro ainda.</p>';
-    return `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Disciplina</th><th>Modo</th><th>Assunto</th><th>Horas</th><th>Questões</th><th>Acertos</th><th>Ações</th></tr></thead><tbody>${recent.map(s => `<tr><td>${formatDate(s.date)}</td><td>${escapeHTML(s.disciplineName)}</td><td>${escapeHTML(s.mode)}</td><td>${escapeHTML(s.subject || '-')}</td><td>${fmt(s.hours)}h</td><td>${s.questions || 0}</td><td>${s.correct || 0}</td><td><button class="subtle-btn mini" data-edit-session="${escapeHTML(s.id)}">Editar</button> <button class="danger-btn mini" data-delete-session="${escapeHTML(s.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div>`;
+    const recent=state.sessions.slice().reverse().slice(0,8); if(!recent.length)return '<p class="empty">Nenhum registro ainda.</p>';
+    return `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Disciplina</th><th>Modo</th><th>Assunto</th><th>Tempo</th><th>Questões</th><th>Acertos</th><th>Ações</th></tr></thead><tbody>${recent.map(x=>`<tr><td>${formatDate(x.date)}</td><td>${escapeHTML(x.disciplineName)}</td><td>${escapeHTML(x.mode)}</td><td>${escapeHTML(x.subject||'-')}</td><td>${formatDurationMinutes(sessionMinutes(x))}</td><td>${x.questions||0}</td><td>${x.correct||0}</td><td><button class="subtle-btn mini" data-edit-session="${escapeHTML(x.id)}">Editar</button> <button class="danger-btn mini" data-delete-session="${escapeHTML(x.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div>`;
   }
 
   function renderHistory() {
-    const sorted = state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-    const filtered = sorted.filter(sess => {
-      if (historyFilters.discipline && normalizeName(sess.disciplineName) !== normalizeName(historyFilters.discipline)) return false;
-      if (historyFilters.mode && sess.mode !== historyFilters.mode) return false;
-      if (historyFilters.from && String(sess.date) < historyFilters.from) return false;
-      if (historyFilters.to && String(sess.date) > historyFilters.to) return false;
-      const q = normalizeName(historyFilters.q || '');
-      if (q && !`${normalizeName(sess.subject)} ${normalizeName(sess.notes)} ${normalizeName(sess.disciplineName)}`.includes(q)) return false;
-      return true;
-    });
-    const totalHours = sum(filtered, 'hours');
-    const content = `
-      <section class="banner"><h2>Histórico</h2><p>Filtre, revise, edite ou exclua registros já lançados.</p></section>
-      <section class="card">
-        <div class="form-grid">
-          <div class="field span-3"><label>Disciplina</label><select id="hist-disc"><option value="">Todas</option>${state.disciplines.map(d => `<option value="${escapeHTML(d.name)}" ${historyFilters.discipline===d.name?'selected':''}>${escapeHTML(d.name)}</option>`).join('')}</select></div>
-          <div class="field span-2"><label>Modo</label><select id="hist-mode"><option value="">Todos</option>${MODES.filter(m=>!isWaitingMode(m)).map(m => modeOptionHTML(m, historyFilters.mode)).join('')}</select></div>
-          <div class="field span-2"><label>De</label><input id="hist-from" type="date" value="${escapeHTML(historyFilters.from)}"></div>
-          <div class="field span-2"><label>Até</label><input id="hist-to" type="date" value="${escapeHTML(historyFilters.to)}"></div>
-          <div class="field span-3"><label>Busca</label><input id="hist-q" value="${escapeHTML(historyFilters.q)}" placeholder="assunto/obs."></div>
-          <div class="span-12 table-actions"><button class="primary-btn" id="apply-history-filter">Aplicar filtros</button><button class="subtle-btn" id="clear-history-filter">Limpar</button></div>
-        </div>
-      </section>
-      <section class="grid cards-4" style="margin-top:18px">
-        <div class="card kpi"><div class="label">Sessões</div><div class="value">${filtered.length}</div><div class="hint">no filtro</div></div>
-        <div class="card kpi"><div class="label">Horas</div><div class="value">${fmt(totalHours)}h</div><div class="hint">no filtro</div></div>
-        <div class="card kpi"><div class="label">Questões</div><div class="value">${sum(filtered, 'questions')}</div><div class="hint">no filtro</div></div>
-        <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(filtered)}%</div><div class="hint">no filtro</div></div>
-      </section>
-      <section class="card" style="margin-top:18px">
-        ${filtered.length ? `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Disciplina</th><th>Modo</th><th>Assunto</th><th>Horas</th><th>Questões</th><th>Acertos</th><th>Obs.</th><th>Ações</th></tr></thead><tbody>${filtered.map(s => `<tr><td>${formatDate(s.date)}</td><td>${escapeHTML(s.disciplineName)}</td><td>${escapeHTML(s.mode)}</td><td>${escapeHTML(s.subject || '-')}</td><td>${fmt(s.hours)}h</td><td>${s.questions || 0}</td><td>${s.correct || 0}</td><td>${escapeHTML(s.notes || '')}</td><td><button class="subtle-btn mini" data-edit-session="${escapeHTML(s.id)}">Editar</button> <button class="danger-btn mini" data-delete-session="${escapeHTML(s.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">Nenhum registro encontrado com os filtros atuais.</p>'}
-      </section>
-    `;
-    renderLayout(content);
-    document.getElementById('apply-history-filter').addEventListener('click', () => {
-      historyFilters = {
-        discipline: document.getElementById('hist-disc').value,
-        mode: document.getElementById('hist-mode').value,
-        from: document.getElementById('hist-from').value,
-        to: document.getElementById('hist-to').value,
-        q: document.getElementById('hist-q').value.trim()
-      };
-      renderHistory();
-    });
-    document.getElementById('clear-history-filter').addEventListener('click', () => {
-      historyFilters = { discipline: '', mode: '', from: '', to: '', q: '' };
-      renderHistory();
-    });
-    attachSessionActions();
+    const sorted=state.sessions.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+    const filtered=sorted.filter(x=>{if(historyFilters.discipline&&normalizeName(x.disciplineName)!==normalizeName(historyFilters.discipline))return false;if(historyFilters.mode&&x.mode!==historyFilters.mode)return false;if(historyFilters.from&&String(x.date)<historyFilters.from)return false;if(historyFilters.to&&String(x.date)>historyFilters.to)return false;const q=normalizeName(historyFilters.q||'');return !q||`${normalizeName(x.subject)} ${normalizeName(x.notes)} ${normalizeName(x.disciplineName)}`.includes(q);});
+    const totalMinutes=sumMinutes(filtered);
+    const content=`<section class="banner"><h2>Histórico</h2><p>Filtre, revise, edite ou exclua registros já lançados.</p></section><section class="card"><div class="form-grid"><div class="field span-3"><label>Disciplina</label><select id="hist-disc"><option value="">Todas</option>${state.disciplines.map(d=>`<option value="${escapeHTML(d.name)}" ${historyFilters.discipline===d.name?'selected':''}>${escapeHTML(d.name)}</option>`).join('')}</select></div><div class="field span-2"><label>Modo</label><select id="hist-mode"><option value="">Todos</option>${MODES.filter(m=>m!=='Em espera').map(m=>`<option ${historyFilters.mode===m?'selected':''}>${m}</option>`).join('')}</select></div><div class="field span-2"><label>De</label><input id="hist-from" type="date" value="${escapeHTML(historyFilters.from)}"></div><div class="field span-2"><label>Até</label><input id="hist-to" type="date" value="${escapeHTML(historyFilters.to)}"></div><div class="field span-3"><label>Busca</label><input id="hist-q" value="${escapeHTML(historyFilters.q)}" placeholder="assunto/obs."></div><div class="span-12 table-actions"><button class="primary-btn" id="apply-history-filter">Aplicar filtros</button><button class="subtle-btn" id="clear-history-filter">Limpar</button></div></div></section>
+      <section class="grid cards-4" style="margin-top:18px"><div class="card kpi"><div class="label">Sessões</div><div class="value">${filtered.length}</div><div class="hint">no filtro</div></div><div class="card kpi"><div class="label">Tempo</div><div class="value">${formatDurationMinutes(totalMinutes)}</div><div class="hint">no filtro</div></div><div class="card kpi"><div class="label">Questões</div><div class="value">${sum(filtered,'questions')}</div><div class="hint">no filtro</div></div><div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(filtered)}%</div><div class="hint">no filtro</div></div></section>
+      <section class="card" style="margin-top:18px">${filtered.length?`<div class="table-wrap"><table><thead><tr><th>Data</th><th>Disciplina</th><th>Modo</th><th>Assunto</th><th>Tempo</th><th>Questões</th><th>Acertos</th><th>Obs.</th><th>Ações</th></tr></thead><tbody>${filtered.map(x=>`<tr><td>${formatDate(x.date)}</td><td>${escapeHTML(x.disciplineName)}</td><td>${escapeHTML(x.mode)}${x.kind==='nightReview'?' · Noturna':''}</td><td>${escapeHTML(x.subject||'-')}</td><td>${formatDurationMinutes(sessionMinutes(x))}</td><td>${x.questions||0}</td><td>${x.correct||0}</td><td>${escapeHTML(x.notes||'')}</td><td><button class="subtle-btn mini" data-edit-session="${escapeHTML(x.id)}">Editar</button> <button class="danger-btn mini" data-delete-session="${escapeHTML(x.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">Nenhum registro encontrado.</p>'}</section>`;
+    renderLayout(content); document.getElementById('apply-history-filter').addEventListener('click',()=>{historyFilters={discipline:document.getElementById('hist-disc').value,mode:document.getElementById('hist-mode').value,from:document.getElementById('hist-from').value,to:document.getElementById('hist-to').value,q:document.getElementById('hist-q').value.trim()};renderHistory();}); document.getElementById('clear-history-filter').addEventListener('click',()=>{historyFilters={discipline:'',mode:'',from:'',to:'',q:''};renderHistory();}); attachSessionActions();
   }
 
   function renderSession() {
     const suggestions = suggestedSessions();
     const draft = lastDraft || (suggestions[0] ? { discipline: suggestions[0].discipline.name, mode: suggestions[0].mode, hours: suggestions[0].hours } : null);
     const content = `
-      <section class="banner"><h2>Sessão</h2><p>${draft ? `${escapeHTML(draft.discipline)} · ${escapeHTML(draft.mode)} · ${fmt(draft.hours)}h` : 'Nenhuma sessão automática. Você pode registrar livremente.'}</p></section>
+      <section class="banner"><h2>Sessão</h2><p>${draft ? `${escapeHTML(draft.discipline)} · ${escapeHTML(draft.mode)} · ${formatDurationMinutes(draft.durationMinutes !== undefined ? draft.durationMinutes : hoursToMinutes(draft.hours))}` : 'Nenhuma sessão automática. Você pode registrar livremente.'}</p></section>
       <section class="card">
         <div class="grid cards-3">
           <div class="kpi"><div class="label">Bloco 1</div><div class="value" id="timer-min">50</div><div class="hint">minutos de foco</div></div>
@@ -9216,78 +9049,35 @@
     document.getElementById('go-register').addEventListener('click', () => navigate('registrar'));
   }
 
-  function renderCycle() {
-    const rows = state.disciplines.slice().sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999));
-    const content = `
-      <section class="banner"><h2>Ciclo</h2><p>Ative disciplinas, defina modo, ordem, carga e fontes.</p></section>
-      <section class="card">
-        <form id="add-disc-form" class="form-grid">
-          <div class="field span-5"><label>Nova disciplina</label><input id="new-disc-name" placeholder="Ex.: Administração Pública" /></div>
-          <div class="field span-3"><label>Modo inicial</label><select id="new-disc-mode">${MODES.map(m => modeOptionHTML(m, '')).join('')}</select></div>
-          <div class="field span-2"><label>Prioridade</label><select id="new-disc-priority">${PRIORITIES.map(p => `<option>${p}</option>`).join('')}</select></div>
-          <div class="span-2"><button class="primary-btn" type="submit">Adicionar</button></div>
-        </form>
-      </section>
-      <section class="card" style="margin-top:18px">
-        <div class="table-wrap"><table><thead><tr><th>Ativa</th><th>Disciplina</th><th>Modo</th><th>CH</th><th>CH manual</th><th>Ordem</th><th>Freq.</th><th>Prior.</th><th>Fonte URL</th><th></th></tr></thead><tbody>
-          ${rows.map(d => `<tr data-id="${escapeHTML(d.id)}">
-            <td><input class="checkbox cycle-active" type="checkbox" ${d.active ? 'checked' : ''}></td>
-            <td><input class="inline-input cycle-name" value="${escapeHTML(d.name)}"></td>
-            <td><select class="inline-select cycle-mode">${MODES.map(m => modeOptionHTML(m, d.mode)).join('')}</select></td>
-            <td><strong>${fmt(effectiveHours(d))}h</strong></td>
-            <td><input class="inline-input cycle-manual" value="${escapeHTML(d.manualHours || '')}" placeholder="auto"></td>
-            <td><input class="inline-input cycle-order" type="number" min="1" value="${escapeHTML(d.order)}"></td>
-            <td><input class="inline-input cycle-frequency" type="number" min="1" value="${escapeHTML(d.frequency)}"></td>
-            <td><select class="inline-select cycle-priority">${PRIORITIES.map(p => `<option ${d.priority===p?'selected':''}>${p}</option>`).join('')}</select></td>
-            <td><input class="inline-input cycle-source-url" value="${escapeHTML(d.sourceUrl)}" placeholder="https://..."></td>
-            <td><button class="subtle-btn" data-delete-disc="${escapeHTML(d.id)}">Remover</button></td>
-          </tr>`).join('')}
-        </tbody></table></div>
-        <div class="table-actions" style="margin-top:16px"><button class="primary-btn" id="save-cycle">Salvar ciclo</button></div>
-      </section>
-    `;
-    renderLayout(content);
-    document.getElementById('add-disc-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const name = document.getElementById('new-disc-name').value.trim();
-      if (!name) { toast('Informe o nome da disciplina.'); return; }
-      const mode = document.getElementById('new-disc-mode').value;
-      const disc = ensureDiscipline(name, mode);
-      disc.active = !isWaitingMode(mode);
-      disc.priority = document.getElementById('new-disc-priority').value;
-      saveState();
-      toast(`${disc.name} adicionada.`);
-      renderCycle();
+  function nightReviewCandidates() {
+    const today=todayISO(), yesterday=addDaysISO(today,-1);
+    const original=date=>state.sessions.filter(s=>s.date===date && s.kind!=='nightReview' && sessionMinutes(s)>0);
+    const reviewed=(date,discId)=>state.sessions.some(s=>s.kind==='nightReview' && s.reviewOfDate===date && (s.disciplineId===discId));
+    const rows=[];
+    [today,yesterday].forEach((date,idx)=>{
+      const list=original(date); if(!list.length)return;
+      const map=new Map(); list.forEach(s=>{const key=s.disciplineId||normalizeName(s.disciplineName);if(!map.has(key))map.set(key,{date,disciplineId:s.disciplineId,disciplineName:s.disciplineName,sessions:[]});map.get(key).sessions.push(s);});
+      map.forEach(r=>{if(idx===0 || !reviewed(date,r.disciplineId))rows.push({...r,done:reviewed(date,r.disciplineId)});});
     });
-    document.getElementById('save-cycle').addEventListener('click', () => {
-      document.querySelectorAll('tr[data-id]').forEach(row => {
-        const id = row.dataset.id;
-        const d = state.disciplines.find(x => x.id === id);
-        if (!d) return;
-        d.active = row.querySelector('.cycle-active').checked;
-        d.name = row.querySelector('.cycle-name').value.trim() || d.name;
-        d.mode = row.querySelector('.cycle-mode').value;
-        d.manualHours = row.querySelector('.cycle-manual').value.trim();
-        d.order = parseIntSafe(row.querySelector('.cycle-order').value) || d.order;
-        d.frequency = Math.max(1, parseIntSafe(row.querySelector('.cycle-frequency').value) || 1);
-        d.priority = row.querySelector('.cycle-priority').value;
-        d.sourceUrl = row.querySelector('.cycle-source-url').value.trim();
-      });
-      saveState();
-      toast('Ciclo salvo.');
-      renderCycle();
-    });
-    document.querySelectorAll('[data-delete-disc]').forEach(btn => btn.addEventListener('click', e => {
-      e.preventDefault();
-      const id = btn.dataset.deleteDisc;
-      const d = state.disciplines.find(x => x.id === id);
-      if (d && confirm(`Remover ${d.name}? Os registros antigos serão preservados.`)) {
-        state.disciplines = state.disciplines.filter(x => x.id !== id);
-        saveState();
-        renderCycle();
-      }
-    }));
+    return rows;
   }
+
+  function renderNightReview() {
+    const rows=nightReviewCandidates(), def=splitDuration(state.settings.nightReviewDefaultMinutes||20);
+    const content=`<section class="banner"><h2>Revisão Noturna</h2><p>Lista automaticamente tudo o que foi estudado hoje. Se ontem ficou sem revisão, o pendente também aparece.</p></section><section class="notice"><strong>Contabilização:</strong> cada revisão salva vira um registro de <strong>Revisão</strong> e soma ao tempo total do dia em que você efetivamente a realizou.</section><section class="card" style="margin-top:18px">${rows.length?`<div class="table-wrap"><table><thead><tr><th>Origem</th><th>Disciplina</th><th>Conteúdo estudado</th><th>Horas</th><th>Minutos</th><th>Status</th><th>Ação</th></tr></thead><tbody>${rows.map((r,i)=>`<tr data-review-row="${i}"><td>${formatDate(r.date)}${r.date===todayISO()?' · hoje':' · pendente'}</td><td><strong>${escapeHTML(r.disciplineName)}</strong></td><td>${r.sessions.map(x=>escapeHTML(x.subject||'Sem assunto')).join('<br>')}</td><td><input class="inline-input review-h" type="number" min="0" value="${def.hours}"></td><td><input class="inline-input review-m" type="number" min="0" max="59" value="${def.minutes}"></td><td>${r.done?'<span class="badge">já registrada</span>':'<span class="badge dark">pendente</span>'}</td><td><button class="primary-btn mini" data-save-review="${i}" ${r.done?'disabled':''}>Registrar revisão</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">Nenhum conteúdo pendente para revisão noturna. Registre seus estudos primeiro.</p>'}</section>`;
+    renderLayout(content); document.querySelectorAll('[data-save-review]').forEach(btn=>btn.addEventListener('click',()=>{const i=Number(btn.dataset.saveReview),r=rows[i],row=document.querySelector(`tr[data-review-row="${i}"]`);if(!r||!row)return;const durationMinutes=durationFromParts(row.querySelector('.review-h').value,row.querySelector('.review-m').value);if(durationMinutes<=0){toast('Informe o tempo da revisão.');return;}if(state.sessions.some(s=>s.kind==='nightReview'&&s.reviewOfDate===r.date&&s.disciplineId===r.disciplineId)){toast('Esta revisão já foi registrada.');renderNightReview();return;}state.sessions.push({id:uid('sess'),date:todayISO(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),disciplineId:r.disciplineId,disciplineName:r.disciplineName,topicId:'',mode:'Revisão',subject:`Revisão noturna — ${r.sessions.map(x=>x.subject||'').filter(Boolean).join(' | ')}`,durationMinutes,hours:durationMinutes/60,questions:0,correct:0,notes:`Revisão dos estudos de ${formatDate(r.date)}.`,kind:'nightReview',reviewOfDate:r.date,sourceSessionIds:r.sessions.map(x=>x.id)});saveState();toast(`Revisão registrada: ${r.disciplineName} · ${formatDurationMinutes(durationMinutes)}`);renderNightReview();}));
+  }
+
+  function renderCycle() {
+    const rows=state.disciplines.slice().sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999));
+    const content=`<section class="banner"><h2>Ciclo</h2><p>Ative disciplinas, defina modo, ordem, frequência, carga e fontes.</p></section><section class="card"><form id="add-disc-form" class="form-grid"><div class="field span-5"><label>Nova disciplina</label><input id="new-disc-name" placeholder="Ex.: Administração Pública" /></div><div class="field span-3"><label>Modo inicial</label><select id="new-disc-mode">${MODES.map(m=>`<option>${m}</option>`).join('')}</select></div><div class="field span-2"><label>Prioridade</label><select id="new-disc-priority">${PRIORITIES.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="span-2"><button class="primary-btn" type="submit">Adicionar</button></div></form></section>
+      <section class="card" style="margin-top:18px"><div class="table-wrap"><table><thead><tr><th>Ativa</th><th>Disciplina</th><th>Modo</th><th>CH efetiva</th><th>Manual h</th><th>Manual min</th><th>Ordem</th><th>Freq.</th><th>Prior.</th><th>Fonte URL</th><th></th></tr></thead><tbody>${rows.map(d=>{const md=splitDuration(d.manualMinutes!==''?d.manualMinutes:(parseHours(d.manualHours)>0?hoursToMinutes(d.manualHours):0));return `<tr data-id="${escapeHTML(d.id)}"><td><input class="checkbox cycle-active" type="checkbox" ${d.active?'checked':''}></td><td><input class="inline-input cycle-name" value="${escapeHTML(d.name)}"></td><td><select class="inline-select cycle-mode">${MODES.map(m=>`<option ${d.mode===m?'selected':''}>${m}</option>`).join('')}</select></td><td><strong>${formatDurationMinutes(effectiveMinutes(d))}</strong></td><td><input class="inline-input cycle-manual-h" type="number" min="0" value="${md.hours||''}" placeholder="auto"></td><td><input class="inline-input cycle-manual-m" type="number" min="0" max="59" value="${md.minutes||''}" placeholder="0"></td><td><input class="inline-input cycle-order" type="number" min="1" value="${escapeHTML(d.order)}"></td><td><input class="inline-input cycle-frequency" type="number" min="1" value="${escapeHTML(d.frequency)}"></td><td><select class="inline-select cycle-priority">${PRIORITIES.map(p=>`<option ${d.priority===p?'selected':''}>${p}</option>`).join('')}</select></td><td><input class="inline-input cycle-source-url" value="${escapeHTML(d.sourceUrl)}" placeholder="https://..."></td><td><button class="subtle-btn" data-delete-disc="${escapeHTML(d.id)}">Remover</button></td></tr>`}).join('')}</tbody></table></div><div class="table-actions" style="margin-top:16px"><button class="primary-btn" id="save-cycle">Salvar ciclo</button></div></section>`;
+    renderLayout(content);
+    document.getElementById('add-disc-form').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('new-disc-name').value.trim();if(!name){toast('Informe o nome da disciplina.');return;}const mode=document.getElementById('new-disc-mode').value,d=ensureDiscipline(name,mode);d.active=mode!=='Em espera';d.priority=document.getElementById('new-disc-priority').value;saveState();toast(`${d.name} adicionada.`);renderCycle();});
+    document.getElementById('save-cycle').addEventListener('click',()=>{document.querySelectorAll('tr[data-id]').forEach(row=>{const d=state.disciplines.find(x=>x.id===row.dataset.id);if(!d)return;d.active=row.querySelector('.cycle-active').checked;d.name=row.querySelector('.cycle-name').value.trim()||d.name;d.mode=row.querySelector('.cycle-mode').value;const h=row.querySelector('.cycle-manual-h').value,m=row.querySelector('.cycle-manual-m').value;d.manualMinutes=(String(h).trim()||String(m).trim())?durationFromParts(h,m):'';d.manualHours=d.manualMinutes===''?'':d.manualMinutes/60;d.order=parseIntSafe(row.querySelector('.cycle-order').value)||d.order;d.frequency=Math.max(1,parseIntSafe(row.querySelector('.cycle-frequency').value)||1);d.priority=row.querySelector('.cycle-priority').value;d.sourceUrl=row.querySelector('.cycle-source-url').value.trim();});saveState();toast('Ciclo salvo.');renderCycle();});
+    document.querySelectorAll('[data-delete-disc]').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();const id=btn.dataset.deleteDisc,d=state.disciplines.find(x=>x.id===id);if(d&&confirm(`Remover ${d.name}? Os registros antigos serão preservados.`)){state.disciplines=state.disciplines.filter(x=>x.id!==id);saveState();renderCycle();}}));
+  }
+
 
 
   function renderTopics() {
@@ -9332,7 +9122,7 @@
     document.getElementById('next-topic-btn').addEventListener('click', () => {
       const next = topics.find(t => ['Em espera','Estudando'].includes(t.status)) || topics[0];
       if (!next || !selectedDisc) { toast('Nenhum tópico disponível.'); return; }
-      lastDraft = { discipline: selectedDisc.name, mode: isWaitingMode(selectedDisc.mode) ? 'Teoria' : selectedDisc.mode, hours: defaultHoursForMode(isWaitingMode(selectedDisc.mode) ? 'Teoria' : selectedDisc.mode), subject: next.title, topicId: next.id };
+      lastDraft = { discipline: selectedDisc.name, mode: selectedDisc.mode === 'Em espera' ? 'Teoria' : selectedDisc.mode, durationMinutes: defaultMinutesForMode(selectedDisc.mode === 'Em espera' ? 'Teoria' : selectedDisc.mode), subject: next.title, topicId: next.id };
       navigate('registrar');
     });
     document.getElementById('add-topic-btn').addEventListener('click', () => {
@@ -9361,7 +9151,7 @@
       const topic = getTopicById(btn.dataset.registerTopic);
       if (!topic) return;
       const disc = getDisciplineById(topic.disciplineId) || getDisciplineByName(topic.disciplineName);
-      lastDraft = { discipline: disc ? disc.name : topic.disciplineName, mode: disc && !isWaitingMode(disc.mode) ? disc.mode : 'Teoria', hours: disc ? effectiveHours(disc) || 2 : 2, subject: topic.title, topicId: topic.id };
+      lastDraft = { discipline: disc ? disc.name : topic.disciplineName, mode: disc && disc.mode !== 'Em espera' ? disc.mode : 'Teoria', durationMinutes: disc ? (effectiveMinutes(disc) || 120) : 120, subject: topic.title, topicId: topic.id };
       navigate('registrar');
     }));
     document.querySelectorAll('[data-delete-topic]').forEach(btn => btn.addEventListener('click', () => {
@@ -9379,9 +9169,9 @@
     const content = `
       <section class="banner"><h2>Progresso</h2><p>Horas, questões, acertos, recordes e avanço real do ciclo.</p></section>
       <section class="grid cards-4">
-        <div class="card kpi"><div class="label">Hoje</div><div class="value">${fmt(sum(periods.today, 'hours'))}h</div><div class="hint">${periods.today.length} sessão(ões)</div></div>
-        <div class="card kpi"><div class="label">Semana</div><div class="value">${fmt(sum(periods.week, 'hours'))}h</div><div class="hint">meta ${fmt(state.settings.weeklyGoal)}h</div></div>
-        <div class="card kpi"><div class="label">Mês</div><div class="value">${fmt(sum(periods.month, 'hours'))}h</div><div class="hint">meta ${fmt(state.settings.monthlyGoal)}h</div></div>
+        <div class="card kpi"><div class="label">Hoje</div><div class="value">${formatDurationMinutes(sumMinutes(periods.today))}</div><div class="hint">${periods.today.length} sessão(ões)</div></div>
+        <div class="card kpi"><div class="label">Semana</div><div class="value">${formatDurationMinutes(sumMinutes(periods.week))}</div><div class="hint">meta ${formatDurationMinutes(settingsMinutes('weeklyGoalMinutes','weeklyGoal'))}</div></div>
+        <div class="card kpi"><div class="label">Mês</div><div class="value">${formatDurationMinutes(sumMinutes(periods.month))}</div><div class="hint">meta ${formatDurationMinutes(settingsMinutes('monthlyGoalMinutes','monthlyGoal'))}</div></div>
         <div class="card kpi"><div class="label">Acertos</div><div class="value">${accuracy(state.sessions)}%</div><div class="hint">${sum(state.sessions, 'questions')} questões</div></div>
       </section>
       <section class="grid cards-3" style="margin-top:18px">
@@ -9414,7 +9204,7 @@
       return { d, hrs, monthHrs: sum(monthList, 'hours'), q, c, pct, days, topicScore, activeTopics, topicTotal: topics.length };
     }).sort((a,b) => b.topicScore - a.topicScore || b.hrs - a.hrs || a.d.name.localeCompare(b.d.name, 'pt-BR'));
     if (!rows.length) return '<p class="empty">Nenhuma disciplina ativa no ciclo. Ative disciplinas na aba Ciclo.</p>';
-    return `<p class="muted">Esta tabela mostra apenas disciplinas ativas do ciclo. Disciplinas em espera ficam fora do cálculo motivacional.</p><div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Modo</th><th>Horas mês</th><th>Horas total</th><th>Questões</th><th>%</th><th>Tópicos</th><th>Progresso conteúdo</th><th>Último contato</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${escapeHTML(r.d.name)}</strong></td><td>${escapeHTML(r.d.mode)}</td><td>${fmt(r.monthHrs)}h</td><td>${fmt(r.hrs)}h</td><td>${r.q}</td><td>${r.pct}%</td><td>${r.activeTopics}/${r.topicTotal}</td><td><div class="progress-bar"><span style="width:${r.topicScore}%"></span></div><span class="muted">${r.topicScore}%</span></td><td>${r.days === null ? '—' : `${r.days} dia(s)`}</td></tr>`).join('')}</tbody></table></div>`;
+    return `<p class="muted">Esta tabela mostra apenas disciplinas ativas do ciclo. Disciplinas em espera ficam fora do cálculo motivacional.</p><div class="table-wrap"><table><thead><tr><th>Disciplina</th><th>Modo</th><th>Horas mês</th><th>Horas total</th><th>Questões</th><th>%</th><th>Tópicos</th><th>Progresso conteúdo</th><th>Último contato</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${escapeHTML(r.d.name)}</strong></td><td>${escapeHTML(r.d.mode)}</td><td>${formatDurationHours(r.monthHrs)}</td><td>${formatDurationHours(r.hrs)}</td><td>${r.q}</td><td>${r.pct}%</td><td>${r.activeTopics}/${r.topicTotal}</td><td><div class="progress-bar"><span style="width:${r.topicScore}%"></span></div><span class="muted">${r.topicScore}%</span></td><td>${r.days === null ? '—' : `${r.days} dia(s)`}</td></tr>`).join('')}</tbody></table></div>`;
   }
 
 
@@ -9548,37 +9338,13 @@
   }
 
   function renderConfig() {
-    const s = state.settings;
-    const content = `
-      <section class="banner"><h2>Configurações</h2><p>Altere sua rotina sem alterar código.</p></section>
-      <section class="card">
-        <form id="config-form" class="form-grid">
-          <div class="field span-3"><label>CH diária atual</label><input id="cfg-daily" value="${fmt(s.dailyHours)}" inputmode="decimal"></div>
-          <div class="field span-3"><label>Meta semanal</label><input id="cfg-weekly" value="${fmt(s.weeklyGoal)}" inputmode="decimal"></div>
-          <div class="field span-3"><label>Meta mensal</label><input id="cfg-monthly" value="${fmt(s.monthlyGoal)}" inputmode="decimal"></div>
-          <div class="field span-3"><label>Domingo estuda?</label><select id="cfg-sunday"><option ${s.sundayStudy?'':'selected'}>Não</option><option ${s.sundayStudy?'selected':''}>Sim</option></select></div>
-          <div class="field span-3"><label>% mínimo de acerto</label><input id="cfg-acc" value="${s.minAccuracy}" type="number"></div>
-          <div class="field span-3"><label>Dias sem contato</label><input id="cfg-days" value="${s.neglectDays}" type="number"></div>
-          <div class="field span-3"><label>Lembrete de backup (dias)</label><input id="cfg-backup-days" value="${s.backupReminderDays || 1}" type="number" min="1"></div>
-          <div class="field span-3"><label>Auto-exportar após registro?</label><select id="cfg-auto-export"><option ${s.autoExportAfterRegister?'':'selected'}>Não</option><option ${s.autoExportAfterRegister?'selected':''}>Sim</option></select></div>
-          <div class="span-12"><button class="primary-btn" type="submit">Salvar configurações</button></div>
-        </form>
-      </section>
-    `;
-    renderLayout(content);
-    document.getElementById('config-form').addEventListener('submit', e => {
-      e.preventDefault();
-      state.settings.dailyHours = parseHours(document.getElementById('cfg-daily').value);
-      state.settings.weeklyGoal = parseHours(document.getElementById('cfg-weekly').value);
-      state.settings.monthlyGoal = parseHours(document.getElementById('cfg-monthly').value);
-      state.settings.sundayStudy = document.getElementById('cfg-sunday').value === 'Sim';
-      state.settings.minAccuracy = parseIntSafe(document.getElementById('cfg-acc').value) || 70;
-      state.settings.neglectDays = parseIntSafe(document.getElementById('cfg-days').value) || 7;
-      state.settings.backupReminderDays = Math.max(1, parseIntSafe(document.getElementById('cfg-backup-days').value) || 1);
-      state.settings.autoExportAfterRegister = document.getElementById('cfg-auto-export').value === 'Sim';
-      state.settings.updatedAt = new Date().toISOString();
-      saveState(); toast('Configurações salvas.'); renderConfig();
-    });
+    const s=state.settings; const daily=splitDuration(settingsMinutes('dailyGoalMinutes','dailyHours')), weekly=splitDuration(settingsMinutes('weeklyGoalMinutes','weeklyGoal')), monthly=splitDuration(settingsMinutes('monthlyGoalMinutes','monthlyGoal'));
+    const content=`<section class="banner"><h2>Configurações</h2><p>Ajuste metas e comportamento do sistema. Tempo sempre em horas + minutos.</p></section><section class="card"><form id="config-form" class="form-grid">
+      <div class="field span-2"><label>CH diária — horas</label><input id="cfg-daily-h" type="number" min="0" value="${daily.hours}"></div><div class="field span-2"><label>CH diária — minutos</label><input id="cfg-daily-m" type="number" min="0" max="59" value="${daily.minutes}"></div>
+      <div class="field span-2"><label>Meta semanal — horas</label><input id="cfg-weekly-h" type="number" min="0" value="${weekly.hours}"></div><div class="field span-2"><label>Meta semanal — minutos</label><input id="cfg-weekly-m" type="number" min="0" max="59" value="${weekly.minutes}"></div>
+      <div class="field span-2"><label>Meta mensal — horas</label><input id="cfg-monthly-h" type="number" min="0" value="${monthly.hours}"></div><div class="field span-2"><label>Meta mensal — minutos</label><input id="cfg-monthly-m" type="number" min="0" max="59" value="${monthly.minutes}"></div>
+      <div class="field span-2"><label>Domingo estuda?</label><select id="cfg-sunday"><option ${s.sundayStudy?'':'selected'}>Não</option><option ${s.sundayStudy?'selected':''}>Sim</option></select></div><div class="field span-2"><label>Acerto mínimo (%)</label><input id="cfg-acc" type="number" min="0" max="100" value="${s.minAccuracy||70}"></div><div class="field span-2"><label>Dias para negligência</label><input id="cfg-days" type="number" min="1" value="${s.neglectDays||7}"></div><div class="field span-2"><label>Lembrete backup (dias)</label><input id="cfg-backup-days" type="number" min="1" value="${s.backupReminderDays||1}"></div><div class="field span-2"><label>Revisão noturna padrão (min)</label><input id="cfg-review-min" type="number" min="1" value="${s.nightReviewDefaultMinutes||20}"></div><div class="field span-2"><label>Auto-exportar após registro?</label><select id="cfg-auto-export"><option ${s.autoExportAfterRegister?'':'selected'}>Não</option><option ${s.autoExportAfterRegister?'selected':''}>Sim</option></select></div><div class="span-12"><button class="primary-btn" type="submit">Salvar configurações</button></div></form></section>`;
+    renderLayout(content); document.getElementById('config-form').addEventListener('submit',e=>{e.preventDefault();setSettingsDuration('dailyGoalMinutes','dailyHours',document.getElementById('cfg-daily-h').value,document.getElementById('cfg-daily-m').value);setSettingsDuration('weeklyGoalMinutes','weeklyGoal',document.getElementById('cfg-weekly-h').value,document.getElementById('cfg-weekly-m').value);setSettingsDuration('monthlyGoalMinutes','monthlyGoal',document.getElementById('cfg-monthly-h').value,document.getElementById('cfg-monthly-m').value);state.settings.sundayStudy=document.getElementById('cfg-sunday').value==='Sim';state.settings.minAccuracy=parseIntSafe(document.getElementById('cfg-acc').value)||70;state.settings.neglectDays=parseIntSafe(document.getElementById('cfg-days').value)||7;state.settings.backupReminderDays=Math.max(1,parseIntSafe(document.getElementById('cfg-backup-days').value)||1);state.settings.nightReviewDefaultMinutes=Math.max(1,parseIntSafe(document.getElementById('cfg-review-min').value)||20);state.settings.autoExportAfterRegister=document.getElementById('cfg-auto-export').value==='Sim';saveState();toast('Configurações salvas.');renderConfig();});
   }
 
   function renderBackup() {
@@ -9645,23 +9411,19 @@
   }
 
   function renderHelp() {
-    const content = `
-      <section class="banner"><h2>Como usar</h2><p>Fluxo simples para estudar por meses, até a aprovação.</p></section>
-      <section class="notice warn"><strong>Escolha um ambiente principal:</strong> use o app pelo Dock ou pelo navegador, mas evite alternar. Eles podem ter bancos separados. Para migrar, exporte JSON no ambiente com dados e importe no ambiente principal.</section>
-      <section class="grid cards-2">
-        <div class="card"><h3>Rotina diária</h3><ol><li>Abra <strong>Hoje</strong> para ver sugestões do ciclo.</li><li>Estude uma disciplina.</li><li>Vá em <strong>Registrar</strong>.</li><li>Selecione a disciplina e o <strong>tópico cadastrado</strong>.</li><li>Salve <strong>uma disciplina por vez</strong>.</li><li>Se errar algum dado, abra <strong>Histórico</strong> e clique em Editar.</li><li>Confira <strong>Progresso</strong>.</li></ol></div>
-        <div class="card"><h3>Conteúdo por disciplina</h3><p>A tela <strong>Conteúdo</strong> guarda os tópicos importados da planilha. Para cada tópico, marque: <strong>Estudando</strong>, <strong>Revisado</strong>, <strong>Em espera</strong>, <strong>Questões</strong> ou <strong>Caderno de Erros</strong>.</p><p>Você pode editar, incluir e remover tópicos a qualquer momento.</p></div>
-        <div class="card"><h3>Regra de ouro</h3><p>O ciclo sugere, mas nunca bloqueia. Se você estudou algo diferente, registre mesmo assim.</p><p>Para 2h30, use <strong>2.5</strong> ou <strong>2,5</strong>.</p></div>
-        <div class="card"><h3>Mac e iPad</h3><p>Hospede no GitHub Pages para acessar pelo Safari. Para sincronizar manualmente, use <strong>Backup</strong> e salve o JSON no iCloud Drive.</p><p>O app é local-first: cada dispositivo mantém seus dados até você importar/exportar backup.</p></div>
-      </section>
-    `;
-    renderLayout(content);
+    const content=`<section class="banner"><h2>Como usar</h2><p>Fluxo simples para estudar por meses, até a aprovação.</p></section><section class="notice warn"><strong>Um ambiente principal:</strong> use preferencialmente o app pelo Dock. Dock e navegador podem ter bancos separados; migre por Backup JSON quando necessário.</section><section class="grid cards-2">
+      <div class="card"><h3>Rotina diária</h3><ol><li>Abra <strong>Hoje</strong>.</li><li>Estude uma disciplina.</li><li>Em <strong>Registrar</strong>, escolha disciplina e tópico.</li><li>Informe <strong>Horas</strong> e <strong>Minutos</strong> separadamente.</li><li>Salve uma disciplina por vez.</li><li>À noite, abra <strong>Revisão Noturna</strong> e registre cada disciplina revisada.</li><li>Confira Progresso e Questões.</li></ol></div>
+      <div class="card"><h3>Conteúdo inteligente</h3><p>Na seleção de tópico, os itens em <strong>Em espera</strong> aparecem primeiro. Tópicos já iniciados/revisados/questões/caderno de erros vão para o fim.</p><p>Você pode editar, incluir, remover e adicionar URL do caderno TEC em Conteúdo.</p></div>
+      <div class="card"><h3>Ciclo</h3><p>Ative só o que está estudando. A frequência distribui repetições separadas sempre que possível. Ex.: Português 2x + DCON + DAD → Português → DCON → Português → DAD.</p><p>A CH automática é 2h em Teoria e 1h nos demais modos, salvo ajuste manual em horas/minutos.</p></div>
+      <div class="card"><h3>Backup e atualização</h3><p>Exporte JSON regularmente. O auto-export pode ser ativado em Configurações. <strong>Nunca envie seu backup pessoal para o repositório público do GitHub.</strong></p></div>
+    </section>`; renderLayout(content);
   }
 
   function render() {
     if (currentRoute === 'hoje') return renderHome();
     if (currentRoute === 'registrar') return renderRegister();
     if (currentRoute === 'historico') return renderHistory();
+    if (currentRoute === 'revisao') return renderNightReview();
     if (currentRoute === 'sessao') return renderSession();
     if (currentRoute === 'ciclo') return renderCycle();
     if (currentRoute === 'conteudo') return renderTopics();

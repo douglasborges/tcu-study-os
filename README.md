@@ -1,14 +1,29 @@
-# TCU Study OS PWA v10
+# TCU Study OS PWA v11
 
-Versão de estabilidade com diagnóstico de ambiente, salvamento reforçado e correção de migração de dados.
+**v11.0 — Horas/Minutos + Revisão Noturna + Cursos 2026**
 
-## Ponto principal
+PWA local-first para controle de estudos do TCU, hospedável gratuitamente no GitHub Pages.
 
-O app é local-first: os dados ficam no armazenamento do ambiente em que você abriu o app. No macOS, o app aberto pelo Dock pode ter armazenamento separado do Safari/Chrome. Escolha um ambiente principal.
+## Destaques da v11
 
-## Fluxo seguro
+- tempo registrado em **Horas + Minutos**, sem decimais na interface;
+- migração automática de registros antigos (`hours`) para `durationMinutes`;
+- **Revisão Noturna** com pendências de hoje e do dia anterior;
+- tópicos **Em espera** aparecem primeiro no seletor; tópicos já trabalhados descem para o final;
+- novos cursos de Português Missão Cebraspe, DAD Rafael Oliveira e Licitações/Contratos Rafael Oliveira;
+- TI substituído integralmente por **TI - TCU [TI Total]**;
+- correção do bug antigo `Portuguêsaria` → `Portaria`;
+- correção da migração que alterava indevidamente o ciclo do usuário;
+- Service Worker em **network-first**, reduzindo o risco de ficar preso em versão antiga do GitHub Pages;
+- backup JSON, snapshots locais e diagnóstico do ambiente continuam disponíveis.
 
-1. Use sempre o mesmo ambiente, preferencialmente o app do Dock.
-2. Registre uma disciplina por vez.
-3. Exporte backup JSON ao final do dia.
-4. Para migrar entre navegador e Dock, exporte no ambiente com dados e importe no ambiente principal.
+## Arquivos principais
+
+- `index.html`
+- `app.js`
+- `styles.css`
+- `manifest.webmanifest`
+- `sw.js`
+- `assets/icons/`
+
+> **Não envie seu backup JSON pessoal ao GitHub.** O repositório público deve conter somente os arquivos do app.

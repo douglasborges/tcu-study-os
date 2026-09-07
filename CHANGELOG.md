@@ -1,21 +1,29 @@
 # Changelog
 
-## v11.0 — Azul & Dourado + Novo Ciclo
+## v11.0 — Horas/Minutos + Revisão Noturna + Cursos 2026
 
-- Nova identidade azul-marinho e dourada.
-- Novo logo e todos os ícones atualizados.
-- Ciclo padrão alterado para AFO → Português → DCON.
-- DAD e Licitações em Aguardando.
-- Inclui conteúdo programático de Licitações.
-- Personaliza o cabeçalho e o painel inicial.
-- Inclui backup inicial v11 sem remover os dados locais já existentes.
-- Preserva a identidade verde da v10 para rollback.
+### Tempo
+- registro separado em Horas e Minutos;
+- exibição global em formato `Xh YYmin`;
+- migração de horas decimais antigas para minutos inteiros;
+- metas diária/semanal/mensal e CH manual do ciclo também usam horas/minutos.
 
-## v10.0 — Estabilidade + Diagnóstico
+### Conteúdo
+- Licitações renomeada para `[LIC] Licitações e Contratos (Foco TCU) - Rafael Oliveira`, preservando histórico;
+- 9 disciplinas do ecossistema `[Port_Cebraspe]` adicionadas;
+- `DAD - Rafael Oliveira [VAs] [2026]` adicionada com 22 tópicos;
+- TI renomeada para `TI - TCU [TI Total]` e conteúdo antigo substituído pela nova trilha enviada;
+- tópicos trabalhados movidos para baixo no seletor de registro.
 
-- Exibe identificador do ambiente no canto inferior direito.
-- Explica diferença entre Dock e navegador no Backup/Ajuda.
-- Salva dados também em uma chave espelho local.
-- Corrige sessões antigas de Português com disciplineId divergente.
-- Evita migração repetida de DCON a cada abertura.
-- Mantém DCON atualizado com 21 tópicos canônicos.
+### Revisão Noturna
+- nova tela;
+- hoje + pendência do dia anterior;
+- agrupamento por disciplina;
+- prevenção de duplicidade;
+- tempo da revisão incluído nas estatísticas.
+
+### Estabilidade
+- migração Port→Português deixa de forçar ativo/ordem/frequência do ciclo;
+- correção automática de `Portuguêsaria` para `Portaria`;
+- reparo de tópicos órfãos conhecidos;
+- Service Worker alterado de cache-first para network-first.

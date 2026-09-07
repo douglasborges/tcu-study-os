@@ -1,13 +1,37 @@
-# Publicar no GitHub Pages
+# Atualização no GitHub Pages — v11
 
-1. Abra o repositório `tcu-study-os`.
-2. Faça backup JSON do app atual antes de atualizar.
-3. Envie todos os arquivos desta pasta para o repositório, substituindo os antigos.
-4. Não envie seu arquivo de backup JSON para o GitHub.
-5. Aguarde o GitHub Pages atualizar.
-6. Abra `https://douglasborges.github.io/tcu-study-os/`.
-7. Se necessário, importe seu backup JSON.
+## Antes de atualizar
 
-## Atualização de versão
+1. Abra o TCU Study OS atual.
+2. Vá em **Backup → Exportar backup agora**.
+3. Guarde o JSON no iCloud/Google Drive.
 
-Se o app parecer antigo, limpe o cache do navegador ou aguarde alguns minutos. Esta versão usa cache `v7`, então o Service Worker deve atualizar automaticamente após recarregar.
+## Upload
+
+1. Descompacte o ZIP da v11.
+2. Abra seu repositório `tcu-study-os` no GitHub.
+3. Vá em **Code → Add file → Upload files**.
+4. Envie os arquivos **de dentro** da pasta da v11, inclusive `assets/icons/`.
+5. Não envie o ZIP e **não envie seu backup JSON**.
+6. Em Commit message, use: `Atualiza TCU Study OS para v11`.
+7. Clique em **Commit changes**.
+
+## Aguarde o deploy
+
+1. Abra **Actions** ou **Deployments**.
+2. Aguarde o `github-pages` ficar com check verde.
+3. Abra: `https://douglasborges.github.io/tcu-study-os/?v=11`
+4. Se necessário, faça **Command + Shift + R**.
+
+A v11 usa Service Worker network-first, então futuras atualizações devem ficar menos propensas a cache antigo.
+
+## Restaurar os dados
+
+Use **Backup → Importar → Substituir tudo** com o arquivo `tcu-study-os-backup-v11-migrado-2026-09-04.json` fornecido separadamente nesta conversa.
+
+Depois confirme:
+- Histórico;
+- Progresso;
+- Ciclo;
+- Conteúdo;
+- Revisão Noturna.
