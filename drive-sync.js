@@ -12,6 +12,7 @@
   const REMOTE_APP_PROPERTY = 'cloud-v1';
   const POLL_MS = 900;
   const SAVE_DEBOUNCE_MS = 1400;
+  const REMOTE_POLL_MS = 120000;
 
   let tokenClient = null;
   let accessToken = '';
@@ -489,6 +490,17 @@
     observeAppRenders();
     if (!navigator.onLine) setUI('offline', 'Sem internet. Seus registros continuam salvos localmente.');
     else if (meta.dirty) setUI('dirty', 'Há alterações locais esperando sincronização.');
-    else setUI('disconnected', meta.everSynced ? 'Clique para reconectar ao Google Drive nesta sessão.' : 'Clique para ativar a sincronização com o Google Drive.');
+    else setUI('disconnected', meta.everSynced ? 'Tentaremos reconectar ao Google Drive automaticamente.' : 'Clique para ativar a sincronização com o Google Drive.');
+
+    // Depois da primeira autorização, tenta renovar a sessão de forma silenciosa ao reabrir o app.
+    if (navigator.onLine && meta.authorizedOnce) {
+      setTimeout(() => syncNow({ initial: true, interactiveAuth: false }), 700);
+    }
+
+    // Enquanto o app estiver aberto e autenticado, verifica periodicamente alterações feitas em outro dispositivo.
+    setInterval(() => {
+      if (!navigator.onLine || syncing || meta.dirty) return;
+      if (accessToken && Date.now() < tokenExpiresAt) syncNow({ initial: true, interactiveAuth: false });
+    }, REMOTE_POLL_MS);
   });
 })();
