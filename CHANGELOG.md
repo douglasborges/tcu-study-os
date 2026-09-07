@@ -1,5 +1,27 @@
 # Changelog
 
+## v11.2 — Google Drive Sync + ícone Azul & Dourado
+
+### Sincronização
+- adiciona sincronização opcional dos registros com Google Drive usando OAuth 2.0 no navegador;
+- usa somente o escopo `drive.file`, sem acesso geral aos demais arquivos do Drive;
+- cria e mantém `TCU Study OS - Dados.json` no Drive do usuário;
+- preserva `localStorage` como cópia local e funcionamento offline;
+- envia alterações automaticamente enquanto a sessão Google estiver autorizada;
+- em outro dispositivo, localiza a mesma base criada pelo app e carrega os dados do Drive;
+- conflitos entre alterações locais e remotas exigem escolha explícita do usuário;
+- tokens OAuth não são gravados em `localStorage` e nenhum client secret é usado no código.
+
+### Interface
+- adiciona estado de nuvem: Conectar, Sincronizando, Sincronizado, Pendente, Offline e Reconectar;
+- passa a usar o logo azul-marinho e dourado já existente no projeto na interface e como favicon preferencial;
+- mantém os PNGs antigos como fallback de compatibilidade para instalações PWA antigas.
+
+### Compatibilidade
+- não altera o `STORE_KEY` nem a estrutura principal dos dados;
+- mantém sessões, tópicos, ciclo, histórico, Revisão Noturna, Horas/Minutos e Cursos 2026;
+- renova o cache da PWA para a v11.2.
+
 ## v11.1 — Identidade Azul & Dourado
 
 ### Interface
