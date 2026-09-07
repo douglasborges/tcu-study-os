@@ -1,7 +1,7 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-1-blue-gold';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-2-drive-sync';
 const APP_SHELL = [
-  './', './index.html', './styles.css', './app.js', './theme-tcu-blue-gold.js', './manifest.webmanifest',
-  './assets/icons/icon-192.png', './assets/icons/icon-512.png'
+  './', './index.html', './styles.css', './drive-sync.css', './app.js', './theme-tcu-blue-gold.js', './drive-sync.js', './manifest.webmanifest',
+  './assets/icons/logo-v11-azul-dourado.png', './assets/icons/icon-192.png', './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
