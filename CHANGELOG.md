@@ -1,5 +1,23 @@
 # Changelog
 
+## v11.1 — Identidade Azul & Dourado
+
+### Interface
+- restaura a identidade oficial do TCU Study OS em azul-marinho e dourado;
+- usa `#26247B`, `#11113D` e `#1B1A58` como base estrutural;
+- usa `#FFCB05` e `#F5D86E` nos destaques;
+- mantém o verde apenas como cor de apoio semântico;
+- corrige cores verdes remanescentes em gráficos dinâmicos do ciclo.
+
+### PWA
+- atualiza `theme-color`, manifesto e cache para a v11.1;
+- preserva a estratégia network-first do Service Worker;
+- força renovação do cache visual sem alterar os dados locais do usuário.
+
+### Compatibilidade
+- nenhuma alteração no `STORE_KEY`, sessões, tópicos, ciclos, histórico ou migrações;
+- preservadas integralmente as funcionalidades de Horas/Minutos, Revisão Noturna e Cursos 2026.
+
 ## v11.0 — Horas/Minutos + Revisão Noturna + Cursos 2026
 
 ### Tempo
