@@ -1,7 +1,8 @@
 (() => {
   'use strict';
 
-  const VERSION_LABEL = 'v11.1 — Azul & Dourado + Horas/Minutos + Revisão Noturna + Cursos 2026';
+  const VERSION_LABEL = 'v11.2 — Azul & Dourado + Sync Google Drive + Horas/Minutos + Revisão Noturna + Cursos 2026';
+  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.2';
   const COLOR_MAP = new Map([
     ['#74ff52', '#FFCB05'],
     ['#00d8a6', '#26247B'],
@@ -30,6 +31,12 @@
     });
   }
 
+  function refreshLogo() {
+    document.querySelectorAll('img.logo').forEach(img => {
+      if (!img.getAttribute('src')?.includes('logo-v11-azul-dourado.png')) img.setAttribute('src', ICON_SRC);
+    });
+  }
+
   function refreshVersionLabel() {
     const badge = document.querySelector('.app-version');
     if (!badge) return;
@@ -42,6 +49,7 @@
   function applyThemeFixes() {
     scheduled = false;
     recolorInlineStyles(document);
+    refreshLogo();
     refreshVersionLabel();
   }
 

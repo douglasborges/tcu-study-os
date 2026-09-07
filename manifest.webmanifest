@@ -1,8 +1,8 @@
 {
   "name": "TCU Study OS",
   "short_name": "TCU Study OS",
-  "description": "TCU Study OS v11.1: identidade azul e dourada, ciclo vivo, conteúdo, horas/minutos, revisão noturna, progresso e questões.",
-  "start_url": "./index.html?v=11.1",
+  "description": "TCU Study OS v11.2: identidade azul e dourada com sincronização opcional pelo Google Drive.",
+  "start_url": "./index.html?v=11.2",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -14,6 +14,12 @@
   "theme_color": "#26247B",
   "orientation": "any",
   "icons": [
+    {
+      "src": "assets/icons/logo-v11-azul-dourado.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "assets/icons/icon-192.png",
       "sizes": "192x192",
@@ -50,45 +56,25 @@
       "name": "Registrar sessão",
       "short_name": "Registrar",
       "url": "./index.html#registrar",
-      "icons": [
-        {
-          "src": "assets/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
     },
     {
       "name": "Progresso",
       "short_name": "Progresso",
       "url": "./index.html#progresso",
-      "icons": [
-        {
-          "src": "assets/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
     },
     {
       "name": "Conteúdo",
       "short_name": "Conteúdo",
       "url": "./index.html#conteudo",
-      "icons": [
-        {
-          "src": "assets/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
     },
     {
       "name": "Revisão Noturna",
       "short_name": "Revisão",
       "url": "./index.html#revisao",
-      "icons": [
-        {
-          "src": "assets/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
     }
   ]
 }
