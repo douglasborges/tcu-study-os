@@ -1,6 +1,6 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-hm-review-2026';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-1-blue-gold';
 const APP_SHELL = [
-  './', './index.html', './styles.css', './app.js', './manifest.webmanifest',
+  './', './index.html', './styles.css', './app.js', './theme-tcu-blue-gold.js', './manifest.webmanifest',
   './assets/icons/icon-192.png', './assets/icons/icon-512.png'
 ];
 
