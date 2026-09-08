@@ -1,9 +1,10 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-3-1-oauth-favicon';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-4-cycle-30h';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './drive-sync.css',
+  './study-plan-v11-4.js',
   './app.js',
   './theme-tcu-blue-gold.js',
   './oauth-client-hotfix-v11.3.1.js',
