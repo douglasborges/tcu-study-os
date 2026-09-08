@@ -1,8 +1,8 @@
 {
   "name": "TCU Study OS",
   "short_name": "TCU Study OS",
-  "description": "TCU Study OS v11.4: ciclo ativo com AFO, DAD Rafael, Português Cebraspe teórico, DCON e TI; meta de 30h semanais e 5h diárias, com Drive sincronizado.",
-  "start_url": "./index.html?v=11.4",
+  "description": "TCU Study OS v11.5: corrige o ciclo no Dock, garante os cinco cursos ativos, mantém 5h/dia e 30h/semana e sinaliza aulas de DAD fora dos editais TCU usados como referência.",
+  "start_url": "./index.html?v=11.5",
   "scope": "./",
   "display": "standalone",
   "display_override": [
