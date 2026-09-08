@@ -1,8 +1,8 @@
 {
   "name": "TCU Study OS",
   "short_name": "TCU Study OS",
-  "description": "TCU Study OS v11.3: identidade azul e dourada, carregamento rápido e sincronização opcional pelo Google Drive.",
-  "start_url": "./index.html?v=11.3",
+  "description": "TCU Study OS v11.3.1: identidade azul e dourada, carregamento rápido e sincronização opcional pelo Google Drive.",
+  "start_url": "./index.html?v=11.3.1",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -21,31 +21,31 @@
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-192.png",
+      "src": "assets/icons/logo-v11-azul-dourado.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "assets/icons/logo-v11-azul-dourado.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-1024.png",
+      "src": "assets/icons/logo-v11-azul-dourado.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-192.png",
+      "src": "assets/icons/logo-v11-azul-dourado.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "assets/icons/logo-v11-azul-dourado.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
