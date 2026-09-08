@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const VERSION_LABEL = 'v11.2.1 — Azul & Dourado + Hotfix de desempenho';
-  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.2.1';
+  const VERSION_LABEL = 'v11.2.2 — Azul & Dourado + Carregamento rápido';
+  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.2.2';
   const COLOR_MAP = new Map([
     ['#74ff52', '#FFCB05'],
     ['#00d8a6', '#26247B'],
