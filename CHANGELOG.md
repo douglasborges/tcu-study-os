@@ -1,5 +1,31 @@
 # Changelog
 
+## v11.4 — Novo ciclo TCU + 30h semanais
+
+### Ciclo ativo
+- ativa somente `AFO (Pacelli)`, `DAD - Rafael Oliveira [VAs] [2026]`, `[Port_Cebraspe] 1- Teórico [2026] [13 aulas]`, `DCON` e `TI - TCU [TI Total]`;
+- define uma passagem de cada disciplina por volta do ciclo, na ordem solicitada;
+- coloca todas as demais disciplinas em `Em espera`, fora da contabilização do ciclo;
+- renomeia a disciplina AFO para `AFO (Pacelli)`, preservando tópicos e histórico.
+
+### Carga horária
+- CH diária passa para 5h;
+- meta semanal passa para 30h;
+- revisão noturna permanece como registro separado e é tratada como carga adicional à CH diária de estudo;
+- meta mensal existente é preservada porque não foi alterada no novo plano.
+
+### DAD + TEC
+- mantém o curso novo de Rafael Oliveira como DAD ativo;
+- migra automaticamente URLs de cadernos TEC da DAD antiga para tópicos compatíveis do curso Rafael;
+- cobre princípios, organização, indireta, terceiro setor, serviços públicos, PPP/consórcios, poderes, atos, processo, licitações, intervenção na propriedade, bens, agentes/Lei 8.112, responsabilidade civil, controle, improbidade e Lei Anticorrupção;
+- quando mais de um caderno compatível aponta para o mesmo tópico, preserva o principal em `tecUrl` e registra os demais nas observações.
+
+### Sincronização e segurança
+- a migração é executada uma única vez por base de dados;
+- preserva `STORE_KEY`, sessões, tópicos, questões, histórico e backups;
+- marca a base como pendente para que o novo plano seja enviado ao Google Drive na próxima sincronização;
+- mantém a v11.3.1 de OAuth e o carregamento rápido.
+
 ## v11.2 — Google Drive Sync + ícone Azul & Dourado
 
 ### Sincronização
