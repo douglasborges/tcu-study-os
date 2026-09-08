@@ -1,5 +1,28 @@
 # Changelog
 
+## v11.5 — Correção do ciclo no Dock + filtro DAD/TCU
+
+### Correção do Dock/PWA
+- corrige a falha da v11.4 que abortava a migração quando a base local antiga ainda não possuía os novos cursos;
+- cria automaticamente, quando necessário, `DAD - Rafael Oliveira [VAs] [2026]`, `[Port_Cebraspe] 1- Teórico [2026] [13 aulas]` e `TI - TCU [TI Total]` antes de o app carregar o estado;
+- força o ciclo ativo para `AFO (Pacelli) → DAD Rafael → Port Cebraspe Teórico → DCON → TI`;
+- mantém todas as demais disciplinas em `Em espera` e fora do ciclo;
+- reforça CH diária de 5h e meta semanal de 30h, com revisão noturna fora dessa carga;
+- renova o cache da PWA para que a atualização chegue ao app instalado no Dock.
+
+### DAD — Rafael Oliveira
+- compara o curso com o Edital TCU/AUFC 2025/2026 (Cebraspe) e com o Edital TCU 2021, prova em 2022 (FGV);
+- usa como critério a união dos conteúdos cobrados nos dois editais, inclusive quando o assunto apareceu em outra disciplina do TCU;
+- adiciona `[NÃO TCU]` somente às aulas sem correspondência explícita ou materialmente aproveitável nos dois referenciais;
+- marcadas: Código de Defesa do Usuário de Serviço Público; Parcerias Público-Privadas (PPPs); Intervenção do Estado na Propriedade; Desapropriação; Métodos Alternativos de Resolução de Conflitos nas Contratações Públicas;
+- não marca Consórcios Públicos, Bens Públicos, Intervenção do Estado na Ordem Econômica e Lei Anticorrupção, pois há aproveitamento em outros blocos dos editais de referência;
+- preserva e reaproveita os cadernos TEC compatíveis da DAD antiga.
+
+### Segurança dos dados
+- preserva `STORE_KEY`, sessões, histórico, questões, tópicos e backups;
+- a correção também é reaplicada quando uma base antiga chega do Google Drive, evitando que o ciclo antigo volte a sobrescrever o novo plano;
+- mantém a branch `stable-v11-4` como ponto de retorno.
+
 ## v11.4 — Novo ciclo TCU + 30h semanais
 
 ### Ciclo ativo
