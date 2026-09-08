@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-3-drive-stable';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-3-1-oauth-favicon';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,7 +6,9 @@ const APP_SHELL = [
   './drive-sync.css',
   './app.js',
   './theme-tcu-blue-gold.js',
+  './oauth-client-hotfix-v11.3.1.js',
   './drive-sync.js',
+  './assets/icons/favicon-v11-blue-gold.svg',
   './manifest.webmanifest'
 ];
 
