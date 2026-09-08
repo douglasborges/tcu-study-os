@@ -1,18 +1,19 @@
-.drive-sync-btn[data-state="synced"],
 .drive-sync-floating[data-state="synced"] {
-  border-color: rgba(255,203,5,.45);
+  border-color: rgba(255,203,5,.55);
 }
 
-.drive-sync-btn[data-state="dirty"],
 .drive-sync-floating[data-state="dirty"] {
-  border-color: rgba(245,216,110,.65);
+  border-color: rgba(245,216,110,.75);
 }
 
-.drive-sync-btn[data-state="error"],
-.drive-sync-btn[data-state="auth"],
 .drive-sync-floating[data-state="error"],
 .drive-sync-floating[data-state="auth"] {
   border-color: rgba(214,69,69,.75);
+}
+
+.drive-sync-floating[data-state="connecting"],
+.drive-sync-floating[data-state="syncing"] {
+  opacity: .88;
 }
 
 .drive-sync-floating {
@@ -24,8 +25,8 @@
   padding: 8px 12px;
   border-radius: 999px;
   color: white;
-  background: rgba(17,17,61,.92);
-  border: 1px solid rgba(255,203,5,.28);
+  background: rgba(17,17,61,.94);
+  border: 1px solid rgba(255,203,5,.32);
   box-shadow: 0 8px 28px rgba(17,17,61,.22);
   backdrop-filter: blur(10px);
   font-size: 12px;
@@ -34,10 +35,6 @@
 }
 
 .drive-sync-floating:hover { transform: translateY(-1px); }
-
-@media (min-width: 861px) {
-  .drive-sync-floating { display: none; }
-}
 
 @media (max-width: 860px) {
   .drive-sync-floating {
