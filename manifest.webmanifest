@@ -1,8 +1,8 @@
 {
   "name": "TCU Study OS",
   "short_name": "TCU Study OS",
-  "description": "TCU Study OS v11.3.1: identidade azul e dourada, carregamento rápido e sincronização opcional pelo Google Drive.",
-  "start_url": "./index.html?v=11.3.1",
+  "description": "TCU Study OS v11.4: ciclo ativo com AFO, DAD Rafael, Português Cebraspe teórico, DCON e TI; meta de 30h semanais e 5h diárias, com Drive sincronizado.",
+  "start_url": "./index.html?v=11.4",
   "scope": "./",
   "display": "standalone",
   "display_override": [
