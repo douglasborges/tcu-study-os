@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const VERSION_LABEL = 'v11.2 — Azul & Dourado + Sync Google Drive + Horas/Minutos + Revisão Noturna + Cursos 2026';
-  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.2';
+  const VERSION_LABEL = 'v11.2.1 — Azul & Dourado + Hotfix de desempenho';
+  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.2.1';
   const COLOR_MAP = new Map([
     ['#74ff52', '#FFCB05'],
     ['#00d8a6', '#26247B'],
@@ -33,7 +33,9 @@
 
   function refreshLogo() {
     document.querySelectorAll('img.logo').forEach(img => {
-      if (!img.getAttribute('src')?.includes('logo-v11-azul-dourado.png')) img.setAttribute('src', ICON_SRC);
+      if (!img.getAttribute('src')?.includes('logo-v11-azul-dourado.png')) {
+        img.setAttribute('src', ICON_SRC);
+      }
     });
   }
 
@@ -42,7 +44,8 @@
     if (!badge) return;
     const parts = badge.textContent.split(' · ');
     const env = parts.length > 1 ? parts.at(-1) : '';
-    badge.textContent = env ? `${VERSION_LABEL} · ${env}` : VERSION_LABEL;
+    const next = env ? `${VERSION_LABEL} · ${env}` : VERSION_LABEL;
+    if (badge.textContent !== next) badge.textContent = next;
   }
 
   let scheduled = false;
