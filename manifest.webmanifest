@@ -1,8 +1,8 @@
 {
   "name": "TCU Study OS",
   "short_name": "TCU Study OS",
-  "description": "TCU Study OS v11.2.2: identidade azul e dourada com carregamento rápido; sincronização Drive temporariamente desativada no carregamento.",
-  "start_url": "./index.html?v=11.2.2",
+  "description": "TCU Study OS v11.3: identidade azul e dourada, carregamento rápido e sincronização opcional pelo Google Drive.",
+  "start_url": "./index.html?v=11.3",
   "scope": "./",
   "display": "standalone",
   "display_override": [
