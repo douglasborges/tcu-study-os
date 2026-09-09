@@ -28,7 +28,7 @@
     'Responsabilidade Civil do Estado',
     'Controle da Administração Pública',
     'Improbidade Administrativa',
-    'Métodos Alternativos de Resolução de Conflitos nas Contratações Públicas: Conciliação/ Mediação/ Comitê de Resolução de Disputas/ Arbitragem [NÃO TCU]',
+    'Métodos Alternativos de Resolução de Conflitos nas Contratações Públicas: Conciliação/ Mediação/ Comitê de Resolução de Disputas/ Arbitragem',
     'Lei Anticorrupção'
   ];
 
