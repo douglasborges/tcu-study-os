@@ -14,8 +14,9 @@
 - compara o curso com o Edital TCU/AUFC 2025/2026 (Cebraspe) e com o Edital TCU 2021, prova em 2022 (FGV);
 - usa como critério a união dos conteúdos cobrados nos dois editais, inclusive quando o assunto apareceu em outra disciplina do TCU;
 - adiciona `[NÃO TCU]` somente às aulas sem correspondência explícita ou materialmente aproveitável nos dois referenciais;
-- marcadas: Código de Defesa do Usuário de Serviço Público; Parcerias Público-Privadas (PPPs); Intervenção do Estado na Propriedade; Desapropriação; Métodos Alternativos de Resolução de Conflitos nas Contratações Públicas;
+- marcadas: Código de Defesa do Usuário de Serviço Público; Parcerias Público-Privadas (PPPs); Intervenção do Estado na Propriedade; Desapropriação;
 - não marca Consórcios Públicos, Bens Públicos, Intervenção do Estado na Ordem Econômica e Lei Anticorrupção, pois há aproveitamento em outros blocos dos editais de referência;
+- não marca Métodos Alternativos de Resolução de Conflitos nas Contratações Públicas, pois conciliação, mediação, comitê de resolução de disputas e arbitragem integram a Lei nº 14.133/2021, expressamente incluída nos dois editais;
 - preserva e reaproveita os cadernos TEC compatíveis da DAD antiga.
 
 ### Segurança dos dados
