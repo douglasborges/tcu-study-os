@@ -9,20 +9,22 @@
   <meta name="apple-mobile-web-app-title" content="TCU Study OS" />
   <title>TCU Study OS</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon-v11-blue-gold.svg?v=11.4" />
-  <link rel="apple-touch-icon" href="assets/icons/logo-v11-azul-dourado.png?v=11.4" />
-  <link rel="stylesheet" href="styles.css?v=11.4" />
-  <link rel="stylesheet" href="drive-sync.css?v=11.4" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon-v11-blue-gold.svg?v=11.5" />
+  <link rel="apple-touch-icon" href="assets/icons/logo-v11-azul-dourado.png?v=11.5" />
+  <link rel="stylesheet" href="styles.css?v=11.5" />
+  <link rel="stylesheet" href="drive-sync.css?v=11.5" />
 </head>
 <body>
   <div id="app" class="app-shell" aria-live="polite"></div>
   <noscript>Este app precisa de JavaScript ativado para funcionar.</noscript>
-  <!-- v11.4: migra o plano/ciclo antes de o app carregar o estado local. -->
-  <script src="study-plan-v11-4.js?v=11.4" defer></script>
-  <script src="app.js?v=11.4" defer></script>
-  <script src="theme-tcu-blue-gold.js?v=11.4" defer></script>
+  <!-- v11.5: a etiqueta [NÃO TCU] fica visível, mas não interfere na deduplicação do catálogo. -->
+  <script src="non-tcu-normalize-v11-5.js?v=11.5" defer></script>
+  <!-- v11.5: cria os cursos que faltarem, corrige o ciclo e marca extras de DAD antes de o app ler o estado local. -->
+  <script src="study-plan-v11-5.js?v=11.5" defer></script>
+  <script src="app.js?v=11.5" defer></script>
+  <script src="theme-tcu-blue-gold.js?v=11.5" defer></script>
   <!-- Mantém o hotfix do Client ID OAuth validado na v11.3.1. -->
   <script src="oauth-client-hotfix-v11.3.1.js" defer></script>
-  <script src="drive-sync.js?v=11.4" defer></script>
+  <script src="drive-sync.js?v=11.5" defer></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const VERSION_LABEL = 'v11.4 — Azul & Dourado + Ciclo 30h + Drive';
-  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.4';
+  const VERSION_LABEL = 'v11.5 — Ciclo corrigido + DAD TCU';
+  const ICON_SRC = 'assets/icons/logo-v11-azul-dourado.png?v=11.5';
   const COLOR_MAP = new Map([
     ['#74ff52', '#FFCB05'],
     ['#00d8a6', '#26247B'],
