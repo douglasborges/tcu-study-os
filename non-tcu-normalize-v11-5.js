@@ -9,6 +9,7 @@
 
   const nativeNormalize = String.prototype.normalize;
   String.prototype.normalize = function(form) {
-    return nativeNormalize.call(this, form).replace(/\s*\[nao tcu\]/gi, '');
+    const withoutMarker = String(this).replace(/\s*\[NÃO TCU\]/gi, '');
+    return nativeNormalize.call(withoutMarker, form);
   };
 })();
