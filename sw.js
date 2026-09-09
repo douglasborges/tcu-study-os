@@ -1,9 +1,10 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-5-cycle-dad-fix';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-5-cycle-dad-fix-2';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './drive-sync.css',
+  './non-tcu-normalize-v11-5.js',
   './study-plan-v11-5.js',
   './app.js',
   './theme-tcu-blue-gold.js',
