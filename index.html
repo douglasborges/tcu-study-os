@@ -17,6 +17,8 @@
 <body>
   <div id="app" class="app-shell" aria-live="polite"></div>
   <noscript>Este app precisa de JavaScript ativado para funcionar.</noscript>
+  <!-- v11.5: a etiqueta [NÃO TCU] fica visível, mas não interfere na deduplicação do catálogo. -->
+  <script src="non-tcu-normalize-v11-5.js?v=11.5" defer></script>
   <!-- v11.5: cria os cursos que faltarem, corrige o ciclo e marca extras de DAD antes de o app ler o estado local. -->
   <script src="study-plan-v11-5.js?v=11.5" defer></script>
   <script src="app.js?v=11.5" defer></script>
