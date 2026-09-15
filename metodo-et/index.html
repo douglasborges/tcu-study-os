@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Método ET">
+  <title>StudyOS · Método ET · Preparação TCU</title>
+  <link rel="icon" href="./assets/et.svg?v=1.1" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./assets/et.svg?v=1.1">
+  <link rel="manifest" href="./manifest.webmanifest?v=1.1">
+  <link rel="stylesheet" href="./styles.css?v=1.1">
+  <link rel="stylesheet" href="./drive-sync.css?v=1.1">
+</head>
+<body>
+  <a class="skip" href="#main">Pular para o conteúdo</a>
+  <aside class="sidebar">
+    <a class="brand" href="#today"><img src="./assets/et.svg?v=1.1" alt="" width="40" height="40"><span>MÉTODO <b>ET</b><small>STUDYOS · ESTUDO TOTAL · DOUGLAS</small></span></a>
+    <div class="focus"><span class="dot"></span> MISSÃO TCU </div>
+    <nav aria-label="Navegação principal">
+      <a href="#today">◉ <span>Hoje</span></a>
+      <a href="#progress">▰ <span>Progresso</span></a>
+      <a href="#subjects">▤ <span>Disciplinas</span></a>
+      <a href="#solid">◇ <span>Estudo Sólido</span></a>
+      <a href="#planning">↻ <span>Planejamento</span></a>
+      <a href="#history">▥ <span>Diário</span></a>
+      <a href="#data">⇅ <span>Dados</span></a>
+      <a href="#reminders">▧ <span>Lembretes</span></a>
+      <a href="#motivation">✦ <span>Lembre-se sempre!</span></a>
+    </nav>
+    <footer>Ao sem talento, <strong>OBSESSÃO!</strong></footer>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><span id="date-label"></span><span class="pill">PRÉ-EDITAL <i></i></span></header>
+    <main id="main" tabindex="-1"><p>Preparando seu espaço de estudo…</p></main>
+    <footer class="app-footer"><div class="footer-message"><p class="footer-title">Seu passado até aqui <strong>não define o seu futuro.</strong></p><p class="footer-detail">O que você escolher fazer <strong>a partir de agora</strong> pode definir o seu futuro.</p></div></footer>
+    <div id="notice" role="status" aria-live="polite"></div>
+  </div>
+  <dialog id="modal"><div id="modal-body"></div><button class="close secondary" id="close-modal" aria-label="Fechar janela">Fechar</button></dialog>
+
+  <script type="module" src="./src/app.js?v=1.1"></script>
+  <script src="./oauth-client-hotfix.js?v=1.1" defer></script>
+  <script src="./drive-sync.js?v=1.1" defer></script>
+  <script>
+    window.addEventListener('load', () => {
+      if (!('serviceWorker' in navigator)) return;
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(error => {
+        console.warn('[Método ET PWA] Service Worker não registrado:', error);
+      });
+    }, { once: true });
+  </script>
+</body>
+</html>
