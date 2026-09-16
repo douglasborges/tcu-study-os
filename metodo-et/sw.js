@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'studyos-metodo-et-';
-const CACHE_NAME = `${CACHE_PREFIX}v1-8`;
+const CACHE_NAME = `${CACHE_PREFIX}v1-9`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './src/personal.js',
   './src/progress.js',
   './navigation-dock-hotfix.js',
+  './data-page-stability-hotfix.js',
   './drive-sync-v1.2.js',
   './oauth-client-hotfix.js',
   './manifest.webmanifest',
