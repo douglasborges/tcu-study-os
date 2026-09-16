@@ -14,9 +14,9 @@
   <link rel="shortcut icon" type="image/png" href="./apple-touch-icon-final.png">
   <link rel="apple-touch-icon" sizes="192x192" href="./apple-touch-icon-final.png">
   <link rel="apple-touch-icon-precomposed" sizes="192x192" href="./apple-touch-icon-final.png">
-  <link rel="manifest" href="./manifest.webmanifest?v=1.9">
-  <link rel="stylesheet" href="./styles.css?v=1.9">
-  <link rel="stylesheet" href="./drive-sync.css?v=1.9">
+  <link rel="manifest" href="./manifest.webmanifest?v=2.0">
+  <link rel="stylesheet" href="./styles.css?v=2.0">
+  <link rel="stylesheet" href="./drive-sync.css?v=2.0">
   <style>
     .app-footer{padding-top:24px}
     .brand.brand-lockup{display:block;width:100%;padding:0;margin:0;text-decoration:none;line-height:0}
@@ -24,12 +24,28 @@
     @media(max-width:1100px){.brand.brand-lockup img{border-radius:10px}}
     @media(max-width:720px){.app-footer{padding-top:20px}.sidebar .brand.brand-lockup{display:none}}
   </style>
+  <script>
+    // v2.0: a StudyOS atual não depende do Service Worker para navegar.
+    // Remove o SW/cache antigo da Método ET para impedir execução de scripts obsoletos no Dock.
+    window.addEventListener('load', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => Promise.all(
+          regs.filter(reg => reg.scope.includes('/tcu-study-os/metodo-et/')).map(reg => reg.unregister())
+        )).catch(() => {});
+      }
+      if ('caches' in window) {
+        caches.keys().then(keys => Promise.all(
+          keys.filter(key => key.startsWith('studyos-metodo-et-')).map(key => caches.delete(key))
+        )).catch(() => {});
+      }
+    }, { once: true });
+  </script>
 </head>
 <body>
   <a class="skip" href="#main">Pular para o conteúdo</a>
   <aside class="sidebar">
     <a class="brand brand-lockup" href="#today" aria-label="Método ET · Estudo Total · Douglas">
-      <img src="./assets/metodo-et-brand-v3.jpg?v=1.9" width="594" height="198" alt="Método ET · Estudo Total · Douglas">
+      <img src="./assets/metodo-et-brand-v3.jpg?v=2.0" width="594" height="198" alt="Método ET · Estudo Total · Douglas">
     </a>
     <div class="focus"><span class="dot"></span> MISSÃO TCU </div>
     <nav aria-label="Navegação principal">
@@ -52,18 +68,9 @@
     <div id="notice" role="status" aria-live="polite"></div>
   </div>
   <dialog id="modal"><div id="modal-body"></div><button class="close secondary" id="close-modal" aria-label="Fechar janela">Fechar</button></dialog>
-  <script type="module" src="./src/app.js?v=1.9"></script>
-  <script src="./navigation-dock-hotfix.js?v=1.9" defer></script>
-  <script src="./data-page-stability-hotfix.js?v=1.9" defer></script>
-  <script src="./oauth-client-hotfix.js?v=1.9" defer></script>
-  <script src="./drive-sync-v1.2.js?v=1.9" defer></script>
-  <script>
-    window.addEventListener('load', () => {
-      if (!('serviceWorker' in navigator)) return;
-      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(error => {
-        console.warn('[Método ET PWA] Service Worker não registrado:', error);
-      });
-    }, { once: true });
-  </script>
+
+  <script type="module" src="./src/app.js?v=2.0"></script>
+  <script src="./oauth-client-hotfix.js?v=2.0" defer></script>
+  <script src="./drive-sync.js?v=2.0" defer></script>
 </body>
 </html>
