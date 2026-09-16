@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'studyos-metodo-et-';
-const CACHE_NAME = `${CACHE_PREFIX}v1-1`;
+const CACHE_NAME = `${CACHE_PREFIX}v1-2`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,7 +9,7 @@ const APP_SHELL = [
   './src/core.js',
   './src/personal.js',
   './src/progress.js',
-  './drive-sync.js',
+  './drive-sync-v1.2.js',
   './oauth-client-hotfix.js',
   './manifest.webmanifest',
   './assets/et.svg',
@@ -62,6 +62,8 @@ async function networkWithTimeout(request, timeoutMs = 3500) {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
+
+  // OAuth e Google Drive ficam fora do Service Worker, como na StudyOS estável.
   if (url.origin !== self.location.origin) return;
 
   if (event.request.mode === 'navigate') {
