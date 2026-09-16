@@ -22,9 +22,14 @@ jobs:
 
           root = Path('metodo-et')
 
-          # 1) Ícone final: exatamente a arte fornecida pelo usuário, preparada em PNG 128x128.
-          icon_b64 = (root / 'icon-user-final.b64').read_text(encoding='utf-8').strip()
-          icon_bytes = base64.b64decode(icon_b64, validate=True)
+          # 1) Ícone final: arte fornecida pelo usuário, preparada em PNG 128x128.
+          raw = (root / 'icon-user-final.b64').read_text(encoding='utf-8').strip()
+          # Considera apenas o primeiro bloco base64 válido caso haja bytes extras após o padding.
+          prefix = raw.split('=', 1)[0]
+          padded = prefix + ('=' * ((4 - len(prefix) % 4) % 4))
+          icon_bytes = base64.b64decode(padded)
+          if not icon_bytes.startswith(b'\x89PNG\r\n\x1a\n'):
+              raise SystemExit('O ícone decodificado não é PNG válido.')
           (root / 'metodo-et-icon-final-v2.png').write_bytes(icon_bytes)
           (root / 'icon-user-final.b64').unlink()
 
@@ -38,13 +43,13 @@ jobs:
           app = app.replace(old, new)
           app_path.write_text(app, encoding='utf-8')
 
-          # 3) Dados: texto estático coerente; o Drive não toca mais no DOM da página.
+          # 3) Dados: texto estático; o Drive não observa nem reescreve o DOM desta página.
           old_warning = 'O Drive não é sincronizado automaticamente nesta versão. O backup consultado foi atualizado em 09/09/2026.'
           new_warning = 'A sincronização com o Google Drive é controlada pelo botão de nuvem. Seus dados também permanecem salvos localmente neste dispositivo.'
           app = app_path.read_text(encoding='utf-8').replace(old_warning, new_warning)
           app_path.write_text(app, encoding='utf-8')
 
-          # 4) HTML v2.1: apenas app + OAuth + drive-sync estável. Sem SW/hotfixes concorrentes.
+          # 4) HTML v2.1: somente app + OAuth + drive-sync estável. Sem hotfixes concorrentes.
           index_path = root / 'index.html'
           index = index_path.read_text(encoding='utf-8')
           index = index.replace('?v=2.0', '?v=2.1')
@@ -54,10 +59,11 @@ jobs:
               raise SystemExit('Index ainda contém hotfixes antigos.')
           if './drive-sync.js?v=2.1' not in index:
               raise SystemExit('Index não aponta para drive-sync.js v2.1.')
-          index = index.replace('<title>Método ET · Preparação TCU</title>', '<title>Método ET · Preparação TCU</title>\n  <meta name="metodo-et-build" content="2.1-clean">')
+          if 'metodo-et-build' not in index:
+              index = index.replace('<title>Método ET · Preparação TCU</title>', '<title>Método ET · Preparação TCU</title>\n  <meta name="metodo-et-build" content="2.1-clean">')
           index_path.write_text(index, encoding='utf-8')
 
-          # 5) Manifesto: novo ícone e versão limpa.
+          # 5) Manifesto: aponta exclusivamente para o novo ícone.
           manifest_path = root / 'manifest.webmanifest'
           manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
           manifest['start_url'] = './'
@@ -67,7 +73,7 @@ jobs:
           ]
           manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
-          # 6) Asserções de produção: nenhum observer/hotfix ativo e nenhuma chamada main.focus na navegação.
+          # 6) Asserções de produção.
           drive = (root / 'drive-sync.js').read_text(encoding='utf-8')
           app = app_path.read_text(encoding='utf-8')
           final_index = index_path.read_text(encoding='utf-8')
