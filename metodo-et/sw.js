@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'studyos-metodo-et-';
-const CACHE_NAME = `${CACHE_PREFIX}v1-3`;
+const CACHE_NAME = `${CACHE_PREFIX}v1-4`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,7 +12,8 @@ const APP_SHELL = [
   './drive-sync-v1.2.js',
   './oauth-client-hotfix.js',
   './manifest.webmanifest',
-  './assets/et.svg',
+  './assets/metodo-et-icon-v2.png',
+  './assets/metodo-et-brand-v2.jpg',
   './data/initial-state.json'
 ];
 
