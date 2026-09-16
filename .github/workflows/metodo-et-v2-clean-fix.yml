@@ -1,4 +1,4 @@
-name: Metodo ET v2.4 legislacao seca
+name: Metodo ET v2.5 editar excluir legislacao
 
 on:
   push:
@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Aplicar Legislação Seca v2.4
-        run: python .github/scripts/metodo_et_v24.py
+      - name: Aplicar edição/exclusão da Legislação Seca v2.5
+        run: python scripts/apply_metodo_et_v25_law_edit_delete.py
       - name: Validar sintaxe JavaScript
         run: |
           cp metodo-et/src/app.js /tmp/metodo-et-app.mjs
@@ -24,10 +24,10 @@ jobs:
           node --check /tmp/metodo-et-app.mjs
           node --check /tmp/metodo-et-core.mjs
           node --check /tmp/metodo-et-personal.mjs
-      - name: Publicar v2.4
+      - name: Publicar v2.5
         run: |
           git config user.name 'Metodo ET Build Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add metodo-et
-          git commit -m 'feat: Método ET v2.4 — Legislação Seca diária' || exit 0
+          git commit -m 'feat: Método ET v2.5 — editar e excluir registros de legislação' || exit 0
           git push
