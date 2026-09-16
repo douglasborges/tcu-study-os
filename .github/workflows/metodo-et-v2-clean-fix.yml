@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
 
+# retry 2: validação do build corrigida
 jobs:
   build:
     runs-on: ubuntu-latest
