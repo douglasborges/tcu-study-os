@@ -1,0 +1,106 @@
+from pathlib import Path
+
+root = Path('metodo-et')
+app_path = root / 'src/app.js'
+personal_path = root / 'src/personal.js'
+index_path = root / 'index.html'
+
+app = app_path.read_text(encoding='utf-8')
+personal = personal_path.read_text(encoding='utf-8')
+index = index_path.read_text(encoding='utf-8')
+
+queue = """export const LEGISLATION_QUEUE=[
+ {id:'cf88',short:'CF/88',title:'Constituição Federal de 1988'},
+ {id:'lotcu',short:'Lei 8.443/1992',title:'Lei Orgânica do Tribunal de Contas da União'},
+ {id:'ritcu',short:'RITCU',title:'Regimento Interno do TCU — Resolução-TCU nº 246/2011 (texto atualizado)'},
+ {id:'lrf',short:'LC 101/2000',title:'Lei de Responsabilidade Fiscal'},
+ {id:'l4320',short:'Lei 4.320/1964',title:'Normas Gerais de Direito Financeiro'},
+ {id:'l10180',short:'Lei 10.180/2001',title:'Sistemas de Planejamento, Orçamento, Administração Financeira, Contabilidade e Controle Interno'},
+ {id:'dl200',short:'DL 200/1967',title:'Organização da Administração Federal'},
+ {id:'l14133',short:'Lei 14.133/2021',title:'Lei de Licitações e Contratos Administrativos'},
+ {id:'l9784',short:'Lei 9.784/1999',title:'Processo Administrativo Federal'},
+ {id:'l8112',short:'Lei 8.112/1990',title:'Regime Jurídico dos Servidores Públicos Federais'},
+ {id:'l8429',short:'Lei 8.429/1992',title:'Lei de Improbidade Administrativa — texto consolidado'},
+ {id:'lai',short:'Lei 12.527/2011',title:'Lei de Acesso à Informação'},
+ {id:'lgpd',short:'Lei 13.709/2018',title:'Lei Geral de Proteção de Dados Pessoais'},
+ {id:'l12846',short:'Lei 12.846/2013',title:'Lei Anticorrupção'},
+ {id:'l13303',short:'Lei 13.303/2016',title:'Lei das Estatais'}
+];
+"""
+if 'export const LEGISLATION_QUEUE=' not in personal:
+    marker = "export const REMINDER_STATUS={todo:'A fazer',done:'Feito',future:'Futuramente'};\n"
+    if marker not in personal:
+        raise SystemExit('Âncora REMINDER_STATUS não encontrada.')
+    personal = personal.replace(marker, marker + queue, 1)
+
+old_norm = "if(st.motivationStartDay===undefined)st.motivationStartDay=day();if(!validDay(st.motivationStartDay))throw Error('Data de motivação inválida.');return st;}"
+new_norm = "if(st.motivationStartDay===undefined)st.motivationStartDay=day();if(!validDay(st.motivationStartDay))throw Error('Data de motivação inválida.');if(st.legislation===undefined)st.legislation={queue:copy(LEGISLATION_QUEUE),current:0,sessions:[],completed:[]};if(!Array.isArray(st.legislation.queue)||!st.legislation.queue.length)st.legislation.queue=copy(LEGISLATION_QUEUE);if(!Array.isArray(st.legislation.sessions))st.legislation.sessions=[];if(!Array.isArray(st.legislation.completed))st.legislation.completed=[];if(!Number.isInteger(st.legislation.current)||st.legislation.current<0)st.legislation.current=0;st.legislation.current=Math.min(st.legislation.current,Math.max(0,st.legislation.queue.length-1));for(const x of st.legislation.sessions){if(typeof x.id!=='string'||!validDay(x.date)||!Number.isInteger(x.minutes)||x.minutes<1||x.minutes>1440||typeof x.normId!=='string')throw Error('Registro de legislação inválido no backup.');}return st;}"
+if old_norm in personal:
+    personal = personal.replace(old_norm, new_norm, 1)
+if 'st.legislation===undefined' not in personal:
+    raise SystemExit('Normalização de legislação não aplicada.')
+personal_path.write_text(personal, encoding='utf-8')
+
+app = app.replace("import { motivationForDay, saveReminder, normalizeExtras} from './personal.js';", "import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE} from './personal.js';", 1)
+app = app.replace("let state,page='today',selected='afo',pendingImport=null,timer=null,storedRaw=null,noticeTimeout;", "let state,page='today',selected='afo',pendingImport=null,timer=null,lawTimer=null,storedRaw=null,noticeTimeout;", 1)
+
+anchor = "function currentSubject(){return subject(M.CYCLE[state.cycle.index]);}\n"
+feature = """function lawState(){return state.legislation;}
+function currentLaw(){let l=lawState();return l.queue[Math.min(l.current,l.queue.length-1)]||l.queue[0];}
+function lawElapsed(){return lawTimer?lawTimer.elapsed+(lawTimer.running?Date.now()-lawTimer.started:0):0;}
+function saveLawTimer(){try{if(lawTimer)localStorage.setItem(M.KEY+':law-timer',JSON.stringify(lawTimer));else localStorage.removeItem(M.KEY+':law-timer');}catch{toast('O cronômetro da legislação está apenas em memória. Registre o tempo antes de fechar a app.',true);}}
+function updateLawClock(){let el=$('#law-clock');if(!el)return;let sec=Math.floor(lawElapsed()/1000);el.textContent=[Math.floor(sec/3600),Math.floor(sec/60)%60,sec%60].map(n=>String(n).padStart(2,'0')).join(':');let target=$('#law-target');if(target)target.textContent=sec>=600?'Meta diária de 10 min alcançada.':Math.max(0,600-sec)+' s para 10 min';}
+function lawLastRef(normId){let rows=lawState().sessions.filter(x=>x.normId===normId).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));return rows[0]?.endRef||rows[0]?.startRef||'';}
+function legislationPage(){let l=lawState(),norm=currentLaw(),today=l.sessions.filter(x=>x.date===M.day()).reduce((a,x)=>a+x.minutes,0),total=l.sessions.reduce((a,x)=>a+x.minutes,0),rows=[...l.sessions].sort((a,b)=>b.date.localeCompare(a.date)||String(b.createdAt).localeCompare(String(a.createdAt))),completed=new Set(l.completed.map(x=>x.normId));return heading('10 MINUTOS TODOS OS DIAS','Legislação Seca','Uma norma por vez, do início ao fim. Esta rotina é complementar e não altera o ciclo principal.')+`<div class="grid two"><section class="card hero"><span class="eyebrow">NORMA ATUAL</span><h2>${esc(norm.short)}</h2><p>${esc(norm.title)}</p><div class="timer" id="law-clock">00:00:00</div><div class="actions">${lawTimer?actionsButton(lawTimer.running?'Pausar':'Continuar','law-timer-toggle')+actionsButton('Registrar tempo','law-timer-save','class="secondary"'):actionsButton('Iniciar 10 minutos','law-timer-start')+actionsButton('Registrar manualmente','law-manual','class="secondary"')}</div><div class="statline"><span>Hoje: <b>${today} min</b></span><span>Total: <b>${M.hm(total)}</b></span><span id="law-target">${today>=10?'Meta diária alcançada.':10-today+' min para a meta'}</span></div><p class="muted" style="font-size:13px">${lawLastRef(norm.id)?'Retomar de: '+esc(lawLastRef(norm.id)):'Comece do início da norma e registre onde parou.'}</p><button class="secondary" data-action="law-complete">Concluir esta norma e avançar</button></section><section class="card"><h2>Regra da rotina</h2><p class="muted">Leia a mesma norma diariamente até terminá-la. Somente depois avance para a próxima da fila.</p><p class="muted">O cronômetro usa 10 minutos como referência, mas o registro manual aceita o tempo real estudado.</p><div class="warning">A LINDB não integra esta fila: ela não aparece expressamente nos conteúdos programáticos dos editais TCU 2021/2022 e TCU 2025/2026 usados como referência.</div></section></div><section class="card section-title"><h2>Fila de leitura</h2><div class="table-wrap"><table><thead><tr><th>ORDEM</th><th>NORMA</th><th>SITUAÇÃO</th></tr></thead><tbody>${l.queue.map((x,i)=>`<tr><td>${i+1}</td><td><b>${esc(x.short)}</b><small style="display:block">${esc(x.title)}</small></td><td>${completed.has(x.id)?'<span class="badge">Concluída</span>':i===l.current?'<span class="badge">Em leitura</span>':'Planejada'}</td></tr>`).join('')}</tbody></table></div></section><section class="card section-title"><h2>Histórico da Legislação Seca</h2>${rows.length?`<div class="table-wrap"><table><thead><tr><th>DATA</th><th>NORMA</th><th>TEMPO</th><th>LEITURA</th><th>ANOTAÇÃO</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(l.queue.find(n=>n.id===x.normId)?.short||x.normId)}</td><td>${x.minutes} min</td><td>${esc([x.startRef,x.endRef].filter(Boolean).join(' → ')||'—')}</td><td>${esc(x.notes||'—')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhuma leitura registrada ainda.</div>'}</section>`;}
+function lawManualDialog(defaultMinutes=10,source='manual'){let norm=currentLaw();open(`<h2>Registrar Legislação Seca</h2><p class="muted"><b>${esc(norm.short)}</b> · ${esc(norm.title)}</p><form id="law-form" class="form-grid"><label>Data<input required type="date" name="date" value="${M.day()}" max="${M.day()}"></label><label>Minutos<input required type="number" min="1" max="1440" step="1" name="minutes" value="${defaultMinutes}"></label><label>Ponto inicial<input name="startRef" maxlength="120" placeholder="Ex.: art. 1º"></label><label>Ponto final<input name="endRef" maxlength="120" placeholder="Ex.: art. 12"></label><label class="full">Anotação opcional<textarea name="notes" maxlength="2000" placeholder="Ex.: retomar no art. 13"></textarea></label><button class="full">Salvar leitura</button></form>`);$('#law-form').onsubmit=e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target)),minutes=Number(d.minutes);if(!M.validDay(d.date)||d.date>M.day()||!Number.isInteger(minutes)||minutes<1||minutes>1440){toast('Confira a data e o tempo da leitura.',true);return;}if(change(()=>{let next=M.copy(state),l=next.legislation,n=l.queue[l.current];l.sessions.push({id:M.uid(),normId:n.id,date:d.date,minutes,startRef:String(d.startRef||'').trim(),endRef:String(d.endRef||'').trim(),notes:String(d.notes||'').trim(),source,createdAt:new Date().toISOString()});return next;},'Leitura de legislação registrada.')){close();}};}
+function completeLawDialog(){let norm=currentLaw();open(`<h2>Concluir ${esc(norm.short)}</h2><p class="muted">Confirme somente depois de chegar ao final da norma. A próxima da fila será liberada automaticamente.</p><form id="law-complete-form"><button>Concluir norma e avançar</button></form>`);$('#law-complete-form').onsubmit=e=>{e.preventDefault();if(change(()=>{let next=M.copy(state),l=next.legislation,n=l.queue[l.current];if(!l.completed.some(x=>x.normId===n.id))l.completed.push({normId:n.id,date:M.day(),at:new Date().toISOString()});if(l.current<l.queue.length-1)l.current++;return next;},'Norma concluída. Próxima leitura liberada.'))close();};}
+"""
+if 'function legislationPage()' not in app:
+    if anchor not in app:
+        raise SystemExit('Âncora currentSubject não encontrada.')
+    app = app.replace(anchor, anchor + feature, 1)
+
+app = app.replace("['today','progress','subjects','solid','planning','history','data','reminders','motivation']", "['today','progress','subjects','solid','planning','history','legislation','data','reminders','motivation']", 1)
+app = app.replace("history:historyPage,data:dataPage", "history:historyPage,legislation:legislationPage,data:dataPage", 1)
+app = app.replace("updateClock();}", "updateClock();updateLawClock();}", 1)
+
+click_anchor = "if(a==='to-solid'){"
+law_actions = "if(a==='law-manual')lawManualDialog();if(a==='law-timer-start'){let n=currentLaw();lawTimer={normId:n.id,elapsed:0,started:Date.now(),running:true};saveLawTimer();render();}if(a==='law-timer-toggle'){lawTimer.elapsed=lawElapsed();lawTimer.running=!lawTimer.running;lawTimer.started=Date.now();saveLawTimer();render();}if(a==='law-timer-save'){if(lawElapsed()<60000)throw Error('Registre após completar pelo menos um minuto.');let mins=Math.max(1,Math.floor(lawElapsed()/60000));lawTimer.elapsed=lawElapsed();lawTimer.running=false;saveLawTimer();lawManualDialog(mins,'timer');lawTimer=null;saveLawTimer();}if(a==='law-complete')completeLawDialog();"
+if law_actions not in app:
+    if click_anchor not in app:
+        raise SystemExit('Âncora de ações não encontrada.')
+    app = app.replace(click_anchor, law_actions + click_anchor, 1)
+
+app = app.replace("setInterval(()=>{updateClock();", "setInterval(()=>{updateClock();updateLawClock();", 1)
+init_anchor = "let t=localStorage.getItem(M.KEY+':timer');if(t){let saved=JSON.parse(t);if(state.subjects.some(s=>s.id===saved.subjectId)&&Number.isFinite(saved.elapsed)&&Number.isFinite(saved.started))timer=saved;}"
+init_new = init_anchor + "let lt=localStorage.getItem(M.KEY+':law-timer');if(lt){let saved=JSON.parse(lt);if(state.legislation.queue.some(n=>n.id===saved.normId)&&Number.isFinite(saved.elapsed)&&Number.isFinite(saved.started))lawTimer=saved;}"
+if init_anchor in app and "M.KEY+':law-timer'" not in app.split('async function init()',1)[1]:
+    app = app.replace(init_anchor, init_new, 1)
+app = app.replace("!Array.isArray(JSON.parse(storedRaw).reminders)", "!Array.isArray(JSON.parse(storedRaw).reminders)||!JSON.parse(storedRaw).legislation", 1)
+app = app.replace("./core.js?v=2.3", "./core.js?v=2.4", 1)
+app_path.write_text(app, encoding='utf-8')
+
+nav_anchor = '      <a href="#history">▥ <span>Diário</span></a>\n'
+nav_item = '      <a href="#legislation">§ <span>Legislação Seca</span></a>\n'
+if nav_item not in index:
+    if nav_anchor not in index:
+        raise SystemExit('Âncora do menu Diário não encontrada.')
+    index = index.replace(nav_anchor, nav_anchor + nav_item, 1)
+index = index.replace('?v=2.3', '?v=2.4')
+index = index.replace('content="2.3-legacy-validation"', 'content="2.4-legislacao-seca"')
+index_path.write_text(index, encoding='utf-8')
+
+app = app_path.read_text(encoding='utf-8')
+personal = personal_path.read_text(encoding='utf-8')
+index = index_path.read_text(encoding='utf-8')
+drive = (root / 'drive-sync.js').read_text(encoding='utf-8')
+assert 'function legislationPage()' in app
+assert 'lawManualDialog' in app
+assert "M.KEY+':law-timer'" in app
+assert 'legislation:legislationPage' in app
+assert 'LEGISLATION_QUEUE' in personal
+assert 'LINDB' not in personal
+assert '#legislation' in index
+assert '2.4-legislacao-seca' in index
+assert 'MutationObserver' not in drive
+assert 'main.focus()' not in app
