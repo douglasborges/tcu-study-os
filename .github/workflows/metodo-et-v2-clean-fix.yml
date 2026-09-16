@@ -18,7 +18,7 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
+          from textwrap import dedent
 
           root = Path('metodo-et')
           app_path = root / 'src/app.js'
@@ -29,53 +29,68 @@ jobs:
           core = core_path.read_text(encoding='utf-8')
           index = index_path.read_text(encoding='utf-8')
 
-          # 1) Registrar uma sessão de teoria não deve exigir validar etapas antigas.
-          # A trava permanece em setUnit(), isto é, ao declarar formalmente uma unidade concluída.
+          # 1) Registrar uma sessão de teoria não deve exigir validar etapas anteriores.
           old_gate = " if(input.activity==='theory'&&u&&!u.theoryDone)requirePrevious(s,u);\n"
           if old_gate in core:
               core = core.replace(old_gate, '', 1)
 
-          # 2) Preservar o conteúdo/videoaula informado em vez de sobrescrever pelo nome do módulo.
+          # 2) O conteúdo/videoaula informado deve ser preservado no diário.
           old_title = "title:u?.title||String(input.title||'').trim()"
           new_title = "title:String(input.title||'').trim()||u?.title||''"
           if old_title in core:
               core = core.replace(old_title, new_title, 1)
           if new_title not in core:
-              raise SystemExit('Não foi possível corrigir o título/conteúdo da sessão.')
-
+              raise SystemExit('Não foi possível corrigir o título da sessão.')
           core_path.write_text(core, encoding='utf-8')
 
-          # 3) Forçar o navegador a buscar o core novo.
+          # 3) Importar o core com cache-bust próprio.
           app = app.replace("import * as M from './core.js';", "import * as M from './core.js?v=2.2';", 1)
 
-          # 4) Catálogo das videoaulas de AFO: usa o catálogo completo preservado dentro do backup StudyOS.
-          helper_anchor = "function currentSubject(){return subject(M.CYCLE[state.cycle.index]);}\n"
-          helpers = r'''function archivedStudyOSStates(){return (state.archive||[]).map(a=>a?.payload?.state||a?.payload).filter(src=>Array.isArray(src?.topics));}
-function afoVideoLessons(s,u){if(s?.id!=='afo'||!u)return[];let prefix=String(u.title||'').trim()+' — ',found=new Map();for(let src of archivedStudyOSStates())for(let t of src.topics||[]){if(t?.disciplineId!=='afo')continue;let full=String(t.title||'').trim();if(!full.startsWith(prefix))continue;let text=String(t.details||full.slice(prefix.length)).trim();if(!text||/^PDF\s*—/i.test(text))continue;let order=Number(t.order)||999999;if(!found.has(text)||order<found.get(text))found.set(text,order);}for(let e of u.legacy||[]){let full=String(e.title||'').trim();if(!full.startsWith(prefix))continue;let text=full.slice(prefix.length).trim();if(text&&!/^PDF\s*—/i.test(text)&&!found.has(text))found.set(text,999999+found.size);}return [...found.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0],'pt-BR')).map(([title])=>title);}
-function sessionContentField(s,u,selected=''){let items=afoVideoLessons(s,u);if(s?.id==='afo'&&u&&items.length)return `<label class="full">Conteúdo estudado / videoaula<select name="title" id="session-content">${option('','Selecionar videoaula',selected)}${items.map(t=>option(t,t,selected)).join('')}</select></label><label class="full">Outro conteúdo (se não estiver na lista)<input name="customTitle" value="${esc(selected&&!items.includes(selected)?selected:'')}" placeholder="Digite somente se não estiver na lista"></label>`;return `<label class="full">Conteúdo estudado (opcional)<input name="title" value="${esc(selected)}" placeholder="Ex.: leitura complementar ou resolução de questões"></label>`;}
-function refreshSessionContent(){let form=$('#session-form');if(!form)return;let s=subject(form.elements.subjectId.value),u=s?.units.find(u=>u.id===form.elements.unitId.value),wrap=$('#session-content-wrap');if(wrap)wrap.innerHTML=sessionContentField(s,u,'');}
-'''
+          # 4) Montar o catálogo completo de videoaulas de AFO a partir do backup StudyOS arquivado.
+          anchor = "function currentSubject(){return subject(M.CYCLE[state.cycle.index]);}\n"
+          helpers = dedent("""
+          function archivedStudyOSStates(){return (state.archive||[]).map(a=>a?.payload?.state||a?.payload).filter(src=>Array.isArray(src?.topics));}
+          function afoVideoLessons(s,u){if(s?.id!=='afo'||!u)return[];let prefix=String(u.title||'').trim()+' — ',found=new Map();for(let src of archivedStudyOSStates())for(let t of src.topics||[]){if(t?.disciplineId!=='afo')continue;let full=String(t.title||'').trim();if(!full.startsWith(prefix))continue;let text=String(t.details||full.slice(prefix.length)).trim();if(!text||/^PDF\\s*—/i.test(text))continue;let order=Number(t.order)||999999;if(!found.has(text)||order<found.get(text))found.set(text,order);}for(let e of u.legacy||[]){let full=String(e.title||'').trim();if(!full.startsWith(prefix))continue;let text=full.slice(prefix.length).trim();if(text&&!/^PDF\\s*—/i.test(text)&&!found.has(text))found.set(text,999999+found.size);}return [...found.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0],'pt-BR')).map(([title])=>title);}
+          function sessionContentField(s,u,selected=''){let items=afoVideoLessons(s,u);if(s?.id==='afo'&&u&&items.length)return `<label class="full">Conteúdo estudado / videoaula<select name="title" id="session-content">${option('','Selecionar videoaula',selected)}${items.map(t=>option(t,t,selected)).join('')}</select></label><label class="full">Outro conteúdo (se não estiver na lista)<input name="customTitle" value="${esc(selected&&!items.includes(selected)?selected:'')}" placeholder="Digite somente se não estiver na lista"></label>`;return `<label class="full">Conteúdo estudado (opcional)<input name="title" value="${esc(selected)}" placeholder="Ex.: leitura complementar ou resolução de questões"></label>`;}
+          function refreshSessionContent(){let form=$('#session-form');if(!form)return;let s=subject(form.elements.subjectId.value),u=s?.units.find(u=>u.id===form.elements.unitId.value),wrap=$('#session-content-wrap');if(wrap)wrap.innerHTML=sessionContentField(s,u,'');}
+          """).lstrip()
           if 'function afoVideoLessons(' not in app:
-              if helper_anchor not in app:
+              if anchor not in app:
                   raise SystemExit('Âncora currentSubject não encontrada.')
-              app = app.replace(helper_anchor, helpers + helper_anchor, 1)
+              app = app.replace(anchor, helpers + anchor, 1)
 
-          # 5) Reescrever somente o formulário de registro, mantendo o restante da app intacto.
-          new_dialog = r'''function sessionDialog(defaults={}){let sid=defaults.subjectId||currentSubject().id,s=subject(sid),initialUnit=s.units.find(u=>u.id===defaults.unitId);open(`<h2>Registrar estudo</h2><p class="muted">Registre a sessão exatamente onde você estudou. Registrar tempo não conclui automaticamente o módulo nem valida etapas anteriores.</p><form id="session-form" class="form-grid"><label>Disciplina<select name="subjectId" id="session-subject">${state.subjects.map(s=>option(s.id,label(s.id),sid)).join('')}</select></label><label>Atividade<select name="activity" id="session-activity">${Object.entries(M.ACTIVITIES).map(([id,t])=>option(id,t,defaults.activity||'free')).join('')}</select></label><label class="full">Aula ou módulo<select name="unitId" id="session-unit">${unitOptions(s,defaults.unitId)}</select></label><div id="session-content-wrap" class="full">${sessionContentField(s,initialUnit,defaults.title||'')}</div><label>Data<input required type="date" name="date" value="${defaults.date||M.day()}" max="${M.day()}"></label><div class="duration-fields"><label>Horas<input required type="number" min="0" max="24" step="1" name="hours" value="${Math.floor((defaults.minutes||0)/60)}"></label><label>Minutos<input required type="number" min="0" max="59" step="1" name="durationMinutes" value="${(defaults.minutes||0)%60}"></label></div><label>Questões resolvidas<input type="number" min="0" step="1" name="questions" value="0"></label><label>Acertos<input type="number" min="0" step="1" name="correct" value="0"></label><label>Formato<select name="medium"><option value="">Não informado</option><option value="pdf">PDF / leitura</option><option value="video">Videoaula</option><option value="tec">TEC / questões</option></select></label><div></div><label>Página / minuto inicial<input type="number" min="0" step="any" name="start"></label><label>Página / minuto final<input type="number" min="0" step="any" name="end"></label><label class="full">Anotações<textarea name="notes" placeholder="O que estudar na próxima sessão? Dúvidas, grifos, questões…"></textarea></label><label class="check full"><input type="checkbox" name="applyCycle" ${checks(!!defaults.activity&&defaults.activity!=='night'&&defaults.activity!=='free'&&sid===currentSubject().id)}> Abater este tempo do bloco atual do ciclo</label><small class="full">Sessões de teoria podem ser registradas no ponto real em que você está. Para marcar uma unidade como concluída, liberar baterias e checkpoints, a validação formal do Método ET continua sendo feita em Disciplinas.</small><button type="submit" class="full">Salvar registro</button></form>`);$('#session-subject').onchange=e=>{$('#session-unit').innerHTML=unitOptions(subject(e.target.value));refreshSessionContent();};$('#session-unit').onchange=refreshSessionContent;$('#session-activity').onchange=e=>{if(e.target.value==='free')$('#session-form').elements.applyCycle.checked=false;if(e.target.value==='night'){$('#session-form').elements.applyCycle.checked=false;$('#session-form').elements.hours.value=0;$('#session-form').elements.durationMinutes.value=5;}};$('#session-form').onsubmit=e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target));if(String(d.customTitle||'').trim())d.title=String(d.customTitle).trim();delete d.customTitle;try{d.minutes=durationMinutes(d.hours,d.durationMinutes);}catch(error){toast(error.message,true);return;}d.applyCycle=e.target.elements.applyCycle.checked;if(change(()=>M.session(state,d))){if(defaults.fromTimer){let remainder=Math.max(0,timer.elapsed-Number(d.minutes)*60000);timer=remainder?{...timer,elapsed:remainder,running:false}:null;saveTimer();}close();render();}};}
-function unitOptions'''
-          pattern = r"function sessionDialog\(defaults=\{\}\)\{.*?\}\nfunction unitOptions"
-          app, count = re.subn(pattern, new_dialog, app, count=1, flags=re.S)
-          if count != 1:
-              raise SystemExit(f'Não foi possível substituir sessionDialog: {count}')
+          # 5) Ajustes localizados no formulário de registro.
+          app = app.replace(
+              '<p class="muted">Em Estudo livre, registre seu tempo sem precisar selecionar uma aula ou concluir etapas anteriores.</p>',
+              '<p class="muted">Registre a sessão exatamente onde você estudou. Registrar tempo não conclui automaticamente o módulo nem valida etapas anteriores.</p>',
+              1
+          )
+          old_content = '<label class="full">Conteúdo estudado (opcional)<input name="title" placeholder="Ex.: leitura complementar ou resolução de questões"></label>'
+          new_content = '<div id="session-content-wrap" class="full">${sessionContentField(s,s.units.find(u=>u.id===defaults.unitId),defaults.title||\'\')}</div>'
+          if old_content in app:
+              app = app.replace(old_content, new_content, 1)
 
+          old_subject_change = "$('#session-subject').onchange=e=>$('#session-unit').innerHTML=unitOptions(subject(e.target.value));"
+          new_subject_change = "$('#session-subject').onchange=e=>{$('#session-unit').innerHTML=unitOptions(subject(e.target.value));refreshSessionContent();};$('#session-unit').onchange=refreshSessionContent;"
+          if old_subject_change in app:
+              app = app.replace(old_subject_change, new_subject_change, 1)
+
+          old_submit = "let d=Object.fromEntries(new FormData(e.target));try{d.minutes=durationMinutes(d.hours,d.durationMinutes);}"
+          new_submit = "let d=Object.fromEntries(new FormData(e.target));if(String(d.customTitle||'').trim())d.title=String(d.customTitle).trim();delete d.customTitle;try{d.minutes=durationMinutes(d.hours,d.durationMinutes);}"
+          if old_submit in app:
+              app = app.replace(old_submit, new_submit, 1)
+
+          old_note = 'Estudo livre soma tempo e questões ao diário, sem concluir etapas. A bateria exige teoria concluída em outro dia. A revisão noturna dura 5–10 min e fica fora das metas.'
+          new_note = 'Sessões de teoria podem ser registradas no ponto real em que você está. Para marcar uma unidade como concluída, liberar baterias e checkpoints, a validação formal do Método ET continua sendo feita em Disciplinas.'
+          app = app.replace(old_note, new_note, 1)
           app_path.write_text(app, encoding='utf-8')
 
-          # 6) Cache bust + identificação da build.
+          # 6) Build v2.2 para o Dock buscar os arquivos novos.
           index = index.replace('?v=2.1', '?v=2.2')
           index = index.replace('content="2.1-clean"', 'content="2.2-registration"')
           index_path.write_text(index, encoding='utf-8')
 
-          # 7) Asserções: não reintroduzir o bug do Dock/Dados e garantir a correção de registro.
+          # 7) Asserções de produção.
           app = app_path.read_text(encoding='utf-8')
           core = core_path.read_text(encoding='utf-8')
           index = index_path.read_text(encoding='utf-8')
