@@ -8,24 +8,45 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Método ET">
   <title>Método ET · Preparação TCU</title>
-  <link rel="icon" href="./assets/metodo-et-icon-v2.png?v=1.4" type="image/png">
-  <link rel="apple-touch-icon" href="./assets/metodo-et-icon-v2.png?v=1.4">
-  <link rel="manifest" href="./manifest.webmanifest?v=1.4">
-  <link rel="stylesheet" href="./styles.css?v=1.4">
-  <link rel="stylesheet" href="./drive-sync.css?v=1.4">
+  <link rel="icon" href="./assets/metodo-et-icon-v2.png?v=1.5" type="image/png">
+  <link rel="apple-touch-icon" href="./assets/metodo-et-icon-v2.png?v=1.5">
+  <link rel="manifest" href="./manifest.webmanifest?v=1.5">
+  <link rel="stylesheet" href="./styles.css?v=1.5">
+  <link rel="stylesheet" href="./drive-sync.css?v=1.5">
   <style>
     .app-footer{padding-top:24px}
-    .brand.brand-lockup{display:block;width:100%;padding:0;margin:0;text-decoration:none}
-    .brand.brand-lockup img{display:block;width:100%;height:auto;max-height:82px;object-fit:contain;object-position:left center;border-radius:10px}
-    @media(max-width:1100px){.brand.brand-lockup img{max-height:72px}}
-    @media(max-width:720px){.app-footer{padding-top:20px}.sidebar .brand.brand-lockup{display:none}}
+    .brand.brand-lockup{
+      display:block;
+      width:100%;
+      padding:0;
+      margin:0;
+      text-decoration:none;
+      line-height:0;
+    }
+    .brand.brand-lockup img{
+      display:block;
+      width:100%;
+      height:auto;
+      aspect-ratio:3 / 1;
+      object-fit:contain;
+      object-position:center;
+      border-radius:12px;
+      box-shadow:0 0 18px rgba(197,246,91,.08);
+    }
+    @media(max-width:1100px){
+      .brand.brand-lockup img{border-radius:10px}
+    }
+    @media(max-width:720px){
+      .app-footer{padding-top:20px}
+      .sidebar .brand.brand-lockup{display:none}
+    }
   </style>
 </head>
 <body>
   <a class="skip" href="#main">Pular para o conteúdo</a>
   <aside class="sidebar">
     <a class="brand brand-lockup" href="#today" aria-label="Método ET · Estudo Total · Douglas">
-      <img src="./assets/metodo-et-brand-v2.jpg?v=1.4" alt="Método ET · Estudo Total · Douglas">
+      <img src="./assets/metodo-et-brand-v3.jpg?v=1.5" width="594" height="198" alt="Método ET · Estudo Total · Douglas">
     </a>
     <div class="focus"><span class="dot"></span> MISSÃO TCU </div>
     <nav aria-label="Navegação principal">
@@ -49,13 +70,13 @@
   </div>
   <dialog id="modal"><div id="modal-body"></div><button class="close secondary" id="close-modal" aria-label="Fechar janela">Fechar</button></dialog>
 
-  <script type="module" src="./src/app.js?v=1.4"></script>
-  <script src="./oauth-client-hotfix.js?v=1.4" defer></script>
-  <script src="./drive-sync-v1.2.js?v=1.4" defer></script>
+  <script type="module" src="./src/app.js?v=1.5"></script>
+  <script src="./oauth-client-hotfix.js?v=1.5" defer></script>
+  <script src="./drive-sync-v1.2.js?v=1.5" defer></script>
   <script>
     window.addEventListener('load', () => {
       if (!('serviceWorker' in navigator)) return;
-      navigator.serviceWorker.register('./sw.js?v=1.4', { scope: './' }).catch(error => {
+      navigator.serviceWorker.register('./sw.js?v=1.5', { scope: './' }).catch(error => {
         console.warn('[Método ET PWA] Service Worker não registrado:', error);
       });
     }, { once: true });
