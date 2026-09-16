@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'studyos-metodo-et-';
-const CACHE_NAME = `${CACHE_PREFIX}v1-2`;
+const CACHE_NAME = `${CACHE_PREFIX}v1-3`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -63,7 +63,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // OAuth e Google Drive ficam fora do Service Worker, como na StudyOS estável.
+  // OAuth e Google Drive ficam fora do Service Worker, como na versão estável.
   if (url.origin !== self.location.origin) return;
 
   if (event.request.mode === 'navigate') {
