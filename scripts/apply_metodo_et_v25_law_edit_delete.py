@@ -38,7 +38,7 @@ app = app.replace("./core.js?v=2.4", "./core.js?v=2.5", 1)
 app_path.write_text(app, encoding='utf-8')
 
 index = index.replace('?v=2.4', '?v=2.5')
-index = index.replace('content="2.4-legislation"', 'content="2.5-law-edit-delete"')
+index = index.replace('content="2.4-legislacao-seca"', 'content="2.5-law-edit-delete"')
 index_path.write_text(index, encoding='utf-8')
 
 # 5) Asserções de segurança.
