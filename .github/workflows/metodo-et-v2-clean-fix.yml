@@ -1,4 +1,4 @@
-name: Metodo ET v2.2 registro AFO
+name: Metodo ET v2.3 validacao historico
 
 on:
   push:
@@ -14,11 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply v2.2 registration fix
+      - name: Apply v2.3 imported-history validation
         shell: python
         run: |
           from pathlib import Path
-          from textwrap import dedent
 
           root = Path('metodo-et')
           app_path = root / 'src/app.js'
@@ -29,80 +28,48 @@ jobs:
           core = core_path.read_text(encoding='utf-8')
           index = index_path.read_text(encoding='utf-8')
 
-          # 1) Registrar uma sessão de teoria não deve exigir validar etapas anteriores.
-          old_gate = " if(input.activity==='theory'&&u&&!u.theoryDone)requirePrevious(s,u);\n"
-          if old_gate in core:
-              core = core.replace(old_gate, '', 1)
-
-          # 2) O conteúdo/videoaula informado deve ser preservado no diário.
-          old_title = "title:u?.title||String(input.title||'').trim()"
-          new_title = "title:String(input.title||'').trim()||u?.title||''"
-          if old_title in core:
-              core = core.replace(old_title, new_title, 1)
-          if new_title not in core:
-              raise SystemExit('Não foi possível corrigir o título da sessão.')
+          # 1) Histórico importado pode validar a teoria sem exigir baterias antigas.
+          # Unidades sem evidência continuam usando a sequência rígida normal do Método ET.
+          old = "if(theory&&!u.theoryDone)requirePrevious(s,u);"
+          new = "if(theory&&!u.theoryDone&&!u.legacy.some(e=>e.status!=='Em espera'||e.date))requirePrevious(s,u);"
+          if old in core:
+              core = core.replace(old, new, 1)
+          if new not in core:
+              raise SystemExit('Não foi possível aplicar a exceção segura para histórico importado.')
           core_path.write_text(core, encoding='utf-8')
 
-          # 3) Importar o core com cache-bust próprio.
-          app = app.replace("import * as M from './core.js';", "import * as M from './core.js?v=2.2';", 1)
+          # 2) Sugerir automaticamente a última data real encontrada nas evidências importadas.
+          helper_anchor = "function refreshSessionContent(){let form=$('#session-form');if(!form)return;let s=subject(form.elements.subjectId.value),u=s?.units.find(u=>u.id===form.elements.unitId.value),wrap=$('#session-content-wrap');if(wrap)wrap.innerHTML=sessionContentField(s,u,'');}\n"
+          helper = "function suggestedTheoryDate(u){let dates=(u?.legacy||[]).map(e=>e.date).filter(d=>/^\\d{4}-\\d{2}-\\d{2}$/.test(d||'')).sort();return dates.at(-1)||'';}\n"
+          if 'function suggestedTheoryDate(' not in app:
+              if helper_anchor not in app:
+                  raise SystemExit('Âncora para suggestedTheoryDate não encontrada.')
+              app = app.replace(helper_anchor, helper_anchor + helper, 1)
 
-          # 4) Montar o catálogo completo de videoaulas de AFO a partir do backup StudyOS arquivado.
-          anchor = "function currentSubject(){return subject(M.CYCLE[state.cycle.index]);}\n"
-          helpers = dedent("""
-          function archivedStudyOSStates(){return (state.archive||[]).map(a=>a?.payload?.state||a?.payload).filter(src=>Array.isArray(src?.topics));}
-          function afoVideoLessons(s,u){if(s?.id!=='afo'||!u)return[];let prefix=String(u.title||'').trim()+' — ',found=new Map();for(let src of archivedStudyOSStates())for(let t of src.topics||[]){if(t?.disciplineId!=='afo')continue;let full=String(t.title||'').trim();if(!full.startsWith(prefix))continue;let text=String(t.details||full.slice(prefix.length)).trim();if(!text||/^PDF\\s*—/i.test(text))continue;let order=Number(t.order)||999999;if(!found.has(text)||order<found.get(text))found.set(text,order);}for(let e of u.legacy||[]){let full=String(e.title||'').trim();if(!full.startsWith(prefix))continue;let text=full.slice(prefix.length).trim();if(text&&!/^PDF\\s*—/i.test(text)&&!found.has(text))found.set(text,999999+found.size);}return [...found.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0],'pt-BR')).map(([title])=>title);}
-          function sessionContentField(s,u,selected=''){let items=afoVideoLessons(s,u);if(s?.id==='afo'&&u&&items.length)return `<label class="full">Conteúdo estudado / videoaula<select name="title" id="session-content">${option('','Selecionar videoaula',selected)}${items.map(t=>option(t,t,selected)).join('')}</select></label><label class="full">Outro conteúdo (se não estiver na lista)<input name="customTitle" value="${esc(selected&&!items.includes(selected)?selected:'')}" placeholder="Digite somente se não estiver na lista"></label>`;return `<label class="full">Conteúdo estudado (opcional)<input name="title" value="${esc(selected)}" placeholder="Ex.: leitura complementar ou resolução de questões"></label>`;}
-          function refreshSessionContent(){let form=$('#session-form');if(!form)return;let s=subject(form.elements.subjectId.value),u=s?.units.find(u=>u.id===form.elements.unitId.value),wrap=$('#session-content-wrap');if(wrap)wrap.innerHTML=sessionContentField(s,u,'');}
-          """).lstrip()
-          if 'function afoVideoLessons(' not in app:
-              if anchor not in app:
-                  raise SystemExit('Âncora currentSubject não encontrada.')
-              app = app.replace(anchor, helpers + anchor, 1)
+          # 3) Pré-preencher a data da teoria com a evidência importada e explicar o comportamento.
+          app = app.replace('value="${u.theoryDate}"', 'value="${u.theoryDate||suggestedTheoryDate(u)}"', 1)
+          old_label = "Teoria concluída para toda esta ${s.id==='afo'?'unidade (módulo completo)':'aula'}</label>"
+          new_label = "Teoria concluída para toda esta ${s.id==='afo'?'unidade (módulo completo)':'aula'}</label>${u.legacy.length&&!u.theoryDone?'<small>Histórico StudyOS encontrado: você pode confirmar a teoria na data real sem marcar bateria ou checkpoint.</small>':''}"
+          if old_label in app:
+              app = app.replace(old_label, new_label, 1)
 
-          # 5) Ajustes localizados no formulário de registro.
-          app = app.replace(
-              '<p class="muted">Em Estudo livre, registre seu tempo sem precisar selecionar uma aula ou concluir etapas anteriores.</p>',
-              '<p class="muted">Registre a sessão exatamente onde você estudou. Registrar tempo não conclui automaticamente o módulo nem valida etapas anteriores.</p>',
-              1
-          )
-          old_content = '<label class="full">Conteúdo estudado (opcional)<input name="title" placeholder="Ex.: leitura complementar ou resolução de questões"></label>'
-          new_content = '<div id="session-content-wrap" class="full">${sessionContentField(s,s.units.find(u=>u.id===defaults.unitId),defaults.title||\'\')}</div>'
-          if old_content in app:
-              app = app.replace(old_content, new_content, 1)
-
-          old_subject_change = "$('#session-subject').onchange=e=>$('#session-unit').innerHTML=unitOptions(subject(e.target.value));"
-          new_subject_change = "$('#session-subject').onchange=e=>{$('#session-unit').innerHTML=unitOptions(subject(e.target.value));refreshSessionContent();};$('#session-unit').onchange=refreshSessionContent;"
-          if old_subject_change in app:
-              app = app.replace(old_subject_change, new_subject_change, 1)
-
-          old_submit = "let d=Object.fromEntries(new FormData(e.target));try{d.minutes=durationMinutes(d.hours,d.durationMinutes);}"
-          new_submit = "let d=Object.fromEntries(new FormData(e.target));if(String(d.customTitle||'').trim())d.title=String(d.customTitle).trim();delete d.customTitle;try{d.minutes=durationMinutes(d.hours,d.durationMinutes);}"
-          if old_submit in app:
-              app = app.replace(old_submit, new_submit, 1)
-
-          old_note = 'Estudo livre soma tempo e questões ao diário, sem concluir etapas. A bateria exige teoria concluída em outro dia. A revisão noturna dura 5–10 min e fica fora das metas.'
-          new_note = 'Sessões de teoria podem ser registradas no ponto real em que você está. Para marcar uma unidade como concluída, liberar baterias e checkpoints, a validação formal do Método ET continua sendo feita em Disciplinas.'
-          app = app.replace(old_note, new_note, 1)
+          # 4) Cache bust da nova build.
+          app = app.replace("./core.js?v=2.2", "./core.js?v=2.3", 1)
           app_path.write_text(app, encoding='utf-8')
-
-          # 6) Build v2.2 para o Dock buscar os arquivos novos.
-          index = index.replace('?v=2.1', '?v=2.2')
-          index = index.replace('content="2.1-clean"', 'content="2.2-registration"')
+          index = index.replace('?v=2.2', '?v=2.3')
+          index = index.replace('content="2.2-registration"', 'content="2.3-legacy-validation"')
           index_path.write_text(index, encoding='utf-8')
 
-          # 7) Asserções de produção.
+          # 5) Asserções de segurança: preservar a estabilidade do Dock/Dados e a nova regra.
           app = app_path.read_text(encoding='utf-8')
           core = core_path.read_text(encoding='utf-8')
           index = index_path.read_text(encoding='utf-8')
           drive = (root / 'drive-sync.js').read_text(encoding='utf-8')
-          assert "input.activity==='theory'&&u&&!u.theoryDone" not in core
-          assert "title:String(input.title||'').trim()||u?.title||''" in core
-          assert "./core.js?v=2.2" in app
-          assert 'function afoVideoLessons(' in app
-          assert 'session-content-wrap' in app
-          assert 'customTitle' in app
-          assert '2.2-registration' in index
-          assert '?v=2.2' in index
+          assert new in core
+          assert 'function suggestedTheoryDate(' in app
+          assert "./core.js?v=2.3" in app
+          assert '2.3-legacy-validation' in index
+          assert '?v=2.3' in index
           assert 'MutationObserver' not in drive
           assert 'main.focus()' not in app
 
@@ -113,10 +80,10 @@ jobs:
           node --check /tmp/metodo-et-app.mjs
           node --check /tmp/metodo-et-core.mjs
 
-      - name: Commit v2.2
+      - name: Commit v2.3
         run: |
           git config user.name 'Metodo ET Build Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add metodo-et
-          git commit -m 'fix: Método ET v2.2 — registro livre e videoaulas AFO' || exit 0
+          git commit -m 'fix: Método ET v2.3 — validar teoria importada sem inventar baterias' || exit 0
           git push
