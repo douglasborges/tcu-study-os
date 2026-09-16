@@ -1,4 +1,4 @@
-name: Metodo ET v2 clean fix
+name: Metodo ET v2.1 clean fix
 
 on:
   push:
@@ -14,65 +14,76 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply clean Dock/Data fix
+      - name: Apply v2.1 clean fix
         shell: python
         run: |
           from pathlib import Path
-          import re
+          import base64, json
 
           root = Path('metodo-et')
 
-          old = root / 'drive-sync-v1.2.js'
-          src = old.read_text(encoding='utf-8')
-          before = src
-          src = src.replace("    renderButton();\n    updateDataPageCopy();", "    renderButton();")
-          src, n1 = re.subn(
-              r"\n  function updateDataPageCopy\(\) \{.*?\n  \}\n\n  function loadGoogleIdentity",
-              "\n\n  function loadGoogleIdentity",
-              src,
-              count=1,
-              flags=re.S,
-          )
-          src, n2 = re.subn(
-              r"\n    startRemoteTimer\(\);\n    const observer = new MutationObserver\(updateDataPageCopy\);\n    const main = document\.querySelector\('#main'\);\n    if \(main\) observer\.observe\(main, \{ childList: true, subtree: true \}\);\n    window\.addEventListener\('hashchange', \(\) => queueMicrotask\(updateDataPageCopy\)\);\n",
-              "\n    startRemoteTimer();\n",
-              src,
-              count=1,
-              flags=re.S,
-          )
-          if n1 != 1 or n2 != 1 or src == before:
-              raise SystemExit(f'Unexpected drive-sync source: update function={n1}, observer={n2}')
-          if 'MutationObserver' in src or 'updateDataPageCopy' in src:
-              raise SystemExit('Drive sync still contains Data-page mutation code')
-          src = src.replace('[Metodo ET Drive Sync v1.2]', '[Metodo ET Drive Sync v1.3]')
-          (root / 'drive-sync-v1.3.js').write_text(src, encoding='utf-8')
+          # 1) Ícone final: exatamente a arte fornecida pelo usuário, preparada em PNG 128x128.
+          icon_b64 = (root / 'icon-user-final.b64').read_text(encoding='utf-8').strip()
+          icon_bytes = base64.b64decode(icon_b64, validate=True)
+          (root / 'metodo-et-icon-final-v2.png').write_bytes(icon_bytes)
+          (root / 'icon-user-final.b64').unlink()
 
+          # 2) Navegação: remove o foco forçado do hashchange.
+          app_path = root / 'src/app.js'
+          app = app_path.read_text(encoding='utf-8')
+          old = "window.addEventListener('hashchange',()=>{render();main.focus();});"
+          new = "window.addEventListener('hashchange',()=>{render();});"
+          if old not in app and new not in app:
+              raise SystemExit('Não encontrei o handler de hashchange esperado.')
+          app = app.replace(old, new)
+          app_path.write_text(app, encoding='utf-8')
+
+          # 3) Dados: texto estático coerente; o Drive não toca mais no DOM da página.
+          old_warning = 'O Drive não é sincronizado automaticamente nesta versão. O backup consultado foi atualizado em 09/09/2026.'
+          new_warning = 'A sincronização com o Google Drive é controlada pelo botão de nuvem. Seus dados também permanecem salvos localmente neste dispositivo.'
+          app = app_path.read_text(encoding='utf-8').replace(old_warning, new_warning)
+          app_path.write_text(app, encoding='utf-8')
+
+          # 4) HTML v2.1: apenas app + OAuth + drive-sync estável. Sem SW/hotfixes concorrentes.
           index_path = root / 'index.html'
           index = index_path.read_text(encoding='utf-8')
-          index = index.replace('?v=1.9', '?v=2.0')
-          index = re.sub(r'\n\s*<script src="\./navigation-dock-hotfix\.js\?v=2\.0" defer></script>', '', index)
-          index = re.sub(r'\n\s*<script src="\./data-page-stability-hotfix\.js\?v=2\.0" defer></script>', '', index)
-          index = index.replace('./drive-sync-v1.2.js?v=2.0', './drive-sync-v1.3.js?v=2.0')
+          index = index.replace('?v=2.0', '?v=2.1')
+          index = index.replace('./apple-touch-icon-final.png?v=2.1', './metodo-et-icon-final-v2.png?v=2.1')
+          index = index.replace('./apple-touch-icon-final.png', './metodo-et-icon-final-v2.png')
+          if 'navigation-dock-hotfix' in index or 'data-page-stability-hotfix' in index:
+              raise SystemExit('Index ainda contém hotfixes antigos.')
+          if './drive-sync.js?v=2.1' not in index:
+              raise SystemExit('Index não aponta para drive-sync.js v2.1.')
+          index = index.replace('<title>Método ET · Preparação TCU</title>', '<title>Método ET · Preparação TCU</title>\n  <meta name="metodo-et-build" content="2.1-clean">')
           index_path.write_text(index, encoding='utf-8')
 
-          sw_path = root / 'sw.js'
-          sw = sw_path.read_text(encoding='utf-8')
-          sw = re.sub(r"const CACHE_NAME = `\$\{CACHE_PREFIX\}v[^`]+`;", "const CACHE_NAME = `${CACHE_PREFIX}v2-0`;", sw)
-          sw = sw.replace("  './navigation-dock-hotfix.js',\n", '')
-          sw = sw.replace("  './data-page-stability-hotfix.js',\n", '')
-          sw = sw.replace("  './drive-sync-v1.2.js',", "  './drive-sync-v1.3.js',")
-          sw_path.write_text(sw, encoding='utf-8')
+          # 5) Manifesto: novo ícone e versão limpa.
+          manifest_path = root / 'manifest.webmanifest'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          manifest['start_url'] = './'
+          manifest['icons'] = [
+              {'src':'./metodo-et-icon-final-v2.png','sizes':'128x128','type':'image/png','purpose':'any'},
+              {'src':'./metodo-et-icon-final-v2.png','sizes':'128x128','type':'image/png','purpose':'maskable'}
+          ]
+          manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
-          assert 'MutationObserver' not in (root / 'drive-sync-v1.3.js').read_text(encoding='utf-8')
+          # 6) Asserções de produção: nenhum observer/hotfix ativo e nenhuma chamada main.focus na navegação.
+          drive = (root / 'drive-sync.js').read_text(encoding='utf-8')
+          app = app_path.read_text(encoding='utf-8')
           final_index = index_path.read_text(encoding='utf-8')
-          assert 'data-page-stability-hotfix' not in final_index
+          assert 'MutationObserver' not in drive
+          assert 'updateDataPageCopy' not in drive
+          assert 'main.focus()' not in app
           assert 'navigation-dock-hotfix' not in final_index
-          assert 'drive-sync-v1.3.js?v=2.0' in final_index
+          assert 'data-page-stability-hotfix' not in final_index
+          assert 'drive-sync-v1.2' not in final_index
+          assert 'metodo-et-icon-final-v2.png' in final_index
+          assert 'metodo-et-build" content="2.1-clean' in final_index
 
-      - name: Commit fixed production files
+      - name: Commit v2.1
         run: |
           git config user.name 'Metodo ET Build Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add metodo-et
-          git commit -m 'fix: Método ET v2.0 sem travamento em Dados' || exit 0
+          git commit -m 'fix: Método ET v2.1 limpa — Dados, Dock e ícone final' || exit 0
           git push
