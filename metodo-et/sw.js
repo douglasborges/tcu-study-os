@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'studyos-metodo-et-';
-const CACHE_NAME = `${CACHE_PREFIX}v1-5`;
+const CACHE_NAME = `${CACHE_PREFIX}v1-6`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,7 +12,7 @@ const APP_SHELL = [
   './drive-sync-v1.2.js',
   './oauth-client-hotfix.js',
   './manifest.webmanifest',
-  './assets/metodo-et-icon-v2.png',
+  './apple-touch-icon.png',
   './assets/metodo-et-brand-v3.jpg',
   './data/initial-state.json'
 ];
@@ -63,8 +63,6 @@ async function networkWithTimeout(request, timeoutMs = 3500) {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-
-  // OAuth e Google Drive ficam fora do Service Worker, como na versão estável.
   if (url.origin !== self.location.origin) return;
 
   if (event.request.mode === 'navigate') {
