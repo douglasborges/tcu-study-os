@@ -10,13 +10,13 @@
   <meta name="apple-mobile-web-app-title" content="Método ET">
   <meta name="application-name" content="Método ET">
   <title>Método ET · Preparação TCU</title>
-  <link rel="icon" type="image/png" sizes="192x192" href="./apple-touch-icon.png">
-  <link rel="shortcut icon" type="image/png" href="./apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="./apple-touch-icon.png">
-  <link rel="apple-touch-icon-precomposed" sizes="192x192" href="./apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.webmanifest?v=1.6">
-  <link rel="stylesheet" href="./styles.css?v=1.6">
-  <link rel="stylesheet" href="./drive-sync.css?v=1.6">
+  <link rel="icon" type="image/png" sizes="192x192" href="./apple-touch-icon-final.png">
+  <link rel="shortcut icon" type="image/png" href="./apple-touch-icon-final.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./apple-touch-icon-final.png">
+  <link rel="apple-touch-icon-precomposed" sizes="192x192" href="./apple-touch-icon-final.png">
+  <link rel="manifest" href="./manifest.webmanifest?v=1.8">
+  <link rel="stylesheet" href="./styles.css?v=1.8">
+  <link rel="stylesheet" href="./drive-sync.css?v=1.8">
   <style>
     .app-footer{padding-top:24px}
     .brand.brand-lockup{display:block;width:100%;padding:0;margin:0;text-decoration:none;line-height:0}
@@ -29,7 +29,7 @@
   <a class="skip" href="#main">Pular para o conteúdo</a>
   <aside class="sidebar">
     <a class="brand brand-lockup" href="#today" aria-label="Método ET · Estudo Total · Douglas">
-      <img src="./assets/metodo-et-brand-v3.jpg?v=1.6" width="594" height="198" alt="Método ET · Estudo Total · Douglas">
+      <img src="./assets/metodo-et-brand-v3.jpg?v=1.8" width="594" height="198" alt="Método ET · Estudo Total · Douglas">
     </a>
     <div class="focus"><span class="dot"></span> MISSÃO TCU </div>
     <nav aria-label="Navegação principal">
@@ -52,13 +52,14 @@
     <div id="notice" role="status" aria-live="polite"></div>
   </div>
   <dialog id="modal"><div id="modal-body"></div><button class="close secondary" id="close-modal" aria-label="Fechar janela">Fechar</button></dialog>
-  <script type="module" src="./src/app.js?v=1.6"></script>
-  <script src="./oauth-client-hotfix.js?v=1.6" defer></script>
-  <script src="./drive-sync-v1.2.js?v=1.6" defer></script>
+  <script type="module" src="./src/app.js?v=1.8"></script>
+  <script src="./navigation-dock-hotfix.js?v=1.8" defer></script>
+  <script src="./oauth-client-hotfix.js?v=1.8" defer></script>
+  <script src="./drive-sync-v1.2.js?v=1.8" defer></script>
   <script>
     window.addEventListener('load', () => {
       if (!('serviceWorker' in navigator)) return;
-      navigator.serviceWorker.register('./sw.js?v=1.6', { scope: './' }).catch(error => {
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(error => {
         console.warn('[Método ET PWA] Service Worker não registrado:', error);
       });
     }, { once: true });

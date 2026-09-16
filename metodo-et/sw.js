@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'studyos-metodo-et-';
-const CACHE_NAME = `${CACHE_PREFIX}v1-6`;
+const CACHE_NAME = `${CACHE_PREFIX}v1-8`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,10 +9,11 @@ const APP_SHELL = [
   './src/core.js',
   './src/personal.js',
   './src/progress.js',
+  './navigation-dock-hotfix.js',
   './drive-sync-v1.2.js',
   './oauth-client-hotfix.js',
   './manifest.webmanifest',
-  './apple-touch-icon.png',
+  './apple-touch-icon-final.png',
   './assets/metodo-et-brand-v3.jpg',
   './data/initial-state.json'
 ];
