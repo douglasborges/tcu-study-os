@@ -2,7 +2,7 @@
   "name": "StudyOS · Método ET · Preparação TCU",
   "short_name": "Método ET",
   "description": "Versão StudyOS baseada no Método ET para preparação do TCU, com funcionamento offline e sincronização automática com Google Drive.",
-  "start_url": "./index.html?v=1.1",
+  "start_url": "./index.html?v=1.2",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
@@ -11,10 +11,10 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "assets/et.svg?v=1.1",
+      "src": "assets/et.svg?v=1.2",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
