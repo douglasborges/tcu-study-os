@@ -68,6 +68,8 @@ jobs:
           grep -q '4.1.0-metas-tempo-real' metodo-et/index.html
           grep -q 'app.js?v=4.1.0' metodo-et/index.html
           grep -q 'analytics.js?v=4.1.0' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.1.0' metodo-et/src/app.js
+          grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
           grep -q 'Concluir esta ocorrência e chamar a próxima disciplina do ciclo' metodo-et/src/app.js
