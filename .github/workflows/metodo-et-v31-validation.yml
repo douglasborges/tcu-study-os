@@ -1,4 +1,4 @@
-name: Metodo ET v4.0.1 stable validation
+name: Metodo ET v4.1.0 stable validation
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.0.1
+      - name: Executar motor analítico v4.1.0
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
           sed "s#'./core.js?v=4.0.1'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
@@ -46,12 +46,37 @@ jobs:
           if(!snap.todayStats||!snap.yesterdayStats) throw new Error('Comparação hoje x ontem indisponível.');
           console.log('Analytics OK:',snap.subjects.length,'disciplinas,',snap.weekly.length,'semanas.');
           NODE
-      - name: Smoke checks v4.0.1 stable
+      - name: Validar ciclo por ocorrência e Metas ET
         run: |
-          grep -q '4.0.1-stable-central-desempenho' metodo-et/index.html
+          cp metodo-et/src/core.js /tmp/core.mjs
+          sed "s#'./core.js'#'./core.mjs'#" metodo-et/src/personal.js > /tmp/personal-runtime.mjs
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {day,session} from '/tmp/core.mjs';
+          import {goalSnapshot,GOAL_TEMPLATES} from '/tmp/personal-runtime.mjs';
+          const base=JSON.parse(fs.readFileSync('metodo-et/data/initial-state.json','utf8'));
+          const advanced=session(base,{subjectId:'afo',date:day(),activity:'free',minutes:37,questions:0,correct:0,applyCycle:true});
+          if(advanced.cycle.index!==1||!advanced.sessions.at(-1).slotComplete) throw new Error('Ocorrência de 37 min deveria concluir e chamar DAD.');
+          const partial=session(base,{subjectId:'afo',date:day(),activity:'micro',minutes:30,questions:0,correct:0,applyCycle:false});
+          if(partial.cycle.index!==0||partial.sessions.at(-1).slotComplete) throw new Error('Sessão parcial não pode avançar o ciclo.');
+          const goal=goalSnapshot(base);
+          if(goal.targetMinutes!==1800||GOAL_TEMPLATES[0].tasks.length!==18||goal.status!=='active') throw new Error('Meta 01 inválida.');
+          console.log('Ciclo livre OK · Meta 01:',GOAL_TEMPLATES[0].tasks.length,'etapas.');
+          NODE
+      - name: Smoke checks v4.1.0
+        run: |
+          grep -q '4.1.0-metas-tempo-real' metodo-et/index.html
           grep -q 'app.js?v=4.0.1' metodo-et/index.html
           grep -q 'analytics.js?v=4.0.1' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
+          grep -q 'Metas ET' metodo-et/src/app.js
+          grep -q 'Concluir esta ocorrência e chamar a próxima disciplina do ciclo' metodo-et/src/app.js
+          grep -q 'PROGRESSO MULTICAMADA' metodo-et/src/app.js
+          grep -q 'GOAL_TEMPLATES' metodo-et/src/personal.js
+          grep -q "id:'meta-01'" metodo-et/src/personal.js
+          grep -q "id:'meta-02'" metodo-et/src/personal.js
+          ! grep -q 'CGU como possibilidade secundária' metodo-et/src/app.js
+          ! grep -q 'A microrrevisão deve ocupar até 10% do bloco' metodo-et/src/core.js
           grep -q 'FOCO NO PROCESSO!' metodo-et/src/app.js
           grep -q 'A intensidade' metodo-et/src/app.js
           grep -q 'distorce a realidade' metodo-et/src/app.js
