@@ -45,7 +45,6 @@ export function session(current,input){
  if(input.activity==='night'&&(minutes<5||minutes>10))throw Error('Revisão noturna: de 5 a 10 minutos por disciplina.');
  let u=input.unitId?getUnit(st,s.id,input.unitId).u:null;
  if(['theory','battery','general','checkpoint'].includes(input.activity)&&!u)throw Error('Selecione a aula ou módulo.');
- if(input.activity==='micro'&&minutes>s.slotMinutes*.1)throw Error('A microrrevisão deve ocupar até 10% do bloco.');
  if(input.activity==='solid'&&s.phase!=='solid')throw Error('Conclua o Estudo Novo antes de registrar sessões do Estudo Sólido.');
  if(input.activity==='night'&&st.sessions.filter(v=>v.subjectId===s.id&&v.date===input.date&&v.activity==='night').reduce((a,v)=>a+v.minutes,0)+minutes>10)throw Error('A revisão noturna totaliza de 5 a 10 minutos por disciplina no dia.');
  if(input.activity==='checkpoint'&&!checkpoints(s).some(c=>c.units.some(v=>v.id===u.id)&&['due','done'].includes(c.status)))throw Error('Conclua teoria e baterias do bloco antes do checkpoint.');
@@ -55,9 +54,11 @@ export function session(current,input){
  if((start!==null||end!==null)&&(!Number.isFinite(start)||!Number.isFinite(end)||start<0||end<start))throw Error('Preencha início e fim válidos do conteúdo.');
  const entry={id:uid(),subjectId:s.id,unitId:u?.id||'',title:String(input.title||'').trim()||u?.title||'',date:input.date,createdAt:new Date().toISOString(),activity:input.activity,minutes,questions:q,correct,medium:input.medium||'',start,end,notes:String(input.notes||''),legacy:false,cycleApplied:false};
  if(input.applyCycle&&input.activity!=='night'){
-  if(input.date!==day()||CYCLE[st.cycle.index]!==s.id)throw Error('Só a disciplina atual, registrada hoje, avança o ciclo.');
-  if(minutes>s.slotMinutes-st.cycle.minutes)throw Error('Restam '+(s.slotMinutes-st.cycle.minutes)+' minutos neste bloco. Divida o registro ou desmarque o avanço do ciclo.');
-  st.cycle.minutes+=minutes;entry.cycleApplied=true;if(st.cycle.minutes===s.slotMinutes){st.cycle.minutes=0;st.cycle.index=(st.cycle.index+1)%CYCLE.length;entry.slotComplete=true;}
+  if(input.date!==day()||CYCLE[st.cycle.index]!==s.id)throw Error('Só a disciplina atual, registrada hoje, pode concluir a ocorrência do ciclo.');
+  st.cycle.minutes=0;
+  st.cycle.index=(st.cycle.index+1)%CYCLE.length;
+  entry.cycleApplied=true;
+  entry.slotComplete=true;
  }
  st.sessions.push(entry);if(u&&['battery','general'].includes(input.activity)){u[input.activity].attempted+=q;u[input.activity].correct+=correct;}return st;
 }
