@@ -1,4 +1,4 @@
-name: Metodo ET v2.5 editar excluir legislacao
+name: Metodo ET v3.0 Conquistas Missao TCU
 
 on:
   push:
@@ -9,26 +9,40 @@ on:
 permissions:
   contents: write
 
-# retry 2: validação do build corrigida
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Aplicar edição/exclusão da Legislação Seca v2.5
-        run: python scripts/apply_metodo_et_v25_law_edit_delete.py
+      - name: Aplicar Conquistas Missao TCU v3.0
+        run: python scripts/apply_metodo_et_v30_achievements.py
       - name: Validar sintaxe JavaScript
         run: |
           cp metodo-et/src/app.js /tmp/metodo-et-app.mjs
           cp metodo-et/src/core.js /tmp/metodo-et-core.mjs
           cp metodo-et/src/personal.js /tmp/metodo-et-personal.mjs
+          cp metodo-et/src/progress.js /tmp/metodo-et-progress.mjs
+          cp metodo-et/src/achievements.js /tmp/metodo-et-achievements.mjs
           node --check /tmp/metodo-et-app.mjs
           node --check /tmp/metodo-et-core.mjs
           node --check /tmp/metodo-et-personal.mjs
-      - name: Publicar v2.5
+          node --check /tmp/metodo-et-progress.mjs
+          node --check /tmp/metodo-et-achievements.mjs
+      - name: Smoke test do motor de conquistas
+        run: |
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {achievementSnapshot} from './metodo-et/src/achievements.js';
+          const state=JSON.parse(fs.readFileSync('./metodo-et/data/initial-state.json','utf8'));
+          const snap=achievementSnapshot(state);
+          if(!Array.isArray(snap.items) || snap.items.length < 40) throw new Error('Catálogo de conquistas incompleto.');
+          if(!Array.isArray(snap.mission) || snap.mission.length < 20) throw new Error('Trajetória TCU incompleta.');
+          console.log('Conquistas:',snap.items.length,'| Missão:',snap.mission.length);
+          NODE
+      - name: Publicar v3.0
         run: |
           git config user.name 'Metodo ET Build Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add metodo-et
-          git commit -m 'feat: Método ET v2.5 — editar e excluir registros de legislação' || exit 0
+          git commit -m 'feat: Método ET v3.0 — Conquistas e Missão TCU' || exit 0
           git push
