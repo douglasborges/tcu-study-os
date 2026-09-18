@@ -366,7 +366,7 @@
     });
   }
 
-  async function syncNow({ initial = false, interactiveAuth = false } = {}) {
+  async function syncNow({ initial = false, interactiveAuth = false, forceAccountPicker = false, previousEmail = '' } = {}) {
     if (syncing) return;
     if (!navigator.onLine) {
       setUI('offline', 'Sem internet. Seus registros continuam salvos neste dispositivo.');
