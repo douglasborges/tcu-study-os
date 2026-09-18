@@ -75,13 +75,10 @@ export function goalSnapshot(current,index=null){
  const st=normalizeGoalState(copy(current)),i=index===null?st.goals.current:Number(index),template=GOAL_TEMPLATES[i],item=template&&st.goals.items.find(x=>x.id===template.id);
  if(!template||!item)throw Error('Meta ET não encontrada.');
  const start=item.startedAt?Date.parse(item.startedAt):NaN,end=item.completedAt?Date.parse(item.completedAt):Infinity;
- const rows=st.sessions.filter(s=>{
-  if(s.legacy===true||s.activity==='night')return false;
-  const stamp=Date.parse(s.createdAt||s.date+'T12:00:00');
-  return (!Number.isFinite(start)||stamp>=start)&&stamp<=end;
- });
- const minutes=rows.reduce((a,s)=>a+(Number(s.minutes)||0),0),target=template.targetMinutes;
- return {...template,...item,index:i,minutes,remaining:Math.max(0,target-minutes),progress:target?Math.min(1,minutes/target):0,ready:minutes>=target,tasks:template.tasks.map(t=>({...t,done:goalTaskDone(st,t)}))};
+ const within=s=>{const stamp=Date.parse(s.createdAt||s.date+'T12:00:00');return (!Number.isFinite(start)||stamp>=start)&&stamp<=end;};
+ const rows=st.sessions.filter(s=>s.legacy!==true&&s.activity!=='night'&&within(s)),lawRows=(st.legislation?.sessions||[]).filter(within);
+ const studyMinutes=rows.reduce((a,s)=>a+(Number(s.minutes)||0),0),lawMinutes=lawRows.reduce((a,s)=>a+(Number(s.minutes)||0),0),minutes=studyMinutes+lawMinutes,target=template.targetMinutes;
+ return {...template,...item,index:i,minutes,studyMinutes,lawMinutes,remaining:Math.max(0,target-minutes),progress:target?Math.min(1,minutes/target):0,ready:minutes>=target,tasks:template.tasks.map(t=>({...t,done:goalTaskDone(st,t)}))};
 }
 export function completeGoal(current,id){
  const st=normalizeGoalState(copy(current)),index=GOAL_TEMPLATES.findIndex(t=>t.id===id);
