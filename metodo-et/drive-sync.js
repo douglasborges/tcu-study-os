@@ -375,7 +375,7 @@
     syncing = true;
     setUI(interactiveAuth ? 'connecting' : 'syncing', interactiveAuth ? 'Abrindo sua conta Google…' : 'Sincronizando seus estudos…');
     try {
-      if (!accessToken || Date.now() >= tokenExpiresAt) await requestToken(interactiveAuth);
+      if (!accessToken || Date.now() >= tokenExpiresAt) await requestToken(interactiveAuth, forceAccountPicker);
       const file = await findRemoteFile();
       if (!file) await createRemoteFile();
       else await reconcile(file, { initial });
