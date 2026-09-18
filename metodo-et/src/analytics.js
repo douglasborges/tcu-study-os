@@ -27,12 +27,12 @@ function statsForDay(st,date,subjectId='all'){
   return summary((st.sessions||[]).filter(s=>s.activity!=='night'&&s.date===date&&(subjectId==='all'||s.subjectId===subjectId)));
 }
 function weekWindow(date){
-  const start=M.weekStart(date),end=shift(start,6),prevStart=shift(start,-7),prevEnd=shift(start,-1);
-  return {start,end,prevStart,prevEnd};
+  const start=M.weekStart(date),elapsed=daysBetween(start,date),prevStart=shift(start,-7),prevEnd=shift(prevStart,elapsed);
+  return {start,prevStart,prevEnd};
 }
 function monthWindow(date){
-  const start=monthStart(date),next=monthShift(date,1),end=shift(next,-1),prevStart=monthShift(date,-1),prevEnd=shift(start,-1);
-  return {start,end,prevStart,prevEnd};
+  const start=monthStart(date),prevStart=monthShift(date,-1),daysInPrevious=daysBetween(prevStart,start),elapsed=Math.min(Number(date.slice(8,10)),daysInPrevious),prevEnd=shift(prevStart,elapsed-1);
+  return {start,prevStart,prevEnd};
 }
 function statsBetween(st,start,end,subjectId='all'){
   return summary((st.sessions||[]).filter(s=>s.activity!=='night'&&s.date>=start&&s.date<=end&&(subjectId==='all'||s.subjectId===subjectId));
@@ -87,6 +87,6 @@ export function analyticsSnapshot(st,{period='all',subjectId='all',today=M.day()
     period,subjectId,bounds:periodBounds(period,today),metrics,today,yesterday,todayStats,yesterdayStats,
     weekCurrent,weekPrevious,monthCurrent,monthPrevious,subjects,filteredSubjects,
     activity:activityDistribution(rows),weekly:seriesByWeek(st,today,subjectId,8),monthly:seriesByMonth(st,today,subjectId,6),
-    attention:attentionItems(st,subjects,today)
+    attention:attentionItems(st,filteredSubjects,today)
   };
 }
