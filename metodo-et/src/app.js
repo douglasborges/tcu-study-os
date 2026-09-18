@@ -174,7 +174,7 @@ function progressDisciplines(a){
  <div class="grid two section-title"><section class="card"><h2>Horas por disciplina</h2><p class="muted">Sem ranking: apenas uma fotografia de distribuição.</p>\${subjectTimeBars(rows)}</section><section class="card"><h2>Questões e aproveitamento</h2><div class="analysis-bars">\${rows.map(d=>\`<div class="analysis-bar-row"><div><b>\${label(d.id)}</b><span>\${dashboardNumber(d.questions)} questões · \${dashboardPercent(d.accuracy)}</span></div><progress value="\${d.questions}" max="\${maxQuestions}"></progress></div>\`).join('')}</div><p class="muted progress-explanation">Quando não há questões registradas, a plataforma mostra “—” no aproveitamento em vez de tratar ausência de amostra como 0%.</p></section></div>\`;
 }
 function comparisonCard(title,current,previous,formatter){
- const diff=current-previous,delta=diff===0?'Sem variação':(diff>0?'+':'')+formatter(diff);
+ const diff=current-previous,delta=diff===0?'Sem variação':(diff>0?'+':'-')+formatter(Math.abs(diff));
  return \`<article class="card metric comparison-metric"><small>\${title}</small><strong>\${formatter(current)}</strong><span class="sub">Período anterior: \${formatter(previous)}</span><span class="comparison-delta \${diff>0?'up':diff<0?'down':'same'}">\${esc(delta)}</span></article>\`;
 }
 function progressEvolution(a){
