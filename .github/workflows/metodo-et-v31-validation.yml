@@ -1,4 +1,4 @@
-name: Metodo ET v3.1 validation
+name: Metodo ET v3.2 validation
 
 on:
   push:
@@ -29,14 +29,19 @@ jobs:
           node --check /tmp/progress.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Smoke checks v3.1
+      - name: Smoke checks v3.2
         run: |
-          grep -q '3.1.1-conquistas-render-fix' metodo-et/index.html
-          grep -q 'drive-sync-ui.js?v=3.1' metodo-et/index.html
-          grep -q 'app.js?v=3.1.1' metodo-et/index.html
+          grep -q '3.2-central-comando-fluxo-pratico' metodo-et/index.html
+          grep -q 'drive-sync-ui.js?v=3.2' metodo-et/index.html
+          grep -q 'app.js?v=3.2' metodo-et/index.html
           grep -q 'login_hint' metodo-et/drive-sync.js
           grep -q 'refreshAccountInfo' metodo-et/drive-sync.js
           grep -q 'data-ach-filter' metodo-et/src/app.js
-          grep -q 'et-shades-icon' metodo-et/src/app.js
+          grep -q 'data-ach-status' metodo-et/src/app.js
+          grep -q 'todayCommandCenter' metodo-et/src/app.js
+          grep -q 'quick-battery' metodo-et/src/app.js
+          grep -q 'quick-checkpoint' metodo-et/src/app.js
+          grep -q 'roadmapPanel' metodo-et/src/app.js
+          grep -q 'et-normal-icon' metodo-et/src/app.js
           ! grep -q 'MutationObserver' metodo-et/drive-sync.js
           ! grep -q 'main.focus()' metodo-et/src/app.js
