@@ -34,7 +34,7 @@ jobs:
       - name: Executar motor analítico v4.1.0
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.0.1'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.1.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -66,8 +66,8 @@ jobs:
       - name: Smoke checks v4.1.0
         run: |
           grep -q '4.1.0-metas-tempo-real' metodo-et/index.html
-          grep -q 'app.js?v=4.0.1' metodo-et/index.html
-          grep -q 'analytics.js?v=4.0.1' metodo-et/src/app.js
+          grep -q 'app.js?v=4.1.0' metodo-et/index.html
+          grep -q 'analytics.js?v=4.1.0' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
           grep -q 'Concluir esta ocorrência e chamar a próxima disciplina do ciclo' metodo-et/src/app.js
