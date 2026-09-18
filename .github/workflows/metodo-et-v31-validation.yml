@@ -1,0 +1,41 @@
+name: Metodo ET v3.1 validation
+
+on:
+  push:
+    paths:
+      - 'metodo-et/**'
+      - '.github/workflows/metodo-et-v31-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar JavaScript
+        run: |
+          cp metodo-et/src/app.js /tmp/app.mjs
+          cp metodo-et/src/achievements.js /tmp/achievements.mjs
+          cp metodo-et/src/core.js /tmp/core.mjs
+          cp metodo-et/src/personal.js /tmp/personal.mjs
+          cp metodo-et/src/progress.js /tmp/progress.mjs
+          node --check /tmp/app.mjs
+          node --check /tmp/achievements.mjs
+          node --check /tmp/core.mjs
+          node --check /tmp/personal.mjs
+          node --check /tmp/progress.mjs
+          node --check metodo-et/drive-sync.js
+          node --check metodo-et/drive-sync-ui.js
+      - name: Smoke checks v3.1
+        run: |
+          grep -q '3.1-drive-smart-conquistas-polish' metodo-et/index.html
+          grep -q 'drive-sync-ui.js?v=3.1' metodo-et/index.html
+          grep -q 'login_hint' metodo-et/drive-sync.js
+          grep -q 'refreshAccountInfo' metodo-et/drive-sync.js
+          grep -q 'data-ach-filter' metodo-et/src/app.js
+          grep -q 'et-shades-icon' metodo-et/src/app.js
+          ! grep -q 'MutationObserver' metodo-et/drive-sync.js
+          ! grep -q 'main.focus()' metodo-et/src/app.js
