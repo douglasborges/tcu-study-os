@@ -31,6 +31,21 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
+      - name: Executar motor analítico v4.0
+        run: |
+          cp metodo-et/src/core.js /tmp/core.mjs
+          sed "s#'./core.js?v=4.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
+          const state=JSON.parse(fs.readFileSync('metodo-et/data/initial-state.json','utf8'));
+          const snap=analyticsSnapshot(state,{today:'2026-09-18'});
+          if(!Array.isArray(snap.subjects)||snap.subjects.length!==5) throw new Error('Central deve calcular cinco disciplinas.');
+          if(!Array.isArray(snap.weekly)||snap.weekly.length!==8) throw new Error('Série semanal inválida.');
+          if(!Array.isArray(snap.monthly)||snap.monthly.length!==6) throw new Error('Série mensal inválida.');
+          if(!snap.todayStats||!snap.yesterdayStats) throw new Error('Comparação hoje x ontem indisponível.');
+          console.log('Analytics OK:',snap.subjects.length,'disciplinas,',snap.weekly.length,'semanas.');
+          NODE
       - name: Smoke checks v4.0
         run: |
           grep -q '4.0-central-desempenho-voce-contra-voce' metodo-et/index.html
