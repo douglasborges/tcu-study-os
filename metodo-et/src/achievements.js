@@ -6,7 +6,7 @@ export const CATEGORY_META={
   questions:{icon:'✓',title:'Questões',description:'Volume acumulado de questões efetivamente registrado no diário.'},
   constancy:{icon:'🔥',title:'Constância',description:'Dias de estudo construídos ao longo da preparação.'},
   cycle:{icon:'↻',title:'Ciclo ET',description:'Execução do ciclo na ordem planejada, bloco após bloco.'},
-  method:{icon:'🧠',title:'Método ET',description:'Baterias, checkpoints e transição para Estudo Sólido.'},
+  method:{icon:'👽',title:'Método ET',description:'Baterias, checkpoints e transição para Estudo Sólido.'},
   night:{icon:'🌙',title:'Revisão noturna',description:'Fechamentos completos dos dias estudados.'},
   law:{icon:'§',title:'Legislação Seca',description:'Regularidade e conclusão da leitura diária de normas.'}
 };
