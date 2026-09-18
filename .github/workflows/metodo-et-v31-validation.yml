@@ -1,4 +1,4 @@
-name: Metodo ET v4.0 validation
+name: Metodo ET v4.0.1 stable validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.0
+      - name: Executar motor analítico v4.0.1
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.0.1'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -46,12 +46,16 @@ jobs:
           if(!snap.todayStats||!snap.yesterdayStats) throw new Error('Comparação hoje x ontem indisponível.');
           console.log('Analytics OK:',snap.subjects.length,'disciplinas,',snap.weekly.length,'semanas.');
           NODE
-      - name: Smoke checks v4.0
+      - name: Smoke checks v4.0.1 stable
         run: |
-          grep -q '4.0-central-desempenho-voce-contra-voce' metodo-et/index.html
-          grep -q 'app.js?v=4.0' metodo-et/index.html
-          grep -q 'analytics.js?v=4.0' metodo-et/src/app.js
+          grep -q '4.0.1-stable-central-desempenho' metodo-et/index.html
+          grep -q 'app.js?v=4.0.1' metodo-et/index.html
+          grep -q 'analytics.js?v=4.0.1' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
+          grep -q 'FOCO NO PROCESSO!' metodo-et/src/app.js
+          grep -q 'A intensidade' metodo-et/src/app.js
+          grep -q 'distorce a realidade' metodo-et/src/app.js
+          ! grep -q 'Histórico StudyOS importado:' metodo-et/src/app.js
           grep -q 'Hoje x ontem' metodo-et/src/app.js
           grep -q 'Desempenho por disciplina' metodo-et/src/app.js
           grep -q 'Horas por semana' metodo-et/src/app.js
