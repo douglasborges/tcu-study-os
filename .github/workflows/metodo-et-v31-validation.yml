@@ -1,4 +1,4 @@
-name: Metodo ET v3.2 validation
+name: Metodo ET v4.0 validation
 
 on:
   push:
@@ -22,26 +22,36 @@ jobs:
           cp metodo-et/src/core.js /tmp/core.mjs
           cp metodo-et/src/personal.js /tmp/personal.mjs
           cp metodo-et/src/progress.js /tmp/progress.mjs
+          cp metodo-et/src/analytics.js /tmp/analytics.mjs
           node --check /tmp/app.mjs
           node --check /tmp/achievements.mjs
           node --check /tmp/core.mjs
           node --check /tmp/personal.mjs
           node --check /tmp/progress.mjs
+          node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Smoke checks v3.2
+      - name: Smoke checks v4.0
         run: |
-          grep -q '3.2-central-comando-fluxo-pratico' metodo-et/index.html
-          grep -q 'drive-sync-ui.js?v=3.2' metodo-et/index.html
-          grep -q 'app.js?v=3.2' metodo-et/index.html
+          grep -q '4.0-central-desempenho-voce-contra-voce' metodo-et/index.html
+          grep -q 'app.js?v=4.0' metodo-et/index.html
+          grep -q 'analytics.js?v=4.0' metodo-et/src/app.js
+          grep -q 'Central de Desempenho' metodo-et/src/app.js
+          grep -q 'Hoje x ontem' metodo-et/src/app.js
+          grep -q 'Desempenho por disciplina' metodo-et/src/app.js
+          grep -q 'Horas por semana' metodo-et/src/app.js
+          grep -q 'Pontos de atenção' metodo-et/src/app.js
+          grep -q 'data-progress-view' metodo-et/src/app.js
+          grep -q 'progress-subject' metodo-et/src/app.js
+          grep -q 'todas as disciplinas têm o mesmo valor' metodo-et/src/app.js
+          grep -q 'analyticsSnapshot' metodo-et/src/analytics.js
+          grep -q 'attentionItems' metodo-et/src/analytics.js
           grep -q 'login_hint' metodo-et/drive-sync.js
           grep -q 'refreshAccountInfo' metodo-et/drive-sync.js
           grep -q 'data-ach-filter' metodo-et/src/app.js
-          grep -q 'data-ach-status' metodo-et/src/app.js
           grep -q 'todayCommandCenter' metodo-et/src/app.js
           grep -q 'quick-battery' metodo-et/src/app.js
           grep -q 'quick-checkpoint' metodo-et/src/app.js
-          grep -q 'roadmapPanel' metodo-et/src/app.js
           grep -q 'et-normal-icon' metodo-et/src/app.js
           ! grep -q 'MutationObserver' metodo-et/drive-sync.js
           ! grep -q 'main.focus()' metodo-et/src/app.js
