@@ -35,7 +35,7 @@ function monthWindow(date){
   return {start,prevStart,prevEnd};
 }
 function statsBetween(st,start,end,subjectId='all'){
-  return summary((st.sessions||[]).filter(s=>s.activity!=='night'&&s.date>=start&&s.date<=end&&(subjectId==='all'||s.subjectId===subjectId));
+  return summary((st.sessions||[]).filter(s=>s.activity!=='night'&&s.date>=start&&s.date<=end&&(subjectId==='all'||s.subjectId===subjectId)));
 }
 function subjectAnalytics(st,period,today){
   const bounds=periodBounds(period,today);
