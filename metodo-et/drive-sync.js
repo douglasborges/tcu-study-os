@@ -147,6 +147,7 @@
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPE,
+      login_hint: meta.accountEmail || undefined,
       callback: response => {
         if (!authWaiter) return;
         const waiter = authWaiter;
@@ -171,17 +172,20 @@
     return tokenClient;
   }
 
-  async function requestToken(interactive = true) {
+  async function requestToken(interactive = true, forceAccountPicker = false) {
     if (accessToken && Date.now() < tokenExpiresAt) return accessToken;
     if (!navigator.onLine) throw new Error('Sem internet. Seus registros continuam salvos localmente.');
+    if (!interactive) throw new Error('A sessão do Google precisa ser renovada. Clique em Reconectar Drive.');
     const client = await initTokenClient();
     if (authWaiter) return authWaiter.promise;
 
     let resolvePromise, rejectPromise;
     const promise = new Promise((resolve, reject) => { resolvePromise = resolve; rejectPromise = reject; });
     authWaiter = { resolve: resolvePromise, reject: rejectPromise, promise };
-    const prompt = interactive ? (meta.authorizedOnce ? 'select_account' : 'consent') : '';
-    try { client.requestAccessToken({ prompt }); }
+    const prompt = forceAccountPicker ? 'select_account' : (meta.authorizedOnce ? (meta.accountEmail ? '' : 'select_account') : 'consent');
+    const config = { prompt };
+    if (meta.accountEmail && !forceAccountPicker) config.login_hint = meta.accountEmail;
+    try { client.requestAccessToken(config); }
     catch (error) { authWaiter = null; rejectPromise(error); }
     return promise;
   }
