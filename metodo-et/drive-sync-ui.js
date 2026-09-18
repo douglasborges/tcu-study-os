@@ -36,8 +36,8 @@
     manage=document.createElement('button');
     manage.type='button';
     manage.className='drive-sync-manage';
-    manage.textContent='⋯';
-    manage.setAttribute('aria-label','Gerenciar sincronização do Drive');
+    manage.textContent='⚙';
+    manage.setAttribute('aria-label','Gerenciar sincronização do Google Drive');
     panel=document.createElement('section');
     panel.className='drive-sync-panel';
     panel.hidden=true;
