@@ -80,7 +80,7 @@ function attentionItems(st,subjects,today){
 export function analyticsSnapshot(st,{period='all',subjectId='all',today=M.day()}={}){
   const rows=eligibleSessions(st,{period,subjectId,today}),metrics=summary(rows),yesterday=shift(today,-1),todayStats=statsForDay(st,today,subjectId),yesterdayStats=statsForDay(st,yesterday,subjectId);
   const w=weekWindow(today),m=monthWindow(today);
-  const weekCurrent=statsBetween(st,w.start,Math.min?today:today,subjectId),weekPrevious=statsBetween(st,w.prevStart,w.prevEnd,subjectId);
+  const weekCurrent=statsBetween(st,w.start,today,subjectId),weekPrevious=statsBetween(st,w.prevStart,w.prevEnd,subjectId);
   const monthCurrent=statsBetween(st,m.start,today,subjectId),monthPrevious=statsBetween(st,m.prevStart,m.prevEnd,subjectId);
   const subjects=subjectAnalytics(st,period,today),filteredSubjects=subjectId==='all'?subjects:subjects.filter(x=>x.id===subjectId);
   return {
