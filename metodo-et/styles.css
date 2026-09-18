@@ -30,3 +30,18 @@
 .hero-rocket{animation:mission-float 3.4s ease-in-out infinite}.mission-rocket{animation:mission-float 3s ease-in-out infinite}
 @keyframes mission-float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-7px) rotate(-2deg)}}
 @media(prefers-reduced-motion:reduce){.hero-rocket,.mission-rocket,.celebration-rocket{animation:none!important}}
+
+
+/* v3.2 — central de comando e fluxo prático */
+.et-normal-icon{font-size:25px;filter:saturate(.8) hue-rotate(40deg);width:34px;height:34px;display:inline-grid;place-items:center}
+.achievement-filter-groups{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.achievement-filter-groups>div>small{display:block;color:var(--muted);font-size:9px;letter-spacing:.11em;font-weight:800;margin-bottom:8px}
+.achievement-card[hidden]{display:none}
+.today-command{margin:18px 0 24px;border-color:#536f31;background:linear-gradient(140deg,#1d2a15,#10140d 68%)}
+.today-command-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.today-command-head h2{margin:5px 0 0}
+.today-command-grid{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px}.today-command-grid>div{padding:16px;border:1px solid var(--line);border-radius:11px;background:#10130e;min-width:0}.today-command-grid small{display:block;color:var(--muted);font-size:9px;letter-spacing:.09em;margin-bottom:7px}.today-command-grid strong{display:block;font-size:19px;line-height:1.25}.today-command-grid p{font-size:12px;color:var(--muted);line-height:1.5;margin:7px 0 10px}.today-command-grid progress{height:6px}.today-roadline{display:flex;flex-wrap:wrap;gap:18px;margin-top:15px;padding-top:13px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}.today-roadline b{color:var(--text)}
+.method-roadmap{margin:18px 0 22px;padding:18px;border:1px solid #3f522e;border-radius:12px;background:#11160e}.method-roadmap-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.method-roadmap-head h3{margin:5px 0 0}.roadmap-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.roadmap-chips span{padding:7px 9px;border-radius:999px;border:1px solid var(--line);font-size:10px;color:var(--muted);background:#0d100b}.roadmap-chips span.done{border-color:#526d32;color:var(--lime);background:#172012}.roadmap-chips span.pending b{color:var(--text)}.roadmap-cycle{margin:13px 0 0;font-size:11px}.method-quick-actions{margin-top:13px}
+@media(max-width:1050px){.today-command-grid{grid-template-columns:1fr}.achievement-filter-groups{grid-template-columns:1fr}}
+@media(max-width:720px){.today-command-head,.method-roadmap-head{align-items:flex-start;flex-direction:column}.roadmap-chips{display:grid;grid-template-columns:1fr 1fr;width:100%}.achievement-filter{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.achievement-filter button{flex-shrink:0}}
+
+.et-shades-icon .et-lens,.et-shades-icon .et-bridge{display:none}
