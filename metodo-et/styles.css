@@ -16,3 +16,17 @@
 .achievement-celebration{text-align:center;padding:10px 8px}.achievement-celebration h2{font-size:29px;margin:11px auto 10px;padding:0}.achievement-celebration p{max-width:520px;margin:0 auto 16px}.celebration-rocket{font-size:74px;filter:drop-shadow(0 0 18px #c5f65b77);animation:rocket-pop .7s ease both}@keyframes rocket-pop{0%{transform:translateY(34px) scale(.75);opacity:0}65%{transform:translateY(-7px) scale(1.08);opacity:1}100%{transform:translateY(0) scale(1)}}
 @media(max-width:1180px){.achievement-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.achievement-records{grid-template-columns:repeat(2,minmax(0,1fr))}.next-achievements{grid-template-columns:1fr}}
 @media(max-width:720px){.achievements-hero{grid-template-columns:1fr}.hero-rocket{font-size:64px;padding:0}.achievement-grid,.achievement-records{grid-template-columns:1fr}.mission-route{padding-left:62px;min-height:520px}.mission-rail{left:24px}.mission-rocket{left:-2px;font-size:34px}.mission-stop{padding-right:2px}}
+
+
+/* v3.1 — refinamentos de Conquistas */
+.achievement-card.closest{position:relative;border-color:var(--lime);box-shadow:0 0 0 1px #c5f65b1c,0 12px 34px #0004;background:linear-gradient(145deg,#243518,#11160e)}
+.closest-label{display:inline-block;margin-bottom:5px;padding:3px 6px;border-radius:4px;background:var(--lime);color:#111608;font-size:8px;font-weight:850;letter-spacing:.08em}
+.achievement-filter{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.achievement-filter button[aria-pressed="true"]{background:var(--lime);color:#111608;border-color:var(--lime)}
+.achievement-category[hidden]{display:none}.achievement-browser{scroll-margin-top:90px}
+.et-shades-icon{position:relative;width:34px;height:32px;display:inline-grid;place-items:center;font-size:28px;line-height:1}
+.et-face{filter:saturate(.75) hue-rotate(45deg)}
+.et-lens{position:absolute;top:12px;width:9px;height:6px;background:#050605;border:1px solid #b9c4b0;border-radius:2px 2px 5px 5px;box-shadow:inset 0 1px 2px #ffffff35,0 1px 5px #000}
+.et-left{left:7px;transform:rotate(5deg)}.et-right{right:7px;transform:rotate(-5deg)}.et-bridge{position:absolute;top:14px;left:15px;width:5px;height:1px;background:#050605}
+.hero-rocket{animation:mission-float 3.4s ease-in-out infinite}.mission-rocket{animation:mission-float 3s ease-in-out infinite}
+@keyframes mission-float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-7px) rotate(-2deg)}}
+@media(prefers-reduced-motion:reduce){.hero-rocket,.mission-rocket,.celebration-rocket{animation:none!important}}
