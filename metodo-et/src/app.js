@@ -1,8 +1,8 @@
-import * as M from './core.js?v=4.0';
-import {durationMinutes,progressMetrics} from './progress.js?v=4.0';
-import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE} from './personal.js?v=4.0';
-import {achievementSnapshot,progressText,CATEGORY_META} from './achievements.js?v=4.0';
-import {analyticsSnapshot} from './analytics.js?v=4.0';
+import * as M from './core.js?v=4.0.1';
+import {durationMinutes,progressMetrics} from './progress.js?v=4.0.1';
+import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE} from './personal.js?v=4.0.1';
+import {achievementSnapshot,progressText,CATEGORY_META} from './achievements.js?v=4.0.1';
+import {analyticsSnapshot} from './analytics.js?v=4.0.1';
 const $=q=>document.querySelector(q), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), label=id=>M.RULES[id]?.label||id.replace('legacy:',''), option=(v,t,selected)=>`<option value="${esc(v)}" ${v===selected?'selected':''}>${esc(t)}</option>`, checks=v=>v?'checked':'', cpLabel={done:'Concluído',due:'Checkpoint pendente',battery:'Baterias pendentes',audit:'Conferir histórico',planned:'Planejado'}, phaseLabel={new:'Estudo Novo',solid:'Estudo Sólido'};
 let state,page='today',selected='afo',pendingImport=null,timer=null,lawTimer=null,storedRaw=null,noticeTimeout,achievementCategoryFilter='all',achievementStatusFilter='all',progressView='overview',progressPeriod='all',progressSubject='all';
 const main=$('#main'), modal=$('#modal');
@@ -166,6 +166,7 @@ function progressOverview(a){
  return `<div class="grid metrics performance-metrics"><section class="card metric"><small>HORAS LÍQUIDAS · ${esc(a.bounds.label)}</small><strong>${M.hm(a.metrics.minutes)}</strong><span class="sub">${a.metrics.sessions} sessões · ${a.metrics.days} dias com estudo</span></section><section class="card metric"><small>QUESTÕES RESOLVIDAS</small><strong>${dashboardNumber(a.metrics.questions)}</strong><span class="sub">${dashboardNumber(a.metrics.correct)} acertos registrados</span></section><section class="card metric"><small>APROVEITAMENTO</small><strong>${dashboardPercent(a.metrics.accuracy)}</strong><span class="sub">Média ponderada das questões registradas</span></section><section class="card metric"><small>MÉDIA POR DIA ESTUDADO</small><strong>${M.hm(a.metrics.avgDaily)}</strong><span class="sub">${esc(subjectTitle)} · dias com sessão registrada</span></section></div>
  <section class="card self-compare section-title"><div class="page-head"><div><span class="eyebrow">VOCÊ CONTRA VOCÊ</span><h2>Hoje x ontem</h2><p>Sem ranking externo. A única referência é o que você construiu ontem.</p></div><span class="badge">${a.yesterday.split('-').reverse().join('/')}</span></div><div class="grid self-compare-grid"><article class="metric mini"><small>HORAS</small>${compareValue(a.todayStats.minutes,a.yesterdayStats.minutes,M.hm)}</article><article class="metric mini"><small>QUESTÕES</small>${compareValue(a.todayStats.questions,a.yesterdayStats.questions,dashboardNumber)}</article><article class="metric mini"><small>APROVEITAMENTO</small><strong>${dashboardPercent(a.todayStats.accuracy)}</strong><span class="sub">Ontem: ${dashboardPercent(a.yesterdayStats.accuracy)}</span></article></div></section>
  <div class="grid two section-title"><section class="card"><h2>Tempo por disciplina</h2><p class="muted">Distribuição do tempo líquido no período selecionado.</p>${subjectTimeBars(a.filteredSubjects)}</section><section class="card"><h2>Como você estudou</h2><p class="muted">Distribuição por tipo de atividade registrada.</p>${activityBars(a.activity)}</section></div>
+ <section class="intensity-wrap section-title" aria-label="Lembrete de mentalidade"><article class="card intensity-card"><span class="intensity-mark" aria-hidden="true">✦</span><p>A intensidade <strong>distorce a realidade.</strong></p></article></section>
  <div class="grid two section-title"><section class="card"><h2>Constância acumulada</h2><div class="statline"><span><b>${p.streak.days}</b> dias de estudo</span><span><b>${p.streak.best}</b> dias no seu recorde</span></div><p class="muted progress-explanation">A sequência mede presença no estudo. Domingo de descanso não interrompe a sequência; domingo estudado conta.</p></section><section class="card"><h2>Princípio da Central</h2><p class="muted progress-explanation">Nenhuma disciplina recebe peso maior. Horas, questões e etapas são mostradas para você enxergar a sua própria execução — não para criar uma nota artificial de “chance de aprovação”.</p></section></div>`;
 }
 function progressDisciplines(a){
@@ -192,7 +193,7 @@ function progressMethod(a){
 }
 function progressPage(){
  const a=analyticsSnapshot(state,{period:progressPeriod,subjectId:progressSubject});
- const imported=(state.imports.map(i=>i.sourceUpdatedAt).filter(Boolean).sort().at(-1)||'').slice(0,10).split('-').reverse().join('/')||'data não informada';
  const body=progressView==='disciplines'?progressDisciplines(a):progressView==='evolution'?progressEvolution(a):progressView==='method'?progressMethod(a):progressOverview(a);
- return heading('VOCÊ CONTRA VOCÊ','Central de Desempenho','Acompanhe sua evolução sem comparação externa. O objetivo é superar o seu próprio ontem.',actionsButton('+ Registrar estudo','session'))+`<p class="muted progress-explanation">Histórico StudyOS importado: ${esc(imported)}. Novos registros são incorporados automaticamente.</p>`+progressFilters()+body;
+ const head=`<div class="page-head progress-page-head"><div><span class="eyebrow">VOCÊ CONTRA VOCÊ</span><span class="process-focus">FOCO NO PROCESSO!</span><h1>Central de Desempenho</h1><p>Acompanhe sua evolução sem comparação externa. O objetivo é superar o seu próprio ontem.</p></div>${actionsButton('+ Registrar estudo','session')}</div>`;
+ return head+progressFilters()+body;
 }
