@@ -31,8 +31,9 @@ jobs:
           node --check metodo-et/drive-sync-ui.js
       - name: Smoke checks v3.1
         run: |
-          grep -q '3.1-drive-smart-conquistas-polish' metodo-et/index.html
+          grep -q '3.1.1-conquistas-render-fix' metodo-et/index.html
           grep -q 'drive-sync-ui.js?v=3.1' metodo-et/index.html
+          grep -q 'app.js?v=3.1.1' metodo-et/index.html
           grep -q 'login_hint' metodo-et/drive-sync.js
           grep -q 'refreshAccountInfo' metodo-et/drive-sync.js
           grep -q 'data-ach-filter' metodo-et/src/app.js
