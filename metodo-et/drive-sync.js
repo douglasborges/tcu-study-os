@@ -376,6 +376,8 @@
     setUI(interactiveAuth ? 'connecting' : 'syncing', interactiveAuth ? 'Abrindo sua conta Google…' : 'Sincronizando seus estudos…');
     try {
       if (!accessToken || Date.now() >= tokenExpiresAt) await requestToken(interactiveAuth, forceAccountPicker);
+      const account = await refreshAccountInfo();
+      if (previousEmail && account?.emailAddress && account.emailAddress !== previousEmail) saveMeta({ remoteFileId: null, everSynced: false, lastRemoteUpdatedAt: null, lastSyncAt: null });
       const file = await findRemoteFile();
       if (!file) await createRemoteFile();
       else await reconcile(file, { initial });
