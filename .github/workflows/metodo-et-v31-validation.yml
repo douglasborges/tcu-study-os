@@ -65,7 +65,7 @@ jobs:
           NODE
       - name: Smoke checks v4.1.0
         run: |
-          grep -q '4.1.0-metas-tempo-real' metodo-et/index.html
+          grep -q '4.1.0-stable' metodo-et/index.html
           grep -q 'app.js?v=4.1.0' metodo-et/index.html
           grep -q 'analytics.js?v=4.1.0' metodo-et/src/app.js
           grep -q 'personal.js?v=4.1.0' metodo-et/src/app.js
