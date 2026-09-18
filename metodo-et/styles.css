@@ -78,3 +78,45 @@
 .intensity-card p{max-width:250px;margin:0;font-size:28px;line-height:1.14;font-weight:650;color:var(--text)}
 .intensity-card p strong{display:block;color:var(--lime);font-weight:850}
 @media(max-width:720px){.process-focus{font-size:10px}.intensity-card{width:min(290px,100%)}.intensity-card p{font-size:24px}}
+
+
+/* v4.1 — Metas ET, tempo real e progresso multicamada */
+.badge.subtle{background:#1b2117;color:#cbd5c2;border:1px solid var(--line)}
+.goal-toolbar{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
+.goal-toolbar label{min-width:min(420px,100%)}
+.goal-metrics{margin-top:0}
+.goal-summary{border-color:#42552f}
+.goal-summary .page-head{margin-bottom:20px}
+.goal-task-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.goal-task{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#10130e}
+.goal-task>span{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:50%;border:1px solid #445138;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.goal-task b{display:block;font-size:13px;line-height:1.45}
+.goal-task small{display:block;margin-top:4px;font-size:11px;line-height:1.45}
+.goal-task.done{border-color:#526f33;background:#172010}
+.goal-task.done>span{background:var(--lime);border-color:var(--lime);color:#101509;font-weight:800}
+.goal-task.done b{color:#dff7ad}
+.goal-actions{padding-top:6px}
+.goal-locked{text-align:center;padding:54px 24px;border-style:dashed}
+.goal-lock{font-size:42px;margin-bottom:14px}
+.layered-progress{margin-bottom:28px}
+.layer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.layer-subject{--subject:#c5f65b;border:1px solid color-mix(in srgb,var(--subject) 32%,#2a3025);border-radius:12px;padding:16px;background:#10130e}
+.layer-subject.subject-afo{--subject:#c5f65b}
+.layer-subject.subject-dad{--subject:#69d7bb}
+.layer-subject.subject-ti{--subject:#a98bff}
+.layer-subject.subject-port{--subject:#e8be75}
+.layer-subject.subject-dcon{--subject:#6bb8e8}
+.layer-head{display:grid;gap:2px;margin-bottom:12px}
+.layer-head b{font-size:15px;color:var(--subject)}
+.layer-head small{font-size:11px}
+.layer-stack{display:grid;gap:8px}
+.layer-row{display:grid;grid-template-columns:82px minmax(90px,1fr) 50px;gap:10px;align-items:center;font-size:11px}
+.layer-row>span{color:var(--muted)}
+.layer-row>div{height:7px;background:#252b21;border-radius:10px;overflow:hidden}
+.layer-row i{display:block;height:100%;border-radius:10px;background:var(--subject)}
+.layer-row.review i{background:color-mix(in srgb,var(--subject) 72%,#0b0d0a)}
+.layer-row.battery i{background:color-mix(in srgb,var(--subject) 52%,#eef2e8)}
+.layer-row.checkpoint i{background:color-mix(in srgb,var(--subject) 48%,#0b0d0a);box-shadow:inset 0 0 0 1px var(--subject)}
+.layer-row>b{text-align:right;font-size:11px;color:var(--text);font-variant-numeric:tabular-nums}
+@media(max-width:900px){.goal-task-list,.layer-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.goal-toolbar{align-items:stretch;flex-direction:column}.layer-row{grid-template-columns:72px minmax(70px,1fr) 46px}.goal-task{padding:12px}}
