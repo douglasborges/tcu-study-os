@@ -211,6 +211,18 @@
     return response;
   }
 
+  async function refreshAccountInfo() {
+    try {
+      const data = await (await apiFetch('https://www.googleapis.com/drive/v3/about?fields=user(displayName,emailAddress,photoLink)')).json();
+      const user = data?.user || {};
+      if (user.emailAddress) saveMeta({ accountEmail: user.emailAddress, accountName: user.displayName || '' });
+      return user;
+    } catch (error) {
+      console.warn('[Método ET Drive Sync] Não foi possível identificar a conta conectada.', error);
+      return null;
+    }
+  }
+
   async function getRemoteFileById(id) {
     if (!id) return null;
     try {
