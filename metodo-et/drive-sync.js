@@ -456,6 +456,19 @@
     startRemoteTimer();
   }
 
+  window.addEventListener('metodo-et-drive-sync-now', () => {
+    const needsAuth = !accessToken || Date.now() >= tokenExpiresAt;
+    syncNow({ initial: true, interactiveAuth: needsAuth });
+  });
+
+  window.addEventListener('metodo-et-drive-switch-account', () => {
+    const previousEmail = meta.accountEmail || '';
+    accessToken = '';
+    tokenExpiresAt = 0;
+    tokenClient = null;
+    syncNow({ initial: true, interactiveAuth: true, forceAccountPicker: true, previousEmail });
+  });
+
   window.addEventListener('online', () => {
     if (meta.dirty) setUI('dirty', 'Internet voltou. Clique para sincronizar com o Drive.');
     else if (accessToken && Date.now() < tokenExpiresAt) setUI('synced', 'Conectado ao Google Drive.');
