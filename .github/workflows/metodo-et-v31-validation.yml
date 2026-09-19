@@ -1,4 +1,4 @@
-name: Metodo ET v4.1.1 stable validation
+name: Metodo ET v4.1.2 stable validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.1.1
+      - name: Executar motor analítico v4.1.2
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.1.1'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.1.2'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -77,20 +77,20 @@ jobs:
           ]};
           const base={subjects:[ti]};
           const units=methodUnits(ti);
-          if(!units.length||!/^FD01\b/.test(units[0].title)) throw new Error('FD01 deve ser a primeira unidade ativa de TI.');
+          if(units.length!==4||!/^FD01\b/.test(units[0].title)) throw new Error('A trilha de teste deve preservar todos os itens e iniciar operacionalmente por FD01.');
           if(methodOrder(ti,units[0])!==1) throw new Error('FD01 deve aparecer como ordem estratégica 01.');
-          if(units.some(u=>/^FD00\b/.test(u.title))) throw new Error('FD00 não pode bloquear a trilha estratégica TCU.');
+          if(!units.some(u=>/^FD00\b/.test(u.title))) throw new Error('FD00 deve permanecer preservado na trilha.');
           const fd01=units[0];
           const next=setUnit(base,'ti',fd01.id,{theoryDone:true,theoryDate:'2026-09-18',batteryDone:false,generalDone:false,materialReady:false});
           if(!next.subjects.find(s=>s.id==='ti').units.find(u=>u.id===fd01.id).theoryDone) throw new Error('FD01 deve poder ser concluído sem FD00.');
-          console.log('Trilha TI OK:',units[0].title,'·',units.length,'unidades ativas presentes.');
+          console.log('Trilha TI OK:',units[0].title,'· conteúdo adicional preservado.');
           NODE
-      - name: Smoke checks v4.1.1
+      - name: Smoke checks v4.1.2
         run: |
-          grep -q '4.1.1-ti-track' metodo-et/index.html
-          grep -q 'app.js?v=4.1.1' metodo-et/index.html
-          grep -q 'analytics.js?v=4.1.1' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.1.1' metodo-et/src/app.js
+          grep -q '4.1.2-ti36-preserved' metodo-et/index.html
+          grep -q 'app.js?v=4.1.2' metodo-et/index.html
+          grep -q 'analytics.js?v=4.1.2' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.1.2' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
@@ -98,6 +98,9 @@ jobs:
           grep -q 'PROGRESSO MULTICAMADA' metodo-et/src/app.js
           grep -q 'GOAL_TEMPLATES' metodo-et/src/personal.js
           grep -q 'TI_TCU_TRACK' metodo-et/src/core.js
+          grep -q 'TI_TCU_SELECTED_36' metodo-et/src/core.js
+          grep -q 'FD00' metodo-et/TI-TCU-TRILHA.md
+          grep -q 'TI43' metodo-et/TI-TCU-TRILHA.md
           grep -q 'P1.1 FD01' metodo-et/src/personal.js
           grep -q 'TI25' metodo-et/TI-TCU-TRILHA.md
           grep -q "id:'meta-01'" metodo-et/src/personal.js
