@@ -2,14 +2,26 @@ export const KEY='metodo-et:v1';
 export const CYCLE=['afo','dad','ti','afo','port','dcon'];
 export const RULES=Object.freeze({afo:{label:'AFO',minutes:120,checkpoint:3,unit:'módulo'},cpu:{label:'Contabilidade Pública',minutes:120,checkpoint:3,unit:'módulo'},dad:{label:'DAD',minutes:120,checkpoint:4,unit:'aula'},ti:{label:'TI',minutes:90,checkpoint:4,unit:'aula'},port:{label:'Português',minutes:120,checkpoint:4,unit:'aula'},dcon:{label:'DCON',minutes:120,checkpoint:4,unit:'aula'}});
 export const ACTIVITIES={free:'Estudo livre',theory:'Teoria',micro:'Microrrevisão',battery:'Revisão + primeira bateria',checkpoint:'Checkpoint',general:'Revisão geral',solid:'Questões — Estudo Sólido',night:'Revisão noturna'};
+export const TI_TCU_SELECTED_36=Object.freeze([
+ 'FD00','FD01','FD02','FD03','FD04','FD05','FD06','SI00','SI01',
+ 'TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI07','TI08','TI08.II','TI09',
+ 'TI21.II','TI23','TI25','TI34','TI35','TI36','TI37.I','TI37.II','TI38','TI38.II',
+ 'TI39','TI39.II','TI40','TI41','TI42','TI43'
+]);
+// A Meta 01 começa em FD01. FD00 continua preservado na trilha, mas não bloqueia o ponto de entrada.
+export const TI_TCU_OPERATIONAL_ORDER=Object.freeze([
+ 'FD01','FD00','FD02','FD03','FD04','FD05','FD06','SI00','SI01',
+ 'TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI07','TI08','TI08.II','TI09',
+ 'TI21.II','TI23','TI25','TI34','TI35','TI36','TI37.I','TI37.II','TI38','TI38.II',
+ 'TI39','TI39.II','TI40','TI41','TI42','TI43'
+]);
 export const TI_TCU_TRACK=Object.freeze([
- {id:'p1',label:'Banco de Dados e SQL',dependsOn:[],units:['FD01','TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI41','TI93','TI43','TI57','TI57-B','TI59','TI64','TI45']},
- {id:'p2',label:'Ciência de Dados, Estatística e EDA',dependsOn:[],units:['TI60','TI62','TI63','MON36','TI83','TI89','TI90']},
- {id:'p3',label:'Data Mining e Machine Learning',dependsOn:['p2'],units:['TI07','TI37.I','TI86']},
- {id:'p4',label:'Python para Dados',dependsOn:[],units:['TI80','TI38','TI38.II']},
- {id:'p5',label:'Engenharia e Governança de Dados',dependsOn:['p1'],units:['TI61','TI08','TI08.II','TI33','TI76','TI53','TI21.II']},
- {id:'p6',label:'PLN, Deep Learning e IA Generativa',dependsOn:['p3'],units:['TI36','TI37.II','TI96','TI97']},
- {id:'p7',label:'Seguro histórico do TCU 2021',dependsOn:[],units:['TI39','TI39.II','TI40','TI42','TI88','TI95','TI34','TI23','TI25','TI35']}
+ {id:'foundation',label:'Fundamentos adicionais de segurança da trilha TCU',dependsOn:[],units:['FD01','FD00','FD02','FD03','FD04','FD05','FD06']},
+ {id:'security-base',label:'Fundamentos de Segurança da Informação',dependsOn:[],units:['SI00','SI01']},
+ {id:'bd',label:'Banco de Dados e SQL',dependsOn:[],units:['TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI41','TI43']},
+ {id:'data',label:'Data Mining, Big Data e fundamentos analíticos',dependsOn:['bd'],units:['TI07','TI08','TI08.II','TI09','TI21.II']},
+ {id:'security',label:'Segurança, LAI e LGPD',dependsOn:['security-base'],units:['TI23','TI25','TI34','TI35']},
+ {id:'ai',label:'IA, ML, PLN e linguagens para dados',dependsOn:['data'],units:['TI36','TI37.I','TI37.II','TI38','TI38.II','TI39','TI39.II','TI40','TI42']}
 ]);
 function tiCode(u){
  const t=String(u?.title||'').trim();
@@ -24,7 +36,9 @@ export function methodUnits(s){
  if(s?.id!=='ti')return s?.units||[];
  const byCode=new Map();
  for(const u of s.units||[]){const code=tiCode(u);if(code&&!byCode.has(code))byCode.set(code,u);}
- return TI_TCU_TRACK.flatMap(g=>g.units.map(code=>byCode.get(code)).filter(Boolean));
+ const ordered=TI_TCU_OPERATIONAL_ORDER.map(code=>byCode.get(code)).filter(Boolean),used=new Set(ordered.map(u=>u.id));
+ // Nunca descartar conteúdo importado: qualquer item adicional permanece na trilha ao final, na ordem original.
+ return [...ordered,...(s.units||[]).filter(u=>!used.has(u.id)).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0))];
 }
 export function methodOrder(s,u){const i=methodUnits(s).findIndex(v=>v.id===u?.id);return i>=0?i+1:Number(u?.order)||0;}
 export const copy=v=>JSON.parse(JSON.stringify(v));
@@ -63,12 +77,12 @@ export function migrate(payload,current=emptyState()){
 }
 function requirePrevious(s,u){
  if(s.id==='ti'){
-  const code=tiCode(u),group=TI_TCU_TRACK.find(g=>g.units.includes(code));
-  if(group){
-   const earlier=new Set(group.units.slice(0,group.units.indexOf(code)));
-   const previous=(s.units||[]).filter(v=>earlier.has(tiCode(v)));
-   if(previous.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a teoria e a bateria das etapas anteriores deste bloco da trilha TCU antes de avançar.');
-   for(const depId of group.dependsOn){const dep=TI_TCU_TRACK.find(g=>g.id===depId),present=(s.units||[]).filter(v=>dep?.units.includes(tiCode(v)));if(present.length&&present.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a base de '+dep.label+' antes de avançar para '+group.label+'.');}
+  const route=methodUnits(s),index=route.findIndex(v=>v.id===u.id);
+  if(index>=0){
+   const previous=route.slice(0,index);
+   if(previous.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a teoria e a bateria das etapas anteriores da trilha TI–TCU antes de avançar.');
+   const code=tiCode(u),group=TI_TCU_TRACK.find(g=>g.units.includes(code));
+   for(const depId of group?.dependsOn||[]){const dep=TI_TCU_TRACK.find(g=>g.id===depId),present=route.filter(v=>dep?.units.includes(tiCode(v)));if(present.length&&present.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a base de '+dep.label+' antes de avançar para '+group.label+'.');}
    return;
   }
  }
