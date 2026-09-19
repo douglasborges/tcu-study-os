@@ -19,7 +19,7 @@ export const LEGISLATION_QUEUE=[
 ];
 export const GOAL_TEMPLATES=[
  {
-  id:'meta-01',number:1,title:'Meta 01 · 30h reais',subtitle:'Consolidar o novo Método ET com 25h de núcleo obrigatório + 5h de margem dinâmica. TI inicia pela P1.1 · FD01, sem pré-requisito artificial de módulos de apoio.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,
+  id:'meta-01',number:1,title:'Meta 01 · 30h reais',subtitle:'Consolidar o novo Método ET com 25h de núcleo obrigatório + 5h de margem dinâmica. TI inicia por FD01 dentro da trilha própria TI–TCU de 36 itens; conteúdos adicionais de segurança permanecem integralmente preservados.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,
   tasks:[
    {id:'m01-01',title:'AFO · Módulo 1 — bateria de questões',check:['battery','afo','afo-u-1']},
    {id:'m01-02',title:'DAD · Aula 1 — revisão + bateria',check:['battery','dad','dad-u-1']},
