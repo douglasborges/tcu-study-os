@@ -1,8 +1,8 @@
-import * as M from './core.js?v=4.1.1';
-import {durationMinutes,progressMetrics} from './progress.js?v=4.1.1';
-import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE, goalSnapshot, completeGoal } from './personal.js?v=4.1.1';
-import {achievementSnapshot,progressText,CATEGORY_META} from './achievements.js?v=4.1.1';
-import {analyticsSnapshot} from './analytics.js?v=4.1.1';
+import * as M from './core.js?v=4.1.2';
+import {durationMinutes,progressMetrics} from './progress.js?v=4.1.2';
+import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE, goalSnapshot, completeGoal } from './personal.js?v=4.1.2';
+import {achievementSnapshot,progressText,CATEGORY_META} from './achievements.js?v=4.1.2';
+import {analyticsSnapshot} from './analytics.js?v=4.1.2';
 const $=q=>document.querySelector(q), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), label=id=>M.RULES[id]?.label||id.replace('legacy:',''), option=(v,t,selected)=>`<option value="${esc(v)}" ${v===selected?'selected':''}>${esc(t)}</option>`, checks=v=>v?'checked':'', cpLabel={done:'Concluído',due:'Checkpoint pendente',battery:'Baterias pendentes',audit:'Conferir histórico',planned:'Planejado'}, phaseLabel={new:'Estudo Novo',solid:'Estudo Sólido'};
 let state,page='today',selected='afo',pendingImport=null,timer=null,lawTimer=null,storedRaw=null,noticeTimeout,achievementCategoryFilter='all',achievementStatusFilter='all',progressView='overview',progressPeriod='all',progressSubject='all',goalView=null;
 const main=$('#main'), modal=$('#modal');
