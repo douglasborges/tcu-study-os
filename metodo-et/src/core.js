@@ -2,6 +2,30 @@ export const KEY='metodo-et:v1';
 export const CYCLE=['afo','dad','ti','afo','port','dcon'];
 export const RULES=Object.freeze({afo:{label:'AFO',minutes:120,checkpoint:3,unit:'módulo'},cpu:{label:'Contabilidade Pública',minutes:120,checkpoint:3,unit:'módulo'},dad:{label:'DAD',minutes:120,checkpoint:4,unit:'aula'},ti:{label:'TI',minutes:90,checkpoint:4,unit:'aula'},port:{label:'Português',minutes:120,checkpoint:4,unit:'aula'},dcon:{label:'DCON',minutes:120,checkpoint:4,unit:'aula'}});
 export const ACTIVITIES={free:'Estudo livre',theory:'Teoria',micro:'Microrrevisão',battery:'Revisão + primeira bateria',checkpoint:'Checkpoint',general:'Revisão geral',solid:'Questões — Estudo Sólido',night:'Revisão noturna'};
+export const TI_TCU_TRACK=Object.freeze([
+ {id:'p1',label:'Banco de Dados e SQL',dependsOn:[],units:['FD01','TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI41','TI93','TI43','TI57','TI57-B','TI59','TI64','TI45']},
+ {id:'p2',label:'Ciência de Dados, Estatística e EDA',dependsOn:[],units:['TI60','TI62','TI63','MON36','TI83','TI89','TI90']},
+ {id:'p3',label:'Data Mining e Machine Learning',dependsOn:['p2'],units:['TI07','TI37.I','TI86']},
+ {id:'p4',label:'Python para Dados',dependsOn:[],units:['TI80','TI38','TI38.II']},
+ {id:'p5',label:'Engenharia e Governança de Dados',dependsOn:['p1'],units:['TI61','TI08','TI08.II','TI33','TI76','TI53','TI21.II']},
+ {id:'p6',label:'PLN, Deep Learning e IA Generativa',dependsOn:['p3'],units:['TI36','TI37.II','TI96','TI97']},
+ {id:'p7',label:'Seguro histórico do TCU 2021',dependsOn:[],units:['TI39','TI39.II','TI40','TI42','TI88','TI95','TI34','TI23','TI25','TI35']}
+]);
+function tiCode(u){
+ const t=String(u?.title||'').trim();
+ if(/^TI01\s*-\s*Parte I\b/i.test(t))return 'TI01.I';
+ if(/^TI01\s*-\s*Parte II\b/i.test(t))return 'TI01.II';
+ if(/^TI37\s*-\s*Parte I\b/i.test(t))return 'TI37.I';
+ if(/^TI37\s*-\s*Parte II\b/i.test(t))return 'TI37.II';
+ const m=t.match(/^(FD\d+|SI\d+|MON\d+|TI\d+(?:\.II)?(?:-B)?)/i);
+ return m?m[1].toUpperCase():'';
+}
+export function methodUnits(s){
+ if(s?.id!=='ti')return s?.units||[];
+ const byCode=new Map();
+ for(const u of s.units||[]){const code=tiCode(u);if(code&&!byCode.has(code))byCode.set(code,u);}
+ return TI_TCU_TRACK.flatMap(g=>g.units.map(code=>byCode.get(code)).filter(Boolean));
+}
 export const copy=v=>JSON.parse(JSON.stringify(v));
 export const uid=()=>globalThis.crypto.randomUUID();
 export function day(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -11,10 +35,10 @@ export function hm(n){n=Math.round(n||0);return Math.floor(n/60)+'h'+String(n%60
 export function pct(q){return q?.attempted?Math.round(q.correct/q.attempted*100)+'%':'—';}
 export function emptyState(){return {version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[],updatedAt:null};}
 const touched=u=>u.legacy.some(e=>e.status!=='Em espera')||u.theoryDone;
-export function checkpoints(s){let result=[],size=RULES[s.id]?.checkpoint||4;for(let i=0;i<s.units.length;i+=size){let units=s.units.slice(i,i+size),id=s.id+'-cp-'+(i/size+1),record=s.checkpoints[id];result.push({id,number:i/size+1,units,partial:units.length<size,record,status:record?.done?'done':units.every(u=>u.theoryDone&&u.batteryDone)?'due':units.every(u=>u.theoryDone)?'battery':units.every(touched)?'audit':'planned'});}return result;}
+export function checkpoints(s){let result=[],size=RULES[s.id]?.checkpoint||4,route=methodUnits(s);for(let i=0;i<route.length;i+=size){let units=route.slice(i,i+size),id=s.id+'-cp-'+(i/size+1),record=s.checkpoints[id];result.push({id,number:i/size+1,units,partial:units.length<size,record,status:record?.done?'done':units.every(u=>u.theoryDone&&u.batteryDone)?'due':units.every(u=>u.theoryDone)?'battery':units.every(touched)?'audit':'planned'});}return result;}
 export function unitSituation(u){return u.generalDone&&u.materialReady?'Revisão geral concluída':u.theoryDone&&u.batteryDone?'Bateria concluída':u.theoryDone?'Bateria pendente':touched(u)?'Conferir avanço importado':'Estudar';}
-export function canSolid(s){return s.units.length>0&&s.units.every(u=>u.theoryDone&&u.batteryDone&&u.generalDone&&u.materialReady)&&checkpoints(s).every(c=>c.status==='done')&&(s.id!=='port'||s.andresanComplete);}
-export function nextAction(s){if(s.phase==='solid')return 'Continuar caderno de questões';let cp=checkpoints(s).find(c=>['due','battery','audit'].includes(c.status));if(cp)return cp.status==='due'?'Fazer checkpoint '+cp.number:cp.status==='audit'?'Conferir avanço do bloco '+cp.number:'Concluir baterias do bloco '+cp.number;let u=s.units.find(u=>!u.theoryDone||!u.batteryDone);if(u)return (u.theoryDone?'Revisar + resolver bateria: ':'Estudar: ')+u.title;return s.units.some(u=>!u.generalDone||!u.materialReady)?'Revisão geral e material de revisão':s.id==='port'&&!s.andresanComplete?'Concluir cursos Andresan':'Pronto para Estudo Sólido';}
+export function canSolid(s){let units=methodUnits(s);return units.length>0&&units.every(u=>u.theoryDone&&u.batteryDone&&u.generalDone&&u.materialReady)&&checkpoints(s).every(c=>c.status==='done')&&(s.id!=='port'||s.andresanComplete);}
+export function nextAction(s){if(s.phase==='solid')return 'Continuar caderno de questões';let cp=checkpoints(s).find(c=>['due','battery','audit'].includes(c.status));if(cp)return cp.status==='due'?'Fazer checkpoint '+cp.number:cp.status==='audit'?'Conferir avanço do bloco '+cp.number:'Concluir baterias do bloco '+cp.number;let units=methodUnits(s),u=units.find(u=>!u.theoryDone||!u.batteryDone);if(u)return (u.theoryDone?'Revisar + resolver bateria: ':'Estudar: ')+u.title;return units.some(u=>!u.generalDone||!u.materialReady)?'Revisão geral e material de revisão':s.id==='port'&&!s.andresanComplete?'Concluir cursos Andresan':'Pronto para Estudo Sólido';}
 export function totals(st,date=day()){let start=weekStart(date),d=new Date(start+'T12:00:00');d.setDate(d.getDate()+7);let end=day(d),law=st.legislation?.sessions||[],studyDay=st.sessions.filter(s=>s.date===date&&s.activity!=='night').reduce((a,s)=>a+s.minutes,0),lawDay=law.filter(s=>s.date===date).reduce((a,s)=>a+s.minutes,0),studyWeek=st.sessions.filter(s=>s.date>=start&&s.date<end&&s.activity!=='night').reduce((a,s)=>a+s.minutes,0),lawWeek=law.filter(s=>s.date>=start&&s.date<end).reduce((a,s)=>a+s.minutes,0);return {day:studyDay+lawDay,night:st.sessions.filter(s=>s.date===date&&s.activity==='night').reduce((a,s)=>a+s.minutes,0),week:studyWeek+lawWeek,lawDay,lawWeek};}
 export function nightTasks(st,date=day()){return [...new Set(st.sessions.filter(s=>s.date===date&&s.activity!=='night'&&RULES[s.subjectId]).map(s=>s.subjectId))].map(id=>({id,done:st.sessions.some(s=>s.date===date&&s.subjectId===id&&s.activity==='night')}));}
 export function fingerprint(v){let t=JSON.stringify(v),h=2166136261;for(let i=0;i<t.length;i++)h=Math.imul(h^t.charCodeAt(i),16777619);return (h>>>0).toString(16)+'-'+t.length;}
@@ -36,7 +60,19 @@ export function migrate(payload,current=emptyState()){
  }
  st.imports.push({id:key,sourceUpdatedAt:payload.updatedAt||src.updatedAt,at:new Date().toISOString()});st.archive.push({id:key,payload:copy(payload)});return st;
 }
-function requirePrevious(s,u){let previous=s.units.filter(v=>v.order<u.order);if(previous.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a teoria e a bateria das unidades anteriores antes de avançar.');if(checkpoints(s).some(c=>c.units.at(-1).order<u.order&&c.status!=='done'))throw Error('Conclua o checkpoint do bloco anterior antes de avançar.');}
+function requirePrevious(s,u){
+ if(s.id==='ti'){
+  const code=tiCode(u),group=TI_TCU_TRACK.find(g=>g.units.includes(code));
+  if(group){
+   const earlier=new Set(group.units.slice(0,group.units.indexOf(code)));
+   const previous=(s.units||[]).filter(v=>earlier.has(tiCode(v)));
+   if(previous.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a teoria e a bateria das etapas anteriores deste bloco da trilha TCU antes de avançar.');
+   for(const depId of group.dependsOn){const dep=TI_TCU_TRACK.find(g=>g.id===depId),present=(s.units||[]).filter(v=>dep?.units.includes(tiCode(v)));if(present.length&&present.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a base de '+dep.label+' antes de avançar para '+group.label+'.');}
+   return;
+  }
+ }
+ let previous=s.units.filter(v=>v.order<u.order);if(previous.some(v=>!v.theoryDone||!v.batteryDone))throw Error('Conclua a teoria e a bateria das unidades anteriores antes de avançar.');if(checkpoints(s).some(c=>c.units.at(-1).order<u.order&&c.status!=='done'))throw Error('Conclua o checkpoint do bloco anterior antes de avançar.');
+}
 function getUnit(st,sid,id){let s=st.subjects.find(s=>s.id===sid),u=s?.units.find(u=>u.id===id);if(!u)throw Error('Aula não encontrada.');return {s,u};}
 export function session(current,input){
  let st=copy(current),s=st.subjects.find(s=>s.id===input.subjectId),minutes=Number(input.minutes),q=Number(input.questions||0),correct=Number(input.correct||0);
@@ -49,7 +85,7 @@ export function session(current,input){
  if(input.activity==='night'&&st.sessions.filter(v=>v.subjectId===s.id&&v.date===input.date&&v.activity==='night').reduce((a,v)=>a+v.minutes,0)+minutes>10)throw Error('A revisão noturna totaliza de 5 a 10 minutos por disciplina no dia.');
  if(input.activity==='checkpoint'&&!checkpoints(s).some(c=>c.units.some(v=>v.id===u.id)&&['due','done'].includes(c.status)))throw Error('Conclua teoria e baterias do bloco antes do checkpoint.');
  if(input.activity==='battery'&&(!u.theoryDone||!u.theoryDate||input.date<=u.theoryDate))throw Error('Confirme a teoria e faça a primeira bateria em outro dia, após a teoria.');
- if(input.activity==='general'&&(!s.units.every(u=>u.theoryDone&&u.batteryDone)||!checkpoints(s).every(c=>c.status==='done')))throw Error('A revisão geral começa após teoria, baterias e checkpoints.');
+ if(input.activity==='general'&&(!methodUnits(s).every(u=>u.theoryDone&&u.batteryDone)||!checkpoints(s).every(c=>c.status==='done')))throw Error('A revisão geral começa após teoria, baterias e checkpoints.');
  let start=input.start===''||input.start==null?null:Number(input.start),end=input.end===''||input.end==null?null:Number(input.end);
  if((start!==null||end!==null)&&(!Number.isFinite(start)||!Number.isFinite(end)||start<0||end<start))throw Error('Preencha início e fim válidos do conteúdo.');
  const entry={id:uid(),subjectId:s.id,unitId:u?.id||'',title:String(input.title||'').trim()||u?.title||'',date:input.date,createdAt:new Date().toISOString(),activity:input.activity,minutes,questions:q,correct,medium:input.medium||'',start,end,notes:String(input.notes||''),legacy:false,cycleApplied:false};
@@ -67,7 +103,7 @@ export function setUnit(current,sid,id,values){let st=copy(current),{s,u}=getUni
  if(theory&&!u.theoryDone&&!u.legacy.some(e=>e.status!=='Em espera'||e.date))requirePrevious(s,u);
  if(theory&&(!validDay(values.theoryDate)||values.theoryDate>day()))throw Error('Informe a data real da conclusão da teoria.');
  if(battery&&(!theory||u.battery.attempted<30))throw Error('A primeira bateria exige teoria concluída e ao menos 30 questões registradas.');
- if(general&&(!s.units.every(v=>v.id===u.id?theory&&battery:v.theoryDone&&v.batteryDone)||!checkpoints(s).every(c=>c.status==='done')))throw Error('Conclua teoria, baterias e checkpoints antes da revisão geral.');
+ if(general&&(!methodUnits(s).every(v=>v.id===u.id?theory&&battery:v.theoryDone&&v.batteryDone)||!checkpoints(s).every(c=>c.status==='done')))throw Error('Conclua teoria, baterias e checkpoints antes da revisão geral.');
  Object.assign(u,{theoryDone:theory,theoryDate:theory?values.theoryDate:'',batteryDone:battery&&theory,generalDone:general&&battery&&theory,materialReady:material});
  if(!theory||!battery){let cp=checkpoints(s).find(c=>c.units.some(v=>v.id===id));if(cp)delete s.checkpoints[cp.id];for(let x of s.units)x.generalDone=false;}
  if(s.phase==='solid'&&!canSolid(s))s.phase='new';return st;
