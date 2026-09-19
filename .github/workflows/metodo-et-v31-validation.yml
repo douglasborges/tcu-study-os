@@ -67,10 +67,15 @@ jobs:
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
           node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
           import {methodUnits,methodOrder,setUnit} from '/tmp/core.mjs';
-          const base=JSON.parse(fs.readFileSync('metodo-et/data/initial-state.json','utf8'));
-          const ti=base.subjects.find(s=>s.id==='ti');
+          const unit=(id,order,title)=>({id,order,title,theoryDone:false,theoryDate:'',batteryDone:false,generalDone:false,materialReady:false,battery:{attempted:0,correct:0},general:{attempted:0,correct:0},legacy:[],marks:[]});
+          const ti={id:'ti',phase:'new',slotMinutes:90,checkpoints:{},notebooks:[],andresanComplete:false,units:[
+            unit('ti-u-1',1,'FD00 - Introdução à Fluência em Dados'),
+            unit('ti-u-2',2,'FD01 - Fundamentos de Dados'),
+            unit('ti-u-3',3,'FD02 - Fundamentos de Bancos de Dados'),
+            unit('ti-u-10',10,'TI01 - Parte I - Bancos de Dados - Versão 2.0')
+          ]};
+          const base={subjects:[ti]};
           const units=methodUnits(ti);
           if(!units.length||!/^FD01\b/.test(units[0].title)) throw new Error('FD01 deve ser a primeira unidade ativa de TI.');
           if(methodOrder(ti,units[0])!==1) throw new Error('FD01 deve aparecer como ordem estratégica 01.');
