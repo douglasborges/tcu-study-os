@@ -2,58 +2,69 @@
 
 Atualização: 19/09/2026
 
-## Decisão de ordem
+## Fonte de verdade do projeto
 
-A Meta 01 permanece correta: **TI começa por FD01 — Fundamentos de Dados**.
+A trilha oficial da Método ET é a **trilha própria TI–TCU com 36 itens**, definida no projeto Preparação para o TCU.
 
-FD00, FD02–FD06, SI00 e SI01 podem existir no catálogo/importação, mas não funcionam como pré-requisitos obrigatórios da trilha estratégica TCU. O Método ET deve usar a trilha abaixo como autoridade para progressão.
+O roteiro do professor Ramon Souza é uma referência útil de conteúdo, sequência e pré-requisitos, mas **não substitui nem reduz** a trilha própria. Os conteúdos extras foram mantidos deliberadamente por segurança, considerando a evolução dos editais recentes de controle e o fato de o último edital de Área Geral do TCU ser de 2021/2022.
 
-## Regras de pré-requisito
+## 36 itens preservados
 
-1. **Prioridade 1 — Banco de Dados e SQL:** começar imediatamente e avançar na ordem.
-2. **Prioridade 2 — Ciência de Dados, Estatística e EDA:** começar junto da Prioridade 1.
-3. **Prioridade 3 — Data Mining e Machine Learning:** somente após a base de Estatística.
-4. **Prioridade 4 — Python para Dados:** pode caminhar em paralelo às Prioridades 2 e 3.
-5. **Prioridade 5 — Engenharia e Governança de Dados:** depois da base de BD/SQL.
-6. **Prioridade 6 — PLN, Deep Learning e IA Generativa:** depois de ML básico.
-7. **Prioridade 7 — Seguro histórico do TCU 2021:** segunda volta/proteção histórica.
+1. FD00 — Introdução à Fluência em Dados  
+2. FD01 — Fundamentos de Dados  
+3. FD02 — Fundamentos de Bancos de Dados  
+4. FD03 — Modelo Entidade-Relacionamento  
+5. FD04 — Modelo Relacional  
+6. FD05 — Mapeamento ER-Relacional  
+7. FD06 — Introdução ao SQL  
+8. SI00 — Fundamentos de Segurança da Informação  
+9. SI01 — Ataques e Ameaças  
+10. TI01 — Parte I — Bancos de Dados  
+11. TI01 — Parte II — Modelo Relacional  
+12. TI02 — Modelo Entidade-Relacionamento  
+13. TI03 — SQL (DML)  
+14. TI04 — SQL (DDL)  
+15. TI05 — SQL (DCL e DTL)  
+16. TI06 — Business Intelligence  
+17. TI07 — Data Mining  
+18. TI08 — Big Data  
+19. TI08.II — Big Data (temas avançados)  
+20. TI09 — Teoria da Informação  
+21. TI21.II — Computação em Nuvem  
+22. TI23 — Segurança da Informação  
+23. TI25 — ISO 27001:2022 (SGSI)  
+24. TI34 — LAI  
+25. TI35 — LGPD  
+26. TI36 — Inteligência Artificial  
+27. TI37 — Parte I — Aprendizado de Máquina  
+28. TI37 — Parte II — Processamento de Linguagem Natural  
+29. TI38 — Python  
+30. TI38.II — Bibliotecas Python  
+31. TI39 — R  
+32. TI39.II — Tidyverse  
+33. TI40 — Pareamento de Dados  
+34. TI41 — XML, JSON e CSV  
+35. TI42 — Representação de Dados  
+36. TI43 — NoSQL
 
-## Ordem consolidada
+## Regra operacional da Meta 01
 
-### P1 · Banco de Dados e SQL
-FD01 → TI01.I → TI01.II → TI02 → TI03 → TI04 → TI05 → TI06 → TI41 → TI93 → TI43 → TI57 → TI57-B → TI59 → TI64 → TI45
+A Meta 01 continua começando por **FD01 — Fundamentos de Dados**. Isso é somente o ponto de entrada operacional da meta; **FD00 e todos os demais conteúdos continuam na trilha** e não foram descartados.
 
-### P2 · Ciência de Dados, Estatística e EDA
-TI60 → TI62 → TI63 → MON36 → TI83 → TI89 → TI90
+A aplicação nunca deve remover uma unidade importada de TI apenas porque ela não apareça em um roteiro externo. Qualquer conteúdo adicional cadastrado deve permanecer visível e estudável.
 
-### P3 · Data Mining e Machine Learning
-TI07 → TI37.I → TI86
+## Uso do roteiro do Ramon
 
-### P4 · Python para Dados
-TI80 → TI38 → TI38.II
+O roteiro do Ramon pode:
+- confirmar relações de pré-requisito;
+- ajudar a decidir a sequência entre conteúdos correlatos;
+- orientar teoria, questões e revisão.
 
-### P5 · Engenharia e Governança de Dados
-TI61 → TI08 → TI08.II → TI33 → TI76 → TI53 → TI21.II
+O roteiro do Ramon não pode:
+- apagar tópicos da trilha própria;
+- reduzir os 36 itens selecionados;
+- transformar a grade dele na única fonte de verdade do Método ET.
 
-### P6 · PLN, Deep Learning e IA Generativa
-TI36 → TI37.II → TI96 → TI97
+## Regra de manutenção
 
-### P7 · Seguro histórico TCU
-TI39 → TI39.II → TI40 → TI42 → TI88 → TI95 → TI34 → TI23 → **TI25** → TI35
-
-> TI25 foi mantido como complemento obrigatório da proteção histórica porque o roteiro TCU do professor Ramon o associa às políticas de segurança, classificação da informação, SGSI e tratamento de incidentes.
-
-## Meta 01
-
-As três ocorrências de TI da Meta 01 permanecem em FD01:
-- P1.1 FD01 — primeira faixa de leitura;
-- P1.1 FD01 — continuidade;
-- P1.1 FD01 — conclusão da teoria.
-
-A divisão respeita a leitura real do PDF. Não é necessário concluir uma aula inteira em uma única ocorrência.
-
-## Fontes de decisão
-
-- TI TOTAL — Roteiro (TCU), professor Ramon Souza.
-- TI TOTAL — Roteiro (RFB), professor Ramon Souza, para aproveitamento secundário.
-- Plano TCU — Roteiro Completo de Aulas, com TCU como objetivo principal e SEFAZ-SC como aproveitamento secundário.
+Mudanças futuras em TI devem preservar os 36 itens acima, salvo decisão explícita do usuário de adicionar, remover ou substituir algum conteúdo.
