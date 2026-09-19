@@ -26,6 +26,7 @@ export function methodUnits(s){
  for(const u of s.units||[]){const code=tiCode(u);if(code&&!byCode.has(code))byCode.set(code,u);}
  return TI_TCU_TRACK.flatMap(g=>g.units.map(code=>byCode.get(code)).filter(Boolean));
 }
+export function methodOrder(s,u){const i=methodUnits(s).findIndex(v=>v.id===u?.id);return i>=0?i+1:Number(u?.order)||0;}
 export const copy=v=>JSON.parse(JSON.stringify(v));
 export const uid=()=>globalThis.crypto.randomUUID();
 export function day(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
