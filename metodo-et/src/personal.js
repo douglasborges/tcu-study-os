@@ -19,23 +19,23 @@ export const LEGISLATION_QUEUE=[
 ];
 export const GOAL_TEMPLATES=[
  {
-  id:'meta-01',number:1,title:'Meta 01 · 30h reais',subtitle:'Consolidar o novo Método ET com 25h de núcleo obrigatório + 5h de margem dinâmica.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,
+  id:'meta-01',number:1,title:'Meta 01 · 30h reais',subtitle:'Consolidar o novo Método ET com 25h de núcleo obrigatório + 5h de margem dinâmica. TI inicia pela P1.1 · FD01, sem pré-requisito artificial de módulos de apoio.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,
   tasks:[
    {id:'m01-01',title:'AFO · Módulo 1 — bateria de questões',check:['battery','afo','afo-u-1']},
    {id:'m01-02',title:'DAD · Aula 1 — revisão + bateria',check:['battery','dad','dad-u-1']},
-   {id:'m01-03',title:'TI · FD01 — cerca de 16 páginas'},
+   {id:'m01-03',title:'TI · P1.1 FD01 — cerca de 16 páginas'},
    {id:'m01-04',title:'AFO · Módulo 2 — bateria de questões',check:['battery','afo','afo-u-2']},
    {id:'m01-05',title:'Português · Aula 1 — primeira sessão'},
    {id:'m01-06',title:'DCON · Art. 5º — blocos 14–15'},
    {id:'m01-07',title:'AFO · Módulo 3 — microrrevisão + bateria',check:['battery','afo','afo-u-3']},
    {id:'m01-08',title:'DAD · Organização Administrativa — parte 1'},
-   {id:'m01-09',title:'TI · FD01 — próxima faixa de leitura'},
+   {id:'m01-09',title:'TI · P1.1 FD01 — próxima faixa de leitura'},
    {id:'m01-10',title:'AFO · Checkpoint M1–M3',check:['checkpoint','afo','afo-cp-1']},
    {id:'m01-11',title:'Português · Aula 1 — concluir teoria',check:['theory','port','port-u-1']},
    {id:'m01-12',title:'DCON · Art. 5º — blocos 16–17'},
    {id:'m01-13',title:'AFO · Módulo 4 — microrrevisão + bateria',check:['battery','afo','afo-u-4']},
    {id:'m01-14',title:'DAD · Organização Administrativa — concluir teoria',check:['theory','dad','dad-u-2']},
-   {id:'m01-15',title:'TI · FD01 — concluir teoria',check:['theory','ti','ti-u-2']},
+   {id:'m01-15',title:'TI · P1.1 FD01 — concluir teoria',check:['theory','ti','ti-u-2']},
    {id:'m01-16',title:'AFO · Módulo 5 — teoria',check:['theory','afo','afo-u-5']},
    {id:'m01-17',title:'Português · Aula 1 — revisão + bateria',check:['battery','port','port-u-1']},
    {id:'m01-18',title:'DCON · Art. 5º — blocos 18–19'}
