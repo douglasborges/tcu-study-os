@@ -41,6 +41,13 @@ export function methodUnits(s){
  return [...ordered,...(s.units||[]).filter(u=>!used.has(u.id)).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0))];
 }
 export function methodOrder(s,u){const i=methodUnits(s).findIndex(v=>v.id===u?.id);return i>=0?i+1:Number(u?.order)||0;}
+export function normalizeMethodState(current){
+ const st=copy(current);
+ for(const s of st.subjects||[])for(const u of s.units||[]){
+  if(u.theoryDone&&Number(u.battery?.attempted||0)>=30)u.batteryDone=true;
+ }
+ return st;
+}
 export const copy=v=>JSON.parse(JSON.stringify(v));
 export const uid=()=>globalThis.crypto.randomUUID();
 export function day(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -111,7 +118,7 @@ export function session(current,input){
   entry.cycleApplied=true;
   entry.slotComplete=true;
  }
- st.sessions.push(entry);if(u&&['battery','general'].includes(input.activity)){u[input.activity].attempted+=q;u[input.activity].correct+=correct;}return st;
+ st.sessions.push(entry);if(u&&['battery','general'].includes(input.activity)){u[input.activity].attempted+=q;u[input.activity].correct+=correct;if(input.activity==='battery'&&u.theoryDone&&u.battery.attempted>=30)u.batteryDone=true;}return st;
 }
 export function setUnit(current,sid,id,values){let st=copy(current),{s,u}=getUnit(st,sid,id);
  let theory=!!values.theoryDone,battery=!!values.batteryDone,general=!!values.generalDone,material=!!values.materialReady;
