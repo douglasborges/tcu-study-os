@@ -1,4 +1,4 @@
-name: Metodo ET v4.1.2 stable validation
+name: Metodo ET v4.1.3 stable validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.1.2
+      - name: Executar motor analítico v4.1.3
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.1.2'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.1.3'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -85,12 +85,30 @@ jobs:
           if(!next.subjects.find(s=>s.id==='ti').units.find(u=>u.id===fd01.id).theoryDone) throw new Error('FD01 deve poder ser concluído sem FD00.');
           console.log('Trilha TI OK:',units[0].title,'· conteúdo adicional preservado.');
           NODE
-      - name: Smoke checks v4.1.2
+      - name: Validar liberação automática de checkpoint
         run: |
-          grep -q '4.1.2-ti36-preserved' metodo-et/index.html
-          grep -q 'app.js?v=4.1.2' metodo-et/index.html
-          grep -q 'analytics.js?v=4.1.2' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.1.2' metodo-et/src/app.js
+          cp metodo-et/src/core.js /tmp/core.mjs
+          node --input-type=module - <<'NODE'
+          import {normalizeMethodState,checkpoints,session,day} from '/tmp/core.mjs';
+          const u=(id,order,title,attempted,correct)=>({id,order,title,theoryDone:true,theoryDate:'2026-09-20',batteryDone:false,generalDone:false,materialReady:false,battery:{attempted,correct},general:{attempted:0,correct:0},legacy:[],marks:[]});
+          const afo={id:'afo',course:'AFO',phase:'new',slotMinutes:120,units:[u('afo-u-1',1,'M1',37,34),u('afo-u-2',2,'M2',65,52),u('afo-u-3',3,'M3',59,56)],checkpoints:{},notebooks:[],andresanComplete:false};
+          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[afo],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[]};
+          const normalized=normalizeMethodState(base);
+          if(!normalized.subjects[0].units.every(x=>x.batteryDone)) throw new Error('Baterias com 30+ questões deveriam ser concluídas automaticamente.');
+          if(checkpoints(normalized.subjects[0])[0].status!=='due') throw new Error('Checkpoint 1 de AFO deveria estar liberado.');
+          const partial=u('afo-u-4',4,'M4',20,18);partial.theoryDate='2026-09-20';
+          const s2={...afo,units:[partial],checkpoints:{}};
+          const base2={...base,subjects:[s2],cycle:{index:0,minutes:0}};
+          const after=session(base2,{subjectId:'afo',unitId:'afo-u-4',date:day(),activity:'battery',minutes:30,questions:10,correct:9,applyCycle:false});
+          if(!after.subjects[0].units[0].batteryDone) throw new Error('Bateria deve concluir ao atingir 30 questões acumuladas.');
+          console.log('Checkpoint automático OK.');
+          NODE
+      - name: Smoke checks v4.1.3
+        run: |
+          grep -q '4.1.3-checkpoint-fix' metodo-et/index.html
+          grep -q 'app.js?v=4.1.3' metodo-et/index.html
+          grep -q 'analytics.js?v=4.1.3' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.1.3' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
@@ -99,6 +117,8 @@ jobs:
           grep -q 'GOAL_TEMPLATES' metodo-et/src/personal.js
           grep -q 'TI_TCU_TRACK' metodo-et/src/core.js
           grep -q 'TI_TCU_SELECTED_36' metodo-et/src/core.js
+          grep -q 'normalizeMethodState' metodo-et/src/core.js
+          grep -q "battery.attempted>=30" metodo-et/src/core.js
           grep -q 'FD00' metodo-et/TI-TCU-TRILHA.md
           grep -q 'TI43' metodo-et/TI-TCU-TRILHA.md
           grep -q 'P1.1 FD01' metodo-et/src/personal.js
