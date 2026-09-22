@@ -1,4 +1,4 @@
-name: Metodo ET v4.1.3 stable validation
+name: Metodo ET v4.1.4 stable validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.1.3
+      - name: Executar motor analítico v4.1.4
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.1.3'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.1.4'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -103,12 +103,32 @@ jobs:
           if(!after.subjects[0].units[0].batteryDone) throw new Error('Bateria deve concluir ao atingir 30 questões acumuladas.');
           console.log('Checkpoint automático OK.');
           NODE
-      - name: Smoke checks v4.1.3
+      - name: Validar tempo integrado ao checkpoint
         run: |
-          grep -q '4.1.3-checkpoint-fix' metodo-et/index.html
-          grep -q 'app.js?v=4.1.3' metodo-et/index.html
-          grep -q 'analytics.js?v=4.1.3' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.1.3' metodo-et/src/app.js
+          cp metodo-et/src/core.js /tmp/core.mjs
+          node --input-type=module - <<'NODE'
+          import {finishCheckpoint,setCheckpointTime,checkpoints,day} from '/tmp/core.mjs';
+          const u=(id,order,title)=>({id,order,title,theoryDone:true,theoryDate:'2026-09-20',batteryDone:true,generalDone:false,materialReady:false,battery:{attempted:30,correct:27},general:{attempted:0,correct:0},legacy:[],marks:[]});
+          const afo={id:'afo',course:'AFO',phase:'new',slotMinutes:120,units:[u('afo-u-1',1,'M1'),u('afo-u-2',2,'M2'),u('afo-u-3',3,'M3')],checkpoints:{},notebooks:[],andresanComplete:false};
+          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[afo],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[]};
+          const results={'afo-u-1':{attempted:5,correct:4},'afo-u-2':{attempted:6,correct:5},'afo-u-3':{attempted:4,correct:4}};
+          const done=finishCheckpoint(base,'afo','afo-cp-1',results,60,true);
+          const cp=checkpoints(done.subjects[0])[0];
+          if(!cp.record?.done||cp.record.minutes!==60) throw new Error('Checkpoint deve armazenar 60 minutos.');
+          const sessions=done.sessions.filter(s=>s.activity==='checkpoint');
+          if(sessions.length!==1||sessions[0].minutes!==60||sessions[0].questions!==15||sessions[0].correct!==13) throw new Error('Checkpoint deve gerar um único registro no Diário com tempo e desempenho.');
+          if(!sessions[0].cycleApplied||done.cycle.index!==1) throw new Error('Checkpoint atual deve poder concluir a ocorrência do ciclo.');
+          const adjusted=setCheckpointTime(done,'afo','afo-cp-1',75);
+          const adjustedSessions=adjusted.sessions.filter(s=>s.activity==='checkpoint');
+          if(adjustedSessions.length!==1||adjustedSessions[0].minutes!==75) throw new Error('Ajustar tempo não pode duplicar o registro do checkpoint.');
+          console.log('Tempo de checkpoint OK:',adjustedSessions[0].minutes,'min.');
+          NODE
+      - name: Smoke checks v4.1.4
+        run: |
+          grep -q '4.1.4-checkpoint-time' metodo-et/index.html
+          grep -q 'app.js?v=4.1.4' metodo-et/index.html
+          grep -q 'analytics.js?v=4.1.4' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.1.4' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
@@ -118,6 +138,9 @@ jobs:
           grep -q 'TI_TCU_TRACK' metodo-et/src/core.js
           grep -q 'TI_TCU_SELECTED_36' metodo-et/src/core.js
           grep -q 'normalizeMethodState' metodo-et/src/core.js
+          grep -q 'setCheckpointTime' metodo-et/src/core.js
+          grep -q 'Concluir checkpoint + registrar tempo' metodo-et/src/app.js
+          grep -q 'Salvar/ajustar tempo' metodo-et/src/app.js
           grep -q "battery.attempted>=30" metodo-et/src/core.js
           grep -q 'FD00' metodo-et/TI-TCU-TRILHA.md
           grep -q 'TI43' metodo-et/TI-TCU-TRILHA.md
