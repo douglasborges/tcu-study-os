@@ -1,4 +1,4 @@
-name: Metodo ET v4.1.4 stable validation
+name: Metodo ET v4.1.5 stable validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.1.4
+      - name: Executar motor analítico v4.1.5
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.1.4'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.1.5'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -123,12 +123,26 @@ jobs:
           if(adjustedSessions.length!==1||adjustedSessions[0].minutes!==75) throw new Error('Ajustar tempo não pode duplicar o registro do checkpoint.');
           console.log('Tempo de checkpoint OK:',adjustedSessions[0].minutes,'min.');
           NODE
-      - name: Smoke checks v4.1.4
+      - name: Validar auditoria da Meta 01
         run: |
-          grep -q '4.1.4-checkpoint-time' metodo-et/index.html
-          grep -q 'app.js?v=4.1.4' metodo-et/index.html
-          grep -q 'analytics.js?v=4.1.4' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.1.4' metodo-et/src/app.js
+          cp metodo-et/src/core.js /tmp/core.mjs
+          node --input-type=module - <<'NODE'
+          import {normalizeMethodState} from '/tmp/core.mjs';
+          const canonical={id:'cp-auto',subjectId:'afo',unitId:'afo-u-1',title:'Checkpoint 1 · AFO',date:'2026-09-22',createdAt:'2026-09-22T19:01:20.226Z',activity:'checkpoint',minutes:60,questions:30,correct:17,legacy:false,cycleApplied:false,checkpointId:'afo-cp-1'};
+          const duplicate={id:'cp-manual',subjectId:'afo',unitId:'afo-u-1',title:'Visão Geral.',date:'2026-09-22',createdAt:'2026-09-22T19:02:09.109Z',activity:'checkpoint',minutes:120,questions:0,correct:0,legacy:false,cycleApplied:true,slotComplete:true,notes:'Checkpoint das Aulas 1, 2 e 3;'};
+          const unit=(id,order)=>({id,title:id,order,theoryDone:true,theoryDate:'2026-09-15',batteryDone:true,generalDone:false,materialReady:false,battery:{attempted:30,correct:25},general:{attempted:0,correct:0},legacy:[],marks:[]});
+          const st={subjects:[{id:'afo',slotMinutes:120,units:[unit('afo-u-1',1),unit('afo-u-2',2),unit('afo-u-3',3)],checkpoints:{'afo-cp-1':{done:true,date:'2026-09-22',minutes:60,sessionId:'cp-auto',perUnit:{'afo-u-1':{attempted:5,correct:4},'afo-u-2':{attempted:5,correct:3},'afo-u-3':{attempted:5,correct:4}}}},notebooks:[],andresanComplete:false}],sessions:[canonical,duplicate]};
+          const clean=normalizeMethodState(st);
+          if(clean.sessions.length!==1||clean.sessions[0].id!=='cp-auto'||clean.sessions[0].minutes!==60) throw new Error('Duplicidade histórica do checkpoint não foi removida.');
+          if(!clean.sessions[0].cycleApplied) throw new Error('Conclusão do ciclo deve ser preservada no registro canônico.');
+          console.log('Auditoria Meta 01 OK.');
+          NODE
+      - name: Smoke checks v4.1.5
+        run: |
+          grep -q '4.1.5-meta01-audit' metodo-et/index.html
+          grep -q 'app.js?v=4.1.5' metodo-et/index.html
+          grep -q 'analytics.js?v=4.1.5' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.1.5' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
@@ -138,6 +152,9 @@ jobs:
           grep -q 'TI_TCU_TRACK' metodo-et/src/core.js
           grep -q 'TI_TCU_SELECTED_36' metodo-et/src/core.js
           grep -q 'normalizeMethodState' metodo-et/src/core.js
+          grep -q 'sessionCount' metodo-et/src/personal.js
+          grep -q 'blockAtLeast' metodo-et/src/personal.js
+          grep -q 'transborda para a próxima' metodo-et/src/app.js
           grep -q 'setCheckpointTime' metodo-et/src/core.js
           grep -q 'Concluir checkpoint + registrar tempo' metodo-et/src/app.js
           grep -q 'Salvar/ajustar tempo' metodo-et/src/app.js
