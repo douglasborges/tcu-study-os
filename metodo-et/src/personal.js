@@ -23,22 +23,22 @@ export const GOAL_TEMPLATES=[
   tasks:[
    {id:'m01-01',title:'AFO · Módulo 1 — bateria de questões',check:['battery','afo','afo-u-1']},
    {id:'m01-02',title:'DAD · Aula 1 — revisão + bateria',check:['battery','dad','dad-u-1']},
-   {id:'m01-03',title:'TI · P1.1 FD01 — cerca de 16 páginas'},
+   {id:'m01-03',title:'TI · P1.1 FD01 — cerca de 16 páginas',check:['sessionCount','ti','ti-u-2','theory',1]},
    {id:'m01-04',title:'AFO · Módulo 2 — bateria de questões',check:['battery','afo','afo-u-2']},
-   {id:'m01-05',title:'Português · Aula 1 — primeira sessão'},
-   {id:'m01-06',title:'DCON · Art. 5º — blocos 14–15'},
+   {id:'m01-05',title:'Português · Aula 1 — primeira sessão',check:['sessionCount','port','port-u-1','theory',1]},
+   {id:'m01-06',title:'DCON · Art. 5º — blocos 14–15',check:['blockAtLeast','dcon','dcon-u-4',15]},
    {id:'m01-07',title:'AFO · Módulo 3 — microrrevisão + bateria',check:['battery','afo','afo-u-3']},
-   {id:'m01-08',title:'DAD · Organização Administrativa — parte 1'},
-   {id:'m01-09',title:'TI · P1.1 FD01 — próxima faixa de leitura'},
+   {id:'m01-08',title:'DAD · Organização Administrativa — parte 1',check:['sessionCount','dad','dad-u-2','theory',1]},
+   {id:'m01-09',title:'TI · P1.1 FD01 — próxima faixa de leitura',check:['sessionCount','ti','ti-u-2','theory',2]},
    {id:'m01-10',title:'AFO · Checkpoint M1–M3',check:['checkpoint','afo','afo-cp-1']},
    {id:'m01-11',title:'Português · Aula 1 — concluir teoria',check:['theory','port','port-u-1']},
-   {id:'m01-12',title:'DCON · Art. 5º — blocos 16–17'},
+   {id:'m01-12',title:'DCON · Art. 5º — blocos 16–17',check:['blockAtLeast','dcon','dcon-u-4',17]},
    {id:'m01-13',title:'AFO · Módulo 4 — microrrevisão + bateria',check:['battery','afo','afo-u-4']},
    {id:'m01-14',title:'DAD · Organização Administrativa — concluir teoria',check:['theory','dad','dad-u-2']},
    {id:'m01-15',title:'TI · P1.1 FD01 — concluir teoria',check:['theory','ti','ti-u-2']},
    {id:'m01-16',title:'AFO · Módulo 5 — teoria',check:['theory','afo','afo-u-5']},
    {id:'m01-17',title:'Português · Aula 1 — revisão + bateria',check:['battery','port','port-u-1']},
-   {id:'m01-18',title:'DCON · Art. 5º — blocos 18–19'}
+   {id:'m01-18',title:'DCON · Art. 5º — blocos 18–19',check:['blockAtLeast','dcon','dcon-u-4',19]}
   ]
  },
  {id:'meta-02',number:2,title:'Meta 02',subtitle:'Desbloqueia somente após o fechamento de 30 horas reais da Meta 01.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,tasks:[]}
@@ -66,8 +66,17 @@ function normalizeGoalState(st){
 }
 export function goalTaskDone(current,task){
  if(!task?.check)return false;
- const [kind,sid,id]=task.check,s=current.subjects?.find(x=>x.id===sid);
+ const [kind,sid,id,a,b]=task.check,s=current.subjects?.find(x=>x.id===sid);
  if(kind==='checkpoint')return !!s?.checkpoints?.[id]?.done;
+ if(kind==='sessionCount'){
+  const count=Number(b)||1;
+  return (current.sessions||[]).filter(v=>v.legacy!==true&&v.subjectId===sid&&v.unitId===id&&(!a||v.activity===a)).length>=count;
+ }
+ if(kind==='blockAtLeast'){
+  const target=Number(a)||0,rows=(current.sessions||[]).filter(v=>v.legacy!==true&&v.subjectId===sid&&v.unitId===id);
+  let max=0;for(const v of rows){for(const m of (String(v.title||'')+' '+String(v.notes||'')).matchAll(/bloco\s*(\d+)/gi))max=Math.max(max,Number(m[1])||0);}
+  return max>=target;
+ }
  const u=s?.units?.find(x=>x.id===id);
  return kind==='theory'?!!u?.theoryDone:kind==='battery'?!!u?.batteryDone:kind==='general'?!!u?.generalDone:false;
 }
