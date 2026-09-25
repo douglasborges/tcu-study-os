@@ -1,5 +1,5 @@
-import * as M from './core.js?v=4.1.4';
-import {streaks} from './progress.js?v=4.1.4';
+import * as M from './core.js?v=4.1.5';
+import {streaks} from './progress.js?v=4.1.5';
 
 export const CATEGORY_META={
   hours:{icon:'⏱',title:'Horas líquidas',description:'Tempo efetivo de estudo principal, sem revisão noturna e sem Legislação Seca.'},
