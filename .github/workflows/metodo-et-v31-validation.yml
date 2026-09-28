@@ -1,4 +1,4 @@
-name: Metodo ET v4.2.1 validation
+name: Metodo ET v4.3.0 validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.2.1
+      - name: Executar motor analítico v4.3.0
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.2.1'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.3.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -162,13 +162,45 @@ jobs:
           if(GOAL_TEMPLATES.length!==2) throw new Error('Somente metas configuradas devem estar no catálogo fixo.');
           console.log('Horizonte ET OK:',next.id,next.status);
           NODE
-      - name: Smoke checks v4.2.1
+      - name: Validar Intensivão BizurAFO
         run: |
-          grep -q '4.2.1-next-goal-lock' metodo-et/index.html
-          grep -q 'app.js?v=4.2.1' metodo-et/index.html
-          grep -q 'analytics.js?v=4.2.1' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.2.1' metodo-et/src/app.js
+          cp metodo-et/src/core.js /tmp/core.mjs
+          sed "s#'./core.js'#'./core.mjs'#" metodo-et/src/personal.js > /tmp/personal-runtime.mjs
+          node --input-type=module - <<'NODE'
+          import {normalizeExtras,bizurSnapshot,recordBizurAFO,endBizurFocus,BIZURAFO_MODULES,goalSnapshot} from '/tmp/personal-runtime.mjs';
+          const afo={id:'afo',course:'AFO',phase:'new',slotMinutes:120,units:[],checkpoints:{},notebooks:[],andresanComplete:false};
+          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[afo],sessions:[],cycle:{index:2,minutes:0},imports:[],archive:[],reminders:[],motivationStartDay:'2026-09-18',legislation:{queue:[{id:'x'}],current:0,sessions:[],completed:[]},achievementsSeen:[],goals:{current:1,items:[
+            {id:'meta-01',status:'done',startedAt:'2026-09-18T00:00:00-03:00',completedAt:'2026-09-27T20:00:00-03:00'},
+            {id:'meta-02',status:'active',startedAt:'2026-09-27T20:00:00-03:00',completedAt:null},
+            {id:'meta-03',status:'locked',startedAt:null,completedAt:null}
+          ]}};
+          const st=normalizeExtras(base);
+          if(!st.bizurafo?.focus?.active||st.bizurafo.focus.pausedCycleIndex!==2) throw new Error('Intensivão deve ativar preservando o índice original do ciclo.');
+          if(BIZURAFO_MODULES.length!==16) throw new Error('Grade BizurAFO deve ter 16 módulos.');
+          if(BIZURAFO_MODULES.find(m=>m.id==='biz-13')?.status!=='pause') throw new Error('Módulo 13 deve ficar fora do primeiro intensivão.');
+          const after=recordBizurAFO(st,{moduleId:'biz-01',date:'2026-09-28',minutes:60,questions:10,correct:8,medium:'video',notes:'visão geral',done:true});
+          const snap=bizurSnapshot(after),goal=goalSnapshot(after,1);
+          if(after.cycle.index!==2) throw new Error('Registro BizurAFO não pode avançar o ciclo normal.');
+          if(snap.minutes!==60||snap.done!==1||snap.next?.id!=='biz-02') throw new Error('Progresso BizurAFO inválido.');
+          if(goal.minutes!==60) throw new Error('Horas BizurAFO devem contar na Meta 02.');
+          let blocked=false;try{recordBizurAFO(st,{moduleId:'biz-13',date:'2026-09-28',minutes:20,questions:0,correct:0,medium:'video'});}catch{blocked=true;}
+          if(!blocked) throw new Error('Módulo NÃO ESTUDAR AGORA não pode aceitar registro no intensivão.');
+          const ended=endBizurFocus(after);
+          if(ended.bizurafo.focus.active||ended.cycle.index!==2) throw new Error('Encerrar intensivão deve preservar o ciclo original.');
+          console.log('BizurAFO OK ·',snap.minutes,'min · ciclo preservado em',ended.cycle.index);
+          NODE
+      - name: Smoke checks v4.3.0
+        run: |
+          grep -q '4.3.0-bizurafo-focus' metodo-et/index.html
+          grep -q 'app.js?v=4.3.0' metodo-et/index.html
+          grep -q 'analytics.js?v=4.3.0' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.3.0' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
+          grep -q 'BIZURAFO_MODULES' metodo-et/src/personal.js
+          grep -q 'bizurTodayPage' metodo-et/src/app.js
+          grep -q 'MODO INTENSIVÃO AFO' metodo-et/src/app.js
+          grep -q 'NÃO ESTUDAR NESTE INTENSIVÃO' metodo-et/src/personal.js
+          grep -q '4.3.0-bizurafo-focus' metodo-et/index.html
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
           grep -q 'Concluir esta ocorrência e chamar a próxima disciplina do ciclo' metodo-et/src/app.js
