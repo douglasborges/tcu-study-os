@@ -1,8 +1,8 @@
-import * as M from './core.js?v=4.2.1';
-import {durationMinutes,progressMetrics} from './progress.js?v=4.2.1';
-import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE, goalSnapshot, completeGoal } from './personal.js?v=4.2.1';
-import {achievementSnapshot,progressText,CATEGORY_META} from './achievements.js?v=4.2.1';
-import {analyticsSnapshot} from './analytics.js?v=4.2.1';
+import * as M from './core.js?v=4.3.0';
+import {durationMinutes,progressMetrics} from './progress.js?v=4.3.0';
+import { motivationForDay, saveReminder, normalizeExtras, LEGISLATION_QUEUE, goalSnapshot, completeGoal, BIZURAFO_MODULES, bizurSnapshot, bizurStatusLabel, recordBizurAFO, setBizurModuleDone, endBizurFocus, resumeBizurFocus } from './personal.js?v=4.3.0';
+import {achievementSnapshot,progressText,CATEGORY_META} from './achievements.js?v=4.3.0';
+import {analyticsSnapshot} from './analytics.js?v=4.3.0';
 const $=q=>document.querySelector(q), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), label=id=>M.RULES[id]?.label||id.replace('legacy:',''), option=(v,t,selected)=>`<option value="${esc(v)}" ${v===selected?'selected':''}>${esc(t)}</option>`, checks=v=>v?'checked':'', cpLabel={done:'Concluído',due:'Checkpoint pendente',battery:'Baterias pendentes',audit:'Conferir histórico',planned:'Planejado'}, phaseLabel={new:'Estudo Novo',solid:'Estudo Sólido'};
 let state,page='today',selected='afo',pendingImport=null,timer=null,lawTimer=null,storedRaw=null,noticeTimeout,achievementCategoryFilter='all',achievementStatusFilter='all',progressView='overview',progressPeriod='all',progressSubject='all',goalView=null;
 const main=$('#main'), modal=$('#modal');
@@ -26,14 +26,14 @@ function download(name,body,type='application/json'){let url=URL.createObjectURL
 function backup(){download('Metodo-ET-'+M.day()+'.json',JSON.stringify(state,null,2));}
 function subject(id=selected){return state.subjects.find(s=>s.id===id);}
 function heading(kicker,title,description,action=''){return `<div class="page-head"><div><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${description}</p></div>${action}</div>`;}
-function tabs(){return `<div class="tabs">${['afo','dad','ti','port','dcon'].map(id=>`<button class="secondary" data-select="${id}" aria-pressed="${selected===id}">${label(id)}</button>`).join('')}</div>`;}
+function focusActive(){return !!state?.bizurafo?.focus?.active;}function tabs(){return `<div class="tabs">${['afo','dad','ti','port','dcon'].map(id=>`<button class="secondary" data-select="${id}" aria-pressed="${selected===id}">${label(id)}${focusActive()&&id!=='afo'?' · ⏸':''}</button>`).join('')}</div>`;}
 function actionsButton(text,act,extra=''){return `<button data-action="${act}" ${extra}>${text}</button>`;}
 function archivedStudyOSStates(){return (state.archive||[]).map(a=>a?.payload?.state||a?.payload).filter(src=>Array.isArray(src?.topics));}
 function afoVideoLessons(s,u){if(s?.id!=='afo'||!u)return[];let prefix=String(u.title||'').trim()+' — ',found=new Map();for(let src of archivedStudyOSStates())for(let t of src.topics||[]){if(t?.disciplineId!=='afo')continue;let full=String(t.title||'').trim();if(!full.startsWith(prefix))continue;let text=String(t.details||full.slice(prefix.length)).trim();if(!text||/^PDF\s*—/i.test(text))continue;let order=Number(t.order)||999999;if(!found.has(text)||order<found.get(text))found.set(text,order);}for(let e of u.legacy||[]){let full=String(e.title||'').trim();if(!full.startsWith(prefix))continue;let text=full.slice(prefix.length).trim();if(text&&!/^PDF\s*—/i.test(text)&&!found.has(text))found.set(text,999999+found.size);}return [...found.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0],'pt-BR')).map(([title])=>title);}
 function sessionContentField(s,u,selected=''){let items=afoVideoLessons(s,u);if(s?.id==='afo'&&u&&items.length)return `<label class="full">Conteúdo estudado / videoaula<select name="title" id="session-content">${option('','Selecionar videoaula',selected)}${items.map(t=>option(t,t,selected)).join('')}</select></label><label class="full">Outro conteúdo (se não estiver na lista)<input name="customTitle" value="${esc(selected&&!items.includes(selected)?selected:'')}" placeholder="Digite somente se não estiver na lista"></label>`;return `<label class="full">Conteúdo estudado (opcional)<input name="title" value="${esc(selected)}" placeholder="Ex.: leitura complementar ou resolução de questões"></label>`;}
 function refreshSessionContent(){let form=$('#session-form');if(!form)return;let s=subject(form.elements.subjectId.value),u=s?.units.find(u=>u.id===form.elements.unitId.value),wrap=$('#session-content-wrap');if(wrap)wrap.innerHTML=sessionContentField(s,u,'');}
 function suggestedTheoryDate(u){let dates=(u?.legacy||[]).map(e=>e.date).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d||'')).sort();return dates.at(-1)||'';}
-function currentSubject(){return subject(M.CYCLE[state.cycle.index]);}
+function currentSubject(){return subject(focusActive()?'afo':M.CYCLE[state.cycle.index]);}
 function lawState(){return state.legislation;}
 function currentLaw(){let l=lawState();return l.queue[Math.min(l.current,l.queue.length-1)]||l.queue[0];}
 function lawElapsed(){return lawTimer?lawTimer.elapsed+(lawTimer.running?Date.now()-lawTimer.started:0):0;}
