@@ -120,3 +120,29 @@
 .layer-row>b{text-align:right;font-size:11px;color:var(--text);font-variant-numeric:tabular-nums}
 @media(max-width:900px){.goal-task-list,.layer-grid{grid-template-columns:1fr}}
 @media(max-width:720px){.goal-toolbar{align-items:stretch;flex-direction:column}.layer-row{grid-template-columns:72px minmax(70px,1fr) 46px}.goal-task{padding:12px}}
+
+
+/* v4.3 — Intensivão AFO · BizurAFO */
+.bizur-panel{border-color:#627d38;background:linear-gradient(145deg,#182214,#10140d 72%)}
+.bizur-summary{display:flex;flex-wrap:wrap;gap:12px 24px;padding:13px 0 17px;color:var(--muted);font-size:11px}
+.bizur-summary b{color:var(--text)}
+.bizur-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}
+.bizur-module{padding:15px;border:1px solid var(--line);border-radius:11px;background:#0f120d;min-width:0}
+.bizur-module.core{border-left:3px solid var(--lime)}
+.bizur-module.cut{border-left:3px solid #d8b45b;background:#17150e}
+.bizur-module.pause{border-left:3px solid #8b7061;background:#171311;opacity:.82}
+.bizur-module.optional{border-left:3px solid #72869c}
+.bizur-module.done{border-color:#587737;background:#172011}
+.bizur-module-head{display:flex;align-items:flex-start;gap:11px}
+.bizur-number{display:grid;place-items:center;width:31px;height:31px;flex:0 0 31px;border-radius:50%;border:1px solid #4a593d;color:var(--lime);font-size:10px;font-variant-numeric:tabular-nums}
+.bizur-module-head b{display:block;font-size:13px;line-height:1.42}
+.bizur-module-head small{display:block;margin-top:4px;font-size:9px;letter-spacing:.07em;color:var(--lime)}
+.bizur-module.cut .bizur-module-head small{color:#e5c778}
+.bizur-module.pause .bizur-module-head small{color:#c7a895}
+.bizur-module.optional .bizur-module-head small{color:#9eb8cf}
+.bizur-module p{font-size:11px;line-height:1.5;color:var(--muted);min-height:49px}
+.bizur-module .statline{font-size:10px}
+.bizur-focus-actions{margin-top:18px}
+.focus-cycle .paused{opacity:.55;border-style:dashed}
+.bizur-command{border-color:#607b35}
+@media(max-width:900px){.bizur-grid{grid-template-columns:1fr}}
