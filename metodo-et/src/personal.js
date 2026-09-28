@@ -67,7 +67,7 @@ export const GOAL_TEMPLATES=[
 ];
 
 export const BIZURAFO_MODULES=Object.freeze([
- {id:'biz-01',number:1,title:'Conceito, dimensões, tipos de orçamento e intervenção do Estado nas finanças públicas',status:'core',note:'Núcleo TCU: funções do governo, falhas de mercado, políticas econômicas, federalismo fiscal e conceitos de orçamento.'},
+ {id:'biz-01',number:1,title:'Conceito, dimensões, tipos de orçamento e intervenção do Estado nas finanças públicas',status:'core',note:'Núcleo TCU: funções do governo, falhas de mercado, políticas econômicas, federalismo fiscal e conceitos de orçamento. Se a aula entrar em tripé macroeconômico como aprofundamento autônomo, não priorize nesta passagem de AFO.'},
  {id:'biz-02',number:2,title:'Instrumentos de planejamento — PPA, LDO e LOA',status:'core',note:'Núcleo expresso do TCU.'},
  {id:'biz-03',number:3,title:'Princípios orçamentários',status:'core',note:'Núcleo expresso do TCU. Na primeira passagem, priorize a teoria principal; a aula única extra e as baterias longas podem ficar para depois.'},
  {id:'biz-04',number:4,title:'Créditos adicionais e alterações orçamentárias',status:'core',note:'Núcleo expresso do TCU.'},
@@ -76,7 +76,7 @@ export const BIZURAFO_MODULES=Object.freeze([
  {id:'biz-07',number:7,title:'Receita pública',status:'core',note:'Núcleo TCU: classificações, estágios, fontes e dívida ativa.'},
  {id:'biz-08',number:8,title:'Despesa pública',status:'core',note:'Núcleo TCU: classificações e estágios. Restos a pagar e temas correlatos reaparecem nos módulos seguintes.'},
  {id:'biz-09',number:9,title:'Execução orçamentária e financeira, programação e descentralização',status:'core',note:'Execução e programação são núcleo TCU. Descentralização é muito recorrente em editais recentes de controle e fica mantida por segurança.'},
- {id:'biz-10',number:10,title:'Restos a pagar, despesas de exercícios anteriores e suprimento de fundos',status:'core',note:'Cobertura compatível com os Títulos IV e VI da Lei 4.320/1964 e muito recorrente em controle.'},
+ {id:'biz-10',number:10,title:'Restos a pagar, despesas de exercícios anteriores e suprimento de fundos',status:'cut',note:'ESTUDAR COM CORTES: Restos a Pagar e DEA entram na Lei 4.320/1964 cobrada pelo TCU. Suprimento de fundos não aparece nominalmente no edital AFO 2021: adie no primeiro intensivão e preserve para segunda volta/concursos de controle.'},
  {id:'biz-11',number:11,title:'Lei de Responsabilidade Fiscal — LRF',status:'cut',note:'ESTUDAR COM CORTES: priorize conceitos/RCL, planejamento, LDO/LOA, renúncia, geração de despesas, transferências voluntárias, destinação ao setor privado, transparência, prestação de contas e fiscalização. Adie, neste intensivão, pessoal, seguridade, endividamento, gestão patrimonial e relatórios RREO/RGF quando tratados só como aprofundamento de LRF.'},
  {id:'biz-12',number:12,title:'Sistemas de informações',status:'cut',note:'ESTUDAR COM CORTES: SIAFI é expresso no TCU. SIOP fica como extra útil por tendência recente de controle. SIAFIC/GRU/rol de responsáveis ficam em baixa prioridade. A grade enviada não substitui a futura cobertura de SIASG e SICONV, também expressos no TCU 2021.'},
  {id:'biz-13',number:13,title:'Regime de ajustes fiscais',status:'pause',note:'NÃO ESTUDAR NESTE INTENSIVÃO. Não aparece nominalmente no bloco de AFO do TCU 2021; fica preservado para segunda volta/atualização constitucional, sem exclusão definitiva.'},
