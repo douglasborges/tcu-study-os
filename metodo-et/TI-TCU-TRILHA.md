@@ -49,7 +49,7 @@ O roteiro do professor Ramon Souza é uma referência útil de conteúdo, sequê
 
 ## Regra operacional da Meta 01
 
-A Meta 01 continua começando por **FD01 — Fundamentos de Dados**. Isso é somente o ponto de entrada operacional da meta; **FD00 e todos os demais conteúdos continuam na trilha** e não foram descartados.
+A Meta 01 começou por **FD01 — Fundamentos de Dados**. A continuidade operacional segue **FD01 → FD02 → FD03 → FD04 → FD05 → FD06**. O **FD00 continua preservado** na trilha própria de 36 itens como conteúdo complementar, mas não interrompe a progressão já iniciada.
 
 A aplicação nunca deve remover uma unidade importada de TI apenas porque ela não apareça em um roteiro externo. Qualquer conteúdo adicional cadastrado deve permanecer visível e estudável.
 
