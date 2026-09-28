@@ -72,6 +72,17 @@ export const MOTIVATION=[
  {file:'routine.svg',title:'O topo é construído na rotina.',alt:'O topo é construído na rotina. Uma sessão com foco. Uma dúvida resolvida. Um passo adiante.',source:'Arte original · Método ET'},
  {file:'next-step.svg',title:'Um passo de cada vez.',alt:'Você não precisa vencer tudo hoje. Precisa cumprir o próximo passo — e continuar amanhã.',source:'Arte original · Método ET'}
 ];
+function placeholderGoal(number){
+ const n=String(number).padStart(2,'0');
+ return {id:'meta-'+n,number,title:'Meta '+n+' · 30h reais',subtitle:'Próxima etapa da jornada. O roteiro será definido ao final da meta atual, usando seu avanço real.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,tasks:[],placeholder:true};
+}
+function goalTemplateAt(index){return GOAL_TEMPLATES[index]||placeholderGoal(index+1);}
+function ensureGoalItem(st,index,status='locked'){
+ const t=goalTemplateAt(index);
+ let item=st.goals.items.find(x=>x.id===t.id);
+ if(!item){item={id:t.id,status,startedAt:null,completedAt:null};st.goals.items.push(item);}
+ return item;
+}
 function normalizeGoalState(st){
  if(st.goals===undefined)st.goals={current:0,items:GOAL_TEMPLATES.map((g,i)=>({id:g.id,status:i===0?'active':'locked',startedAt:i===0?'2026-09-18T00:00:00-03:00':null,completedAt:null}))};
  if(!st.goals||!Array.isArray(st.goals.items))throw Error('Metas ET inválidas no backup.');
@@ -80,10 +91,12 @@ function normalizeGoalState(st){
   if(!item){item={id:t.id,status:i===0?'active':'locked',startedAt:i===0?'2026-09-18T00:00:00-03:00':null,completedAt:null};st.goals.items.push(item);}
   if(!['active','locked','done'].includes(item.status))throw Error('Situação de Meta ET inválida no backup.');
  }
- if(!Number.isInteger(st.goals.current)||st.goals.current<0||st.goals.current>=GOAL_TEMPLATES.length){
-  const open=GOAL_TEMPLATES.findIndex(t=>st.goals.items.find(x=>x.id===t.id)?.status==='active');
-  st.goals.current=open>=0?open:0;
- }
+ let activeIndex=st.goals.items.findIndex(x=>x.status==='active');
+ if(!Number.isInteger(st.goals.current)||st.goals.current<0||activeIndex<0)st.goals.current=activeIndex>=0?activeIndex:Math.max(0,Math.min(st.goals.current||0,st.goals.items.length-1));
+ else st.goals.current=activeIndex;
+ // Regra permanente: sempre mostrar exatamente a próxima meta como horizonte bloqueado.
+ const horizon=st.goals.current+1,next=ensureGoalItem(st,horizon,'locked');
+ if(next.status!=='done'&&next.status!=='active')next.status='locked';
  return st;
 }
 export function goalTaskDone(current,task){
@@ -103,25 +116,29 @@ export function goalTaskDone(current,task){
  return kind==='theory'?!!u?.theoryDone:kind==='battery'?!!u?.batteryDone:kind==='general'?!!u?.generalDone:false;
 }
 export function goalSnapshot(current,index=null){
- const st=normalizeGoalState(copy(current)),i=index===null?st.goals.current:Number(index),template=GOAL_TEMPLATES[i],item=template&&st.goals.items.find(x=>x.id===template.id);
+ const st=normalizeGoalState(copy(current)),i=index===null?st.goals.current:Number(index),template=goalTemplateAt(i),item=st.goals.items.find(x=>x.id===template.id);
  if(!template||!item)throw Error('Meta ET não encontrada.');
+ const target=template.targetMinutes;
+ if(item.status==='locked')return {...template,...item,index:i,minutes:0,studyMinutes:0,lawMinutes:0,remaining:target,progress:0,ready:false,tasks:template.tasks.map(t=>({...t,done:false}))};
  const start=item.startedAt?Date.parse(item.startedAt):NaN,end=item.completedAt?Date.parse(item.completedAt):Infinity;
  const within=s=>{const stamp=Date.parse(s.createdAt||s.date+'T12:00:00');return (!Number.isFinite(start)||stamp>=start)&&stamp<=end;};
  const rows=st.sessions.filter(s=>s.legacy!==true&&s.activity!=='night'&&within(s)),lawRows=(st.legislation?.sessions||[]).filter(within);
- const studyMinutes=rows.reduce((a,s)=>a+(Number(s.minutes)||0),0),lawMinutes=lawRows.reduce((a,s)=>a+(Number(s.minutes)||0),0),minutes=studyMinutes+lawMinutes,target=template.targetMinutes;
+ const studyMinutes=rows.reduce((a,s)=>a+(Number(s.minutes)||0),0),lawMinutes=lawRows.reduce((a,s)=>a+(Number(s.minutes)||0),0),minutes=studyMinutes+lawMinutes;
  return {...template,...item,index:i,minutes,studyMinutes,lawMinutes,remaining:Math.max(0,target-minutes),progress:target?Math.min(1,minutes/target):0,ready:minutes>=target,tasks:template.tasks.map(t=>({...t,done:goalTaskDone(st,t)}))};
 }
 export function completeGoal(current,id){
- const st=normalizeGoalState(copy(current)),index=GOAL_TEMPLATES.findIndex(t=>t.id===id);
- if(index<0)throw Error('Meta ET não encontrada.');
- const item=st.goals.items.find(x=>x.id===id);
+ const st=normalizeGoalState(copy(current)),index=st.goals.items.findIndex(x=>x.id===id),template=GOAL_TEMPLATES[index];
+ if(index<0||!template)throw Error('Esta meta ainda é apenas o horizonte bloqueado. Configure o roteiro antes de ativá-la.');
+ const item=st.goals.items[index];
  if(item.status==='locked')throw Error('Esta meta ainda está bloqueada.');
  if(item.status==='done')return st;
  const snap=goalSnapshot(st,index);
  if(!snap.ready)throw Error('A meta fecha apenas com 30 horas reais registradas. Faltam '+Math.max(0,snap.remaining)+' minutos.');
- const now=new Date().toISOString();item.status='done';item.completedAt=now;
  const next=GOAL_TEMPLATES[index+1];
- if(next){const n=st.goals.items.find(x=>x.id===next.id);n.status='active';n.startedAt=now;st.goals.current=index+1;}else st.goals.current=index;
+ if(!next)throw Error('A próxima meta ainda precisa ser configurada antes do fechamento.');
+ const now=new Date().toISOString();item.status='done';item.completedAt=now;
+ const n=ensureGoalItem(st,index+1,'locked');n.status='active';n.startedAt=now;st.goals.current=index+1;
+ ensureGoalItem(st,index+2,'locked');
  return st;
 }
 
