@@ -10,13 +10,13 @@ export const TI_TCU_SELECTED_36=Object.freeze([
 ]);
 // A Meta 01 começa em FD01. FD00 continua preservado na trilha, mas não bloqueia o ponto de entrada.
 export const TI_TCU_OPERATIONAL_ORDER=Object.freeze([
- 'FD01','FD00','FD02','FD03','FD04','FD05','FD06','SI00','SI01',
+ 'FD01','FD02','FD03','FD04','FD05','FD06','FD00','SI00','SI01',
  'TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI07','TI08','TI08.II','TI09',
  'TI21.II','TI23','TI25','TI34','TI35','TI36','TI37.I','TI37.II','TI38','TI38.II',
  'TI39','TI39.II','TI40','TI41','TI42','TI43'
 ]);
 export const TI_TCU_TRACK=Object.freeze([
- {id:'foundation',label:'Fundamentos adicionais de segurança da trilha TCU',dependsOn:[],units:['FD01','FD00','FD02','FD03','FD04','FD05','FD06']},
+ {id:'foundation',label:'Fundamentos adicionais de segurança da trilha TCU',dependsOn:[],units:['FD01','FD02','FD03','FD04','FD05','FD06','FD00']},
  {id:'security-base',label:'Fundamentos de Segurança da Informação',dependsOn:[],units:['SI00','SI01']},
  {id:'bd',label:'Banco de Dados e SQL',dependsOn:[],units:['TI01.I','TI01.II','TI02','TI03','TI04','TI05','TI06','TI41','TI43']},
  {id:'data',label:'Data Mining, Big Data e fundamentos analíticos',dependsOn:['bd'],units:['TI07','TI08','TI08.II','TI09','TI21.II']},
@@ -46,29 +46,15 @@ export function normalizeMethodState(current){
  for(const s of st.subjects||[])for(const u of s.units||[]){
   if(u.theoryDone&&Number(u.battery?.attempted||0)>=30)u.batteryDone=true;
  }
- // Corrige duplicidades antigas geradas quando o checkpoint era salvo e, em seguida,
- // o mesmo tempo era lançado manualmente para concluir a ocorrência do ciclo.
- const remove=new Set();
- for(const s of st.subjects||[]){
-  for(const [id,record] of Object.entries(s.checkpoints||{})){
-   if(!record?.done||!record.sessionId)continue;
-   const canonical=st.sessions.find(v=>v.id===record.sessionId&&v.activity==='checkpoint');
-   const cp=checkpoints(s).find(x=>x.id===id);
-   if(!canonical||!cp)continue;
-   const t0=Date.parse(canonical.createdAt||canonical.date+'T12:00:00');
-   for(const v of st.sessions){
-    if(v.id===canonical.id||v.legacy===true||v.activity!=='checkpoint'||v.subjectId!==s.id||v.date!==canonical.date||v.checkpointId)continue;
-    if(!cp.units.some(u=>u.id===v.unitId))continue;
-    const t=Date.parse(v.createdAt||v.date+'T12:00:00'),near=Number.isFinite(t0)&&Number.isFinite(t)&&Math.abs(t-t0)<=10*60*1000;
-    const looksSame=near&&(v.cycleApplied||/checkpoint/i.test(String(v.notes||'')+' '+String(v.title||'')));
-    if(!looksSame)continue;
-    if(v.cycleApplied){canonical.cycleApplied=true;canonical.slotComplete=!!v.slotComplete||canonical.slotComplete;}
-    if(!canonical.notes&&v.notes)canonical.notes=v.notes;
-    remove.add(v.id);
-   }
-  }
+ // Se o Diário registra explicitamente a conclusão da teoria, sincroniza o estado da unidade.
+ // Não inferimos conclusão apenas por tempo: exigimos linguagem inequívoca no próprio registro.
+ for(const row of st.sessions||[]){
+  if(row.legacy===true||row.activity!=='theory'||!row.unitId)continue;
+  const note=(String(row.title||'')+' '+String(row.notes||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if(!/(finalizei|concluid[ao]|totalmente concluid[ao]|pdf concluido|teoria concluida)/.test(note))continue;
+  const s=st.subjects?.find(x=>x.id===row.subjectId),u=s?.units?.find(x=>x.id===row.unitId);
+  if(u&&!u.theoryDone){u.theoryDone=true;u.theoryDate=validDay(row.date)?row.date:u.theoryDate;}
  }
- if(remove.size)st.sessions=st.sessions.filter(v=>!remove.has(v.id));
  return st;
 }
 export const copy=v=>JSON.parse(JSON.stringify(v));
