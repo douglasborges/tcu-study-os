@@ -1,4 +1,4 @@
-name: Metodo ET v4.2.0 validation
+name: Metodo ET v4.2.1 validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.2.0
+      - name: Executar motor analítico v4.2.1
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.2.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.2.1'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -143,12 +143,31 @@ jobs:
           if(methodUnits(clean.subjects[0])[1].id!=='ti-u-3') throw new Error('FD02 deve ser a continuação operacional de FD01.');
           console.log('Sincronização de teoria OK.');
           NODE
-      - name: Smoke checks v4.2.0
+      - name: Validar horizonte bloqueado das Metas ET
         run: |
-          grep -q '4.2.0-meta02' metodo-et/index.html
-          grep -q 'app.js?v=4.2.0' metodo-et/index.html
-          grep -q 'analytics.js?v=4.2.0' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.2.0' metodo-et/src/app.js
+          cp metodo-et/src/core.js /tmp/core.mjs
+          sed "s#'./core.js'#'./core.mjs'#" metodo-et/src/personal.js > /tmp/personal-runtime.mjs
+          node --input-type=module - <<'NODE'
+          import {normalizeExtras,goalSnapshot,GOAL_TEMPLATES} from '/tmp/personal-runtime.mjs';
+          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[],reminders:[],motivationStartDay:'2026-09-18',legislation:{queue:[{id:'x'}],current:0,sessions:[],completed:[]},achievementsSeen:[],goals:{current:1,items:[
+            {id:'meta-01',status:'done',startedAt:'2026-09-18T00:00:00-03:00',completedAt:'2026-09-27T20:00:00-03:00'},
+            {id:'meta-02',status:'active',startedAt:'2026-09-27T20:00:00-03:00',completedAt:null}
+          ]}};
+          const st=normalizeExtras(base);
+          if(st.goals.items.length!==3) throw new Error('Deve existir Meta 01, Meta 02 e uma Meta 03 bloqueada.');
+          const next=st.goals.items[2];
+          if(next.id!=='meta-03'||next.status!=='locked') throw new Error('Meta 03 deve aparecer bloqueada.');
+          const snap=goalSnapshot(st,2);
+          if(snap.number!==3||snap.status!=='locked'||snap.minutes!==0||snap.tasks.length!==0) throw new Error('Snapshot da Meta 03 bloqueada inválido.');
+          if(GOAL_TEMPLATES.length!==2) throw new Error('Somente metas configuradas devem estar no catálogo fixo.');
+          console.log('Horizonte ET OK:',next.id,next.status);
+          NODE
+      - name: Smoke checks v4.2.1
+        run: |
+          grep -q '4.2.1-next-goal-lock' metodo-et/index.html
+          grep -q 'app.js?v=4.2.1' metodo-et/index.html
+          grep -q 'analytics.js?v=4.2.1' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.2.1' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
@@ -172,6 +191,8 @@ jobs:
           grep -q "id:'meta-01'" metodo-et/src/personal.js
           grep -q "id:'meta-02'" metodo-et/src/personal.js
           grep -q "m02-18" metodo-et/src/personal.js
+          grep -q 'placeholderGoal' metodo-et/src/personal.js
+          grep -q 'horizonte bloqueado' metodo-et/src/personal.js
           grep -q "FD02 — revisão + bateria" metodo-et/src/personal.js
           grep -q "AFO · Checkpoint 2" metodo-et/src/personal.js
           ! grep -q 'CGU como possibilidade secundária' metodo-et/src/app.js
