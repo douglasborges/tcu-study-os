@@ -1,4 +1,4 @@
-name: Metodo ET v4.1.5 stable validation
+name: Metodo ET v4.2.0 validation
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.1.5
+      - name: Executar motor analítico v4.2.0
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.1.5'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
+          sed "s#'./core.js?v=4.2.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
@@ -61,7 +61,9 @@ jobs:
           if(partial.cycle.index!==0||partial.sessions.at(-1).slotComplete) throw new Error('Sessão parcial não pode avançar o ciclo.');
           const goal=goalSnapshot(base);
           if(goal.targetMinutes!==1800||GOAL_TEMPLATES[0].tasks.length!==18||goal.status!=='active') throw new Error('Meta 01 inválida.');
-          console.log('Ciclo livre OK · Meta 01:',GOAL_TEMPLATES[0].tasks.length,'etapas.');
+          if(GOAL_TEMPLATES[1].targetMinutes!==1800||GOAL_TEMPLATES[1].tasks.length!==18) throw new Error('Meta 02 deve ter 18 etapas e 30h reais.');
+          if(!/^AFO/.test(GOAL_TEMPLATES[1].tasks[0].title)||!GOAL_TEMPLATES[1].tasks[2].title.includes('FD02')) throw new Error('Meta 02 não continua do ponto real da Meta 01.');
+          console.log('Ciclo livre OK · Metas:',GOAL_TEMPLATES[0].tasks.length,'+',GOAL_TEMPLATES[1].tasks.length,'etapas.');
           NODE
       - name: Validar trilha estratégica de TI
         run: |
@@ -77,8 +79,8 @@ jobs:
           ]};
           const base={subjects:[ti]};
           const units=methodUnits(ti);
-          if(units.length!==4||!/^FD01\b/.test(units[0].title)) throw new Error('A trilha de teste deve preservar todos os itens e iniciar operacionalmente por FD01.');
-          if(methodOrder(ti,units[0])!==1) throw new Error('FD01 deve aparecer como ordem estratégica 01.');
+          if(units.length!==4||!/^FD01\b/.test(units[0].title)||!/^FD02\b/.test(units[1].title)) throw new Error('A trilha deve continuar FD01 → FD02 e preservar os demais itens.');
+          if(methodOrder(ti,units[0])!==1||methodOrder(ti,units[1])!==2) throw new Error('FD01 e FD02 devem aparecer como ordens estratégicas 01 e 02.');
           if(!units.some(u=>/^FD00\b/.test(u.title))) throw new Error('FD00 deve permanecer preservado na trilha.');
           const fd01=units[0];
           const next=setUnit(base,'ti',fd01.id,{theoryDone:true,theoryDate:'2026-09-18',batteryDone:false,generalDone:false,materialReady:false});
@@ -123,26 +125,30 @@ jobs:
           if(adjustedSessions.length!==1||adjustedSessions[0].minutes!==75) throw new Error('Ajustar tempo não pode duplicar o registro do checkpoint.');
           console.log('Tempo de checkpoint OK:',adjustedSessions[0].minutes,'min.');
           NODE
-      - name: Validar auditoria da Meta 01
+      - name: Validar sincronização de conclusão explícita
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
           node --input-type=module - <<'NODE'
-          import {normalizeMethodState} from '/tmp/core.mjs';
-          const canonical={id:'cp-auto',subjectId:'afo',unitId:'afo-u-1',title:'Checkpoint 1 · AFO',date:'2026-09-22',createdAt:'2026-09-22T19:01:20.226Z',activity:'checkpoint',minutes:60,questions:30,correct:17,legacy:false,cycleApplied:false,checkpointId:'afo-cp-1'};
-          const duplicate={id:'cp-manual',subjectId:'afo',unitId:'afo-u-1',title:'Visão Geral.',date:'2026-09-22',createdAt:'2026-09-22T19:02:09.109Z',activity:'checkpoint',minutes:120,questions:0,correct:0,legacy:false,cycleApplied:true,slotComplete:true,notes:'Checkpoint das Aulas 1, 2 e 3;'};
-          const unit=(id,order)=>({id,title:id,order,theoryDone:true,theoryDate:'2026-09-15',batteryDone:true,generalDone:false,materialReady:false,battery:{attempted:30,correct:25},general:{attempted:0,correct:0},legacy:[],marks:[]});
-          const st={subjects:[{id:'afo',slotMinutes:120,units:[unit('afo-u-1',1),unit('afo-u-2',2),unit('afo-u-3',3)],checkpoints:{'afo-cp-1':{done:true,date:'2026-09-22',minutes:60,sessionId:'cp-auto',perUnit:{'afo-u-1':{attempted:5,correct:4},'afo-u-2':{attempted:5,correct:3},'afo-u-3':{attempted:5,correct:4}}}},notebooks:[],andresanComplete:false}],sessions:[canonical,duplicate]};
+          import {normalizeMethodState,methodUnits} from '/tmp/core.mjs';
+          const unit=(id,order,title)=>({id,title,order,theoryDone:false,theoryDate:'',batteryDone:false,generalDone:false,materialReady:false,battery:{attempted:0,correct:0},general:{attempted:0,correct:0},legacy:[],marks:[]});
+          const ti={id:'ti',slotMinutes:90,units:[unit('ti-u-1',1,'FD00 - Introdução à Fluência em Dados'),unit('ti-u-2',2,'FD01 - Fundamentos de Dados'),unit('ti-u-3',3,'FD02 - Fundamentos de Bancos de Dados')],checkpoints:{},notebooks:[],andresanComplete:false};
+          const dad={id:'dad',slotMinutes:120,units:[unit('dad-u-1',1,'Aula 1'),unit('dad-u-2',2,'Organização Administrativa')],checkpoints:{},notebooks:[],andresanComplete:false};
+          const st={subjects:[ti,dad],sessions:[
+            {id:'ti-end',subjectId:'ti',unitId:'ti-u-3',date:'2026-09-26',activity:'theory',minutes:80,legacy:false,title:'FD02 - Fundamentos de Bancos de Dados',notes:'Finalizei a leitura da aula 2; falta a bateria.'},
+            {id:'dad-end',subjectId:'dad',unitId:'dad-u-2',date:'2026-09-27',activity:'theory',minutes:90,legacy:false,title:'Organização Administrativa',notes:'Conclusão dos blocos 5 e 6 da Aula 2 - totalmente concluída.'}
+          ]};
           const clean=normalizeMethodState(st);
-          if(clean.sessions.length!==1||clean.sessions[0].id!=='cp-auto'||clean.sessions[0].minutes!==60) throw new Error('Duplicidade histórica do checkpoint não foi removida.');
-          if(!clean.sessions[0].cycleApplied) throw new Error('Conclusão do ciclo deve ser preservada no registro canônico.');
-          console.log('Auditoria Meta 01 OK.');
+          if(!clean.subjects[0].units.find(u=>u.id==='ti-u-3').theoryDone) throw new Error('FD02 deveria ser reconhecida como teoria concluída.');
+          if(!clean.subjects[1].units.find(u=>u.id==='dad-u-2').theoryDone) throw new Error('DAD Aula 2 deveria ser reconhecida como teoria concluída.');
+          if(methodUnits(clean.subjects[0])[1].id!=='ti-u-3') throw new Error('FD02 deve ser a continuação operacional de FD01.');
+          console.log('Sincronização de teoria OK.');
           NODE
-      - name: Smoke checks v4.1.5
+      - name: Smoke checks v4.2.0
         run: |
-          grep -q '4.1.5-meta01-audit' metodo-et/index.html
-          grep -q 'app.js?v=4.1.5' metodo-et/index.html
-          grep -q 'analytics.js?v=4.1.5' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.1.5' metodo-et/src/app.js
+          grep -q '4.2.0-meta02' metodo-et/index.html
+          grep -q 'app.js?v=4.2.0' metodo-et/index.html
+          grep -q 'analytics.js?v=4.2.0' metodo-et/src/app.js
+          grep -q 'personal.js?v=4.2.0' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
@@ -165,6 +171,9 @@ jobs:
           grep -q 'TI25' metodo-et/TI-TCU-TRILHA.md
           grep -q "id:'meta-01'" metodo-et/src/personal.js
           grep -q "id:'meta-02'" metodo-et/src/personal.js
+          grep -q "m02-18" metodo-et/src/personal.js
+          grep -q "FD02 — revisão + bateria" metodo-et/src/personal.js
+          grep -q "AFO · Checkpoint 2" metodo-et/src/personal.js
           ! grep -q 'CGU como possibilidade secundária' metodo-et/src/app.js
           ! grep -q 'A microrrevisão deve ocupar até 10% do bloco' metodo-et/src/core.js
           grep -q 'FOCO NO PROCESSO!' metodo-et/src/app.js
