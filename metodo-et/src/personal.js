@@ -41,7 +41,29 @@ export const GOAL_TEMPLATES=[
    {id:'m01-18',title:'DCON · Art. 5º — blocos 18–19',check:['blockAtLeast','dcon','dcon-u-4',19]}
   ]
  },
- {id:'meta-02',number:2,title:'Meta 02',subtitle:'Desbloqueia somente após o fechamento de 30 horas reais da Meta 01.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,tasks:[]}
+ {
+  id:'meta-02',number:2,title:'Meta 02 · 30h reais',subtitle:'Continuidade direta da Meta 01: consolidar pendências de revisão/bateria e avançar um novo bloco de teoria, mantendo 25h de núcleo + 5h de margem dinâmica.',targetMinutes:1800,coreMinutes:1500,marginMinutes:300,
+  tasks:[
+   {id:'m02-01',title:'AFO · Módulo 5 — Gestão organizacional das finanças públicas · teoria',check:['theory','afo','afo-u-5']},
+   {id:'m02-02',title:'DAD · Aula 1 — revisão + bateria',check:['battery','dad','dad-u-1']},
+   {id:'m02-03',title:'TI · FD02 — revisão + bateria',check:['battery','ti','ti-u-3']},
+   {id:'m02-04',title:'AFO · Módulo 5 — microrrevisão + bateria',check:['battery','afo','afo-u-5']},
+   {id:'m02-05',title:'Português · Aula 2 — concluir teoria (blocos 4–5)',check:['theory','port','port-u-2']},
+   {id:'m02-06',title:'DCON · Art. 5º — blocos 20–21',check:['blockAtLeast','dcon','dcon-u-4',21]},
+   {id:'m02-07',title:'AFO · Módulo 6 — Ciclo Orçamentário · teoria',check:['theory','afo','afo-u-6']},
+   {id:'m02-08',title:'DAD · Aula 2 — revisão + bateria',check:['battery','dad','dad-u-2']},
+   {id:'m02-09',title:'TI · FD03 — Modelo Entidade-Relacionamento · teoria',check:['theory','ti','ti-u-4']},
+   {id:'m02-10',title:'AFO · Módulo 6 — microrrevisão + bateria',check:['battery','afo','afo-u-6']},
+   {id:'m02-11',title:'Português · Aula 2 — revisão + bateria',check:['battery','port','port-u-2']},
+   {id:'m02-12',title:'DCON · Art. 5º — blocos 22–24 · concluir teoria',check:['theory','dcon','dcon-u-4']},
+   {id:'m02-13',title:'AFO · Checkpoint 2 — Módulos 4–6',check:['checkpoint','afo','afo-cp-2']},
+   {id:'m02-14',title:'DAD · Aula 3 — Administração Pública Indireta · teoria',check:['theory','dad','dad-u-3']},
+   {id:'m02-15',title:'TI · FD03 — revisão + bateria',check:['battery','ti','ti-u-4']},
+   {id:'m02-16',title:'AFO · Módulo 7 — Receita: classificações e estágios · teoria',check:['theory','afo','afo-u-7']},
+   {id:'m02-17',title:'Português · Aula 3 — Classes de Palavras · teoria',check:['theory','port','port-u-3']},
+   {id:'m02-18',title:'DCON · A02 — 1ª aula de questões / bateria',check:['sessionCount','dcon','dcon-u-4','battery',1]}
+  ]
+ }
 ];
 
 export const MOTIVATION=[
