@@ -1,7 +1,7 @@
 {
-  "name": "Método ET · Preparação TCU",
-  "short_name": "Método ET",
-  "description": "Método ET — Estudo Total para preparação do TCU, com sincronização pelo Google Drive.",
+  "name": "Método ET · Estudos da Camile · CGU",
+  "short_name": "Camile ET",
+  "description": "Método ET para a preparação da Camile rumo à CGU — Auditoria e Fiscalização.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -10,20 +10,20 @@
     "minimal-ui",
     "browser"
   ],
-  "background_color": "#0b0d0a",
-  "theme_color": "#0b0d0a",
+  "background_color": "#160f20",
+  "theme_color": "#7c3aed",
   "orientation": "any",
   "icons": [
     {
-      "src": "./metodo-et-icon-final-v2.png",
-      "sizes": "128x128",
-      "type": "image/png",
+      "src": "./assets/camile-sunflower.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "./metodo-et-icon-final-v2.png",
-      "sizes": "128x128",
-      "type": "image/png",
+      "src": "./assets/camile-sunflower.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ],
