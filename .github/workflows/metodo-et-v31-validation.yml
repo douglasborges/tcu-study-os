@@ -1,7 +1,8 @@
-name: Metodo ET v4.3.0 validation
+name: Metodo ET Camile local validation
 
 on:
   push:
+    branches: [estudos-camile]
     paths:
       - 'metodo-et/**'
       - '.github/workflows/metodo-et-v31-validation.yml'
@@ -15,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Validar JavaScript
         run: |
           cp metodo-et/src/app.js /tmp/app.mjs
@@ -31,223 +33,35 @@ jobs:
           node --check /tmp/analytics.mjs
           node --check metodo-et/drive-sync.js
           node --check metodo-et/drive-sync-ui.js
-      - name: Executar motor analítico v4.3.0
+
+      - name: Validar base zerada da Camile
         run: |
           cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js?v=4.3.0'#'./core.mjs'#" metodo-et/src/analytics.js > /tmp/analytics-runtime.mjs
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
-          import {analyticsSnapshot} from '/tmp/analytics-runtime.mjs';
-          const state=JSON.parse(fs.readFileSync('metodo-et/data/initial-state.json','utf8'));
-          const snap=analyticsSnapshot(state,{today:'2026-09-18'});
-          if(!Array.isArray(snap.subjects)||snap.subjects.length!==5) throw new Error('Central deve calcular cinco disciplinas.');
-          if(!Array.isArray(snap.weekly)||snap.weekly.length!==8) throw new Error('Série semanal inválida.');
-          if(!Array.isArray(snap.monthly)||snap.monthly.length!==6) throw new Error('Série mensal inválida.');
-          if(!snap.todayStats||!snap.yesterdayStats) throw new Error('Comparação hoje x ontem indisponível.');
-          console.log('Analytics OK:',snap.subjects.length,'disciplinas,',snap.weekly.length,'semanas.');
+          import {validate,CYCLE,KEY,methodUnits} from '/tmp/core.mjs';
+          const st=JSON.parse(fs.readFileSync('metodo-et/data/initial-state.json','utf8'));
+          validate(st);
+          if(KEY!=='metodo-et:camile:v1') throw new Error('Chave local da Camile incorreta.');
+          if(JSON.stringify(CYCLE)!==JSON.stringify(['port','dcon','info'])) throw new Error('Ciclo inicial incorreto.');
+          if(st.sessions.length||st.imports.length||st.archive.length||st.achievementsSeen.length) throw new Error('A base precisa nascer zerada.');
+          const ids=st.subjects.map(s=>s.id);
+          if(!['afo','dad','ti','port','dcon','info'].every(id=>ids.includes(id))) throw new Error('Disciplinas-base não preservadas.');
+          const info=st.subjects.find(s=>s.id==='info'),route=methodUnits(info);
+          const first=route.slice(0,9).map(u=>u.title);
+          const expected=['INFO01 - Windows 11','INFO03 - Word','INFO04 - Excel','INFO05 - PowerPoint','INFO07 - Correio Eletrônico','INFO08 - Navegadores','INFO09 - Busca, grupos, redes sociais','INF10 - Hardware e Software','INF11 - Microsoft Teams'];
+          if(JSON.stringify(first)!==JSON.stringify(expected)) throw new Error('Ordem inicial de Informática inválida.');
+          if(route[9]?.track!=='dados') throw new Error('Dados deve entrar logo após Informática ativa.');
+          const later=route.filter(u=>u.deferred).map(u=>u.title);
+          if(JSON.stringify(later)!==JSON.stringify(['INFO01 - Windows 10','INFO02 - Linux','INFO06 - LibreOffice'])) throw new Error('Conteúdos adiados incorretos.');
+          console.log('Base Camile OK');
           NODE
-      - name: Validar ciclo por ocorrência e Metas ET
+
+      - name: Validar identidade e Drive isolado
         run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js'#'./core.mjs'#" metodo-et/src/personal.js > /tmp/personal-runtime.mjs
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
-          import {day,session} from '/tmp/core.mjs';
-          import {goalSnapshot,GOAL_TEMPLATES} from '/tmp/personal-runtime.mjs';
-          const base=JSON.parse(fs.readFileSync('metodo-et/data/initial-state.json','utf8'));
-          const advanced=session(base,{subjectId:'afo',date:day(),activity:'free',minutes:37,questions:0,correct:0,applyCycle:true});
-          if(advanced.cycle.index!==1||!advanced.sessions.at(-1).slotComplete) throw new Error('Ocorrência de 37 min deveria concluir e chamar DAD.');
-          const partial=session(base,{subjectId:'afo',date:day(),activity:'micro',minutes:30,questions:0,correct:0,applyCycle:false});
-          if(partial.cycle.index!==0||partial.sessions.at(-1).slotComplete) throw new Error('Sessão parcial não pode avançar o ciclo.');
-          const goal=goalSnapshot(base);
-          if(goal.targetMinutes!==1800||GOAL_TEMPLATES[0].tasks.length!==18||goal.status!=='active') throw new Error('Meta 01 inválida.');
-          if(GOAL_TEMPLATES[1].targetMinutes!==1800||GOAL_TEMPLATES[1].tasks.length!==18) throw new Error('Meta 02 deve ter 18 etapas e 30h reais.');
-          if(!/^AFO/.test(GOAL_TEMPLATES[1].tasks[0].title)||!GOAL_TEMPLATES[1].tasks[2].title.includes('FD02')) throw new Error('Meta 02 não continua do ponto real da Meta 01.');
-          console.log('Ciclo livre OK · Metas:',GOAL_TEMPLATES[0].tasks.length,'+',GOAL_TEMPLATES[1].tasks.length,'etapas.');
-          NODE
-      - name: Validar trilha estratégica de TI
-        run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          node --input-type=module - <<'NODE'
-          import {methodUnits,methodOrder,setUnit} from '/tmp/core.mjs';
-          const unit=(id,order,title)=>({id,order,title,theoryDone:false,theoryDate:'',batteryDone:false,generalDone:false,materialReady:false,battery:{attempted:0,correct:0},general:{attempted:0,correct:0},legacy:[],marks:[]});
-          const ti={id:'ti',phase:'new',slotMinutes:90,checkpoints:{},notebooks:[],andresanComplete:false,units:[
-            unit('ti-u-1',1,'FD00 - Introdução à Fluência em Dados'),
-            unit('ti-u-2',2,'FD01 - Fundamentos de Dados'),
-            unit('ti-u-3',3,'FD02 - Fundamentos de Bancos de Dados'),
-            unit('ti-u-10',10,'TI01 - Parte I - Bancos de Dados - Versão 2.0')
-          ]};
-          const base={subjects:[ti]};
-          const units=methodUnits(ti);
-          if(units.length!==4||!/^FD01\b/.test(units[0].title)||!/^FD02\b/.test(units[1].title)) throw new Error('A trilha deve continuar FD01 → FD02 e preservar os demais itens.');
-          if(methodOrder(ti,units[0])!==1||methodOrder(ti,units[1])!==2) throw new Error('FD01 e FD02 devem aparecer como ordens estratégicas 01 e 02.');
-          if(!units.some(u=>/^FD00\b/.test(u.title))) throw new Error('FD00 deve permanecer preservado na trilha.');
-          const fd01=units[0];
-          const next=setUnit(base,'ti',fd01.id,{theoryDone:true,theoryDate:'2026-09-18',batteryDone:false,generalDone:false,materialReady:false});
-          if(!next.subjects.find(s=>s.id==='ti').units.find(u=>u.id===fd01.id).theoryDone) throw new Error('FD01 deve poder ser concluído sem FD00.');
-          console.log('Trilha TI OK:',units[0].title,'· conteúdo adicional preservado.');
-          NODE
-      - name: Validar liberação automática de checkpoint
-        run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          node --input-type=module - <<'NODE'
-          import {normalizeMethodState,checkpoints,session,day} from '/tmp/core.mjs';
-          const u=(id,order,title,attempted,correct)=>({id,order,title,theoryDone:true,theoryDate:'2026-09-20',batteryDone:false,generalDone:false,materialReady:false,battery:{attempted,correct},general:{attempted:0,correct:0},legacy:[],marks:[]});
-          const afo={id:'afo',course:'AFO',phase:'new',slotMinutes:120,units:[u('afo-u-1',1,'M1',37,34),u('afo-u-2',2,'M2',65,52),u('afo-u-3',3,'M3',59,56)],checkpoints:{},notebooks:[],andresanComplete:false};
-          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[afo],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[]};
-          const normalized=normalizeMethodState(base);
-          if(!normalized.subjects[0].units.every(x=>x.batteryDone)) throw new Error('Baterias com 30+ questões deveriam ser concluídas automaticamente.');
-          if(checkpoints(normalized.subjects[0])[0].status!=='due') throw new Error('Checkpoint 1 de AFO deveria estar liberado.');
-          const partial=u('afo-u-4',4,'M4',20,18);partial.theoryDate='2026-09-20';
-          const s2={...afo,units:[partial],checkpoints:{}};
-          const base2={...base,subjects:[s2],cycle:{index:0,minutes:0}};
-          const after=session(base2,{subjectId:'afo',unitId:'afo-u-4',date:day(),activity:'battery',minutes:30,questions:10,correct:9,applyCycle:false});
-          if(!after.subjects[0].units[0].batteryDone) throw new Error('Bateria deve concluir ao atingir 30 questões acumuladas.');
-          console.log('Checkpoint automático OK.');
-          NODE
-      - name: Validar tempo integrado ao checkpoint
-        run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          node --input-type=module - <<'NODE'
-          import {finishCheckpoint,setCheckpointTime,checkpoints,day} from '/tmp/core.mjs';
-          const u=(id,order,title)=>({id,order,title,theoryDone:true,theoryDate:'2026-09-20',batteryDone:true,generalDone:false,materialReady:false,battery:{attempted:30,correct:27},general:{attempted:0,correct:0},legacy:[],marks:[]});
-          const afo={id:'afo',course:'AFO',phase:'new',slotMinutes:120,units:[u('afo-u-1',1,'M1'),u('afo-u-2',2,'M2'),u('afo-u-3',3,'M3')],checkpoints:{},notebooks:[],andresanComplete:false};
-          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[afo],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[]};
-          const results={'afo-u-1':{attempted:5,correct:4},'afo-u-2':{attempted:6,correct:5},'afo-u-3':{attempted:4,correct:4}};
-          const done=finishCheckpoint(base,'afo','afo-cp-1',results,60,true);
-          const cp=checkpoints(done.subjects[0])[0];
-          if(!cp.record?.done||cp.record.minutes!==60) throw new Error('Checkpoint deve armazenar 60 minutos.');
-          const sessions=done.sessions.filter(s=>s.activity==='checkpoint');
-          if(sessions.length!==1||sessions[0].minutes!==60||sessions[0].questions!==15||sessions[0].correct!==13) throw new Error('Checkpoint deve gerar um único registro no Diário com tempo e desempenho.');
-          if(!sessions[0].cycleApplied||done.cycle.index!==1) throw new Error('Checkpoint atual deve poder concluir a ocorrência do ciclo.');
-          const adjusted=setCheckpointTime(done,'afo','afo-cp-1',75);
-          const adjustedSessions=adjusted.sessions.filter(s=>s.activity==='checkpoint');
-          if(adjustedSessions.length!==1||adjustedSessions[0].minutes!==75) throw new Error('Ajustar tempo não pode duplicar o registro do checkpoint.');
-          console.log('Tempo de checkpoint OK:',adjustedSessions[0].minutes,'min.');
-          NODE
-      - name: Validar sincronização de conclusão explícita
-        run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          node --input-type=module - <<'NODE'
-          import {normalizeMethodState,methodUnits} from '/tmp/core.mjs';
-          const unit=(id,order,title)=>({id,title,order,theoryDone:false,theoryDate:'',batteryDone:false,generalDone:false,materialReady:false,battery:{attempted:0,correct:0},general:{attempted:0,correct:0},legacy:[],marks:[]});
-          const ti={id:'ti',slotMinutes:90,units:[unit('ti-u-1',1,'FD00 - Introdução à Fluência em Dados'),unit('ti-u-2',2,'FD01 - Fundamentos de Dados'),unit('ti-u-3',3,'FD02 - Fundamentos de Bancos de Dados')],checkpoints:{},notebooks:[],andresanComplete:false};
-          const dad={id:'dad',slotMinutes:120,units:[unit('dad-u-1',1,'Aula 1'),unit('dad-u-2',2,'Organização Administrativa')],checkpoints:{},notebooks:[],andresanComplete:false};
-          const st={subjects:[ti,dad],sessions:[
-            {id:'ti-end',subjectId:'ti',unitId:'ti-u-3',date:'2026-09-26',activity:'theory',minutes:80,legacy:false,title:'FD02 - Fundamentos de Bancos de Dados',notes:'Finalizei a leitura da aula 2; falta a bateria.'},
-            {id:'dad-end',subjectId:'dad',unitId:'dad-u-2',date:'2026-09-27',activity:'theory',minutes:90,legacy:false,title:'Organização Administrativa',notes:'Conclusão dos blocos 5 e 6 da Aula 2 - totalmente concluída.'}
-          ]};
-          const clean=normalizeMethodState(st);
-          if(!clean.subjects[0].units.find(u=>u.id==='ti-u-3').theoryDone) throw new Error('FD02 deveria ser reconhecida como teoria concluída.');
-          if(!clean.subjects[1].units.find(u=>u.id==='dad-u-2').theoryDone) throw new Error('DAD Aula 2 deveria ser reconhecida como teoria concluída.');
-          if(methodUnits(clean.subjects[0])[1].id!=='ti-u-3') throw new Error('FD02 deve ser a continuação operacional de FD01.');
-          console.log('Sincronização de teoria OK.');
-          NODE
-      - name: Validar horizonte bloqueado das Metas ET
-        run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js'#'./core.mjs'#" metodo-et/src/personal.js > /tmp/personal-runtime.mjs
-          node --input-type=module - <<'NODE'
-          import {normalizeExtras,goalSnapshot,GOAL_TEMPLATES} from '/tmp/personal-runtime.mjs';
-          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[],sessions:[],cycle:{index:0,minutes:0},imports:[],archive:[],reminders:[],motivationStartDay:'2026-09-18',legislation:{queue:[{id:'x'}],current:0,sessions:[],completed:[]},achievementsSeen:[],goals:{current:1,items:[
-            {id:'meta-01',status:'done',startedAt:'2026-09-18T00:00:00-03:00',completedAt:'2026-09-27T20:00:00-03:00'},
-            {id:'meta-02',status:'active',startedAt:'2026-09-27T20:00:00-03:00',completedAt:null}
-          ]}};
-          const st=normalizeExtras(base);
-          if(st.goals.items.length!==3) throw new Error('Deve existir Meta 01, Meta 02 e uma Meta 03 bloqueada.');
-          const next=st.goals.items[2];
-          if(next.id!=='meta-03'||next.status!=='locked') throw new Error('Meta 03 deve aparecer bloqueada.');
-          const snap=goalSnapshot(st,2);
-          if(snap.number!==3||snap.status!=='locked'||snap.minutes!==0||snap.tasks.length!==0) throw new Error('Snapshot da Meta 03 bloqueada inválido.');
-          if(GOAL_TEMPLATES.length!==2) throw new Error('Somente metas configuradas devem estar no catálogo fixo.');
-          console.log('Horizonte ET OK:',next.id,next.status);
-          NODE
-      - name: Validar Intensivão BizurAFO
-        run: |
-          cp metodo-et/src/core.js /tmp/core.mjs
-          sed "s#'./core.js'#'./core.mjs'#" metodo-et/src/personal.js > /tmp/personal-runtime.mjs
-          node --input-type=module - <<'NODE'
-          import {normalizeExtras,bizurSnapshot,recordBizurAFO,endBizurFocus,BIZURAFO_MODULES,goalSnapshot} from '/tmp/personal-runtime.mjs';
-          const afo={id:'afo',course:'AFO',phase:'new',slotMinutes:120,units:[],checkpoints:{},notebooks:[],andresanComplete:false};
-          const base={version:1,settings:{weeklyMinimum:1800,dailyMinimum:300,focus:'TCU',secondary:'CGU'},subjects:[afo],sessions:[],cycle:{index:2,minutes:0},imports:[],archive:[],reminders:[],motivationStartDay:'2026-09-18',legislation:{queue:[{id:'x'}],current:0,sessions:[],completed:[]},achievementsSeen:[],goals:{current:1,items:[
-            {id:'meta-01',status:'done',startedAt:'2026-09-18T00:00:00-03:00',completedAt:'2026-09-27T20:00:00-03:00'},
-            {id:'meta-02',status:'active',startedAt:'2026-09-27T20:00:00-03:00',completedAt:null},
-            {id:'meta-03',status:'locked',startedAt:null,completedAt:null}
-          ]}};
-          const st=normalizeExtras(base);
-          if(!st.bizurafo?.focus?.active||st.bizurafo.focus.pausedCycleIndex!==2) throw new Error('Intensivão deve ativar preservando o índice original do ciclo.');
-          if(BIZURAFO_MODULES.length!==16) throw new Error('Grade BizurAFO deve ter 16 módulos.');
-          if(BIZURAFO_MODULES.find(m=>m.id==='biz-13')?.status!=='pause') throw new Error('Módulo 13 deve ficar fora do primeiro intensivão.');
-          const after=recordBizurAFO(st,{moduleId:'biz-01',date:'2026-09-28',minutes:60,questions:10,correct:8,medium:'video',notes:'visão geral',done:true});
-          const snap=bizurSnapshot(after),goal=goalSnapshot(after,1);
-          if(after.cycle.index!==2) throw new Error('Registro BizurAFO não pode avançar o ciclo normal.');
-          if(snap.minutes!==60||snap.done!==1||snap.next?.id!=='biz-02') throw new Error('Progresso BizurAFO inválido.');
-          if(goal.minutes!==60) throw new Error('Horas BizurAFO devem contar na Meta 02.');
-          let blocked=false;try{recordBizurAFO(st,{moduleId:'biz-13',date:'2026-09-28',minutes:20,questions:0,correct:0,medium:'video'});}catch{blocked=true;}
-          if(!blocked) throw new Error('Módulo NÃO ESTUDAR AGORA não pode aceitar registro no intensivão.');
-          const ended=endBizurFocus(after);
-          if(ended.bizurafo.focus.active||ended.cycle.index!==2) throw new Error('Encerrar intensivão deve preservar o ciclo original.');
-          console.log('BizurAFO OK ·',snap.minutes,'min · ciclo preservado em',ended.cycle.index);
-          NODE
-      - name: Smoke checks v4.3.0
-        run: |
-          grep -q '4.3.0-bizurafo-focus' metodo-et/index.html
-          grep -q 'app.js?v=4.3.0' metodo-et/index.html
-          grep -q 'analytics.js?v=4.3.0' metodo-et/src/app.js
-          grep -q 'personal.js?v=4.3.0' metodo-et/src/app.js
-          grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
-          grep -q 'BIZURAFO_MODULES' metodo-et/src/personal.js
-          grep -q 'bizurTodayPage' metodo-et/src/app.js
-          grep -q 'MODO INTENSIVÃO AFO' metodo-et/src/app.js
-          grep -q 'NÃO ESTUDAR NESTE INTENSIVÃO' metodo-et/src/personal.js
-          grep -q '4.3.0-bizurafo-focus' metodo-et/index.html
-          grep -q 'Central de Desempenho' metodo-et/src/app.js
-          grep -q 'Metas ET' metodo-et/src/app.js
-          grep -q 'Concluir esta ocorrência e chamar a próxima disciplina do ciclo' metodo-et/src/app.js
-          grep -q 'PROGRESSO MULTICAMADA' metodo-et/src/app.js
-          grep -q 'GOAL_TEMPLATES' metodo-et/src/personal.js
-          grep -q 'TI_TCU_TRACK' metodo-et/src/core.js
-          grep -q 'TI_TCU_SELECTED_36' metodo-et/src/core.js
-          grep -q 'normalizeMethodState' metodo-et/src/core.js
-          grep -q 'sessionCount' metodo-et/src/personal.js
-          grep -q 'blockAtLeast' metodo-et/src/personal.js
-          grep -q 'transborda para a próxima' metodo-et/src/app.js
-          grep -q 'setCheckpointTime' metodo-et/src/core.js
-          grep -q 'Concluir checkpoint + registrar tempo' metodo-et/src/app.js
-          grep -q 'Salvar/ajustar tempo' metodo-et/src/app.js
-          grep -q "battery.attempted>=30" metodo-et/src/core.js
-          grep -q 'FD00' metodo-et/TI-TCU-TRILHA.md
-          grep -q 'TI43' metodo-et/TI-TCU-TRILHA.md
-          grep -q 'P1.1 FD01' metodo-et/src/personal.js
-          grep -q 'TI25' metodo-et/TI-TCU-TRILHA.md
-          grep -q "id:'meta-01'" metodo-et/src/personal.js
-          grep -q "id:'meta-02'" metodo-et/src/personal.js
-          grep -q "m02-18" metodo-et/src/personal.js
-          grep -q 'placeholderGoal' metodo-et/src/personal.js
-          grep -q 'horizonte bloqueado' metodo-et/src/personal.js
-          grep -q "FD02 — revisão + bateria" metodo-et/src/personal.js
-          grep -q "AFO · Checkpoint 2" metodo-et/src/personal.js
-          ! grep -q 'CGU como possibilidade secundária' metodo-et/src/app.js
-          ! grep -q 'A microrrevisão deve ocupar até 10% do bloco' metodo-et/src/core.js
-          grep -q 'FOCO NO PROCESSO!' metodo-et/src/app.js
-          grep -q 'A intensidade' metodo-et/src/app.js
-          grep -q 'distorce a realidade' metodo-et/src/app.js
-          ! grep -q 'Histórico StudyOS importado:' metodo-et/src/app.js
-          grep -q 'Hoje x ontem' metodo-et/src/app.js
-          grep -q 'Desempenho por disciplina' metodo-et/src/app.js
-          grep -q 'Horas por semana' metodo-et/src/app.js
-          grep -q 'Pontos de atenção' metodo-et/src/app.js
-          grep -q 'data-progress-view' metodo-et/src/app.js
-          grep -q 'progress-subject' metodo-et/src/app.js
-          grep -q 'todas as disciplinas têm o mesmo valor' metodo-et/src/app.js
-          grep -q 'analyticsSnapshot' metodo-et/src/analytics.js
-          grep -q 'attentionItems' metodo-et/src/analytics.js
-          grep -q 'login_hint' metodo-et/drive-sync.js
-          grep -q 'refreshAccountInfo' metodo-et/drive-sync.js
-          grep -q 'data-ach-filter' metodo-et/src/app.js
-          grep -q 'todayCommandCenter' metodo-et/src/app.js
-          grep -q 'quick-battery' metodo-et/src/app.js
-          grep -q 'quick-checkpoint' metodo-et/src/app.js
-          grep -q 'et-normal-icon' metodo-et/src/app.js
-          ! grep -q 'MutationObserver' metodo-et/drive-sync.js
-          ! grep -q 'main.focus()' metodo-et/src/app.js
+          grep -q 'MISSÃO CGU' metodo-et/index.html
+          grep -q 'camile-brand.svg' metodo-et/index.html
+          grep -q 'camile-capybara.svg' metodo-et/styles.css
+          grep -q "metodo-et:camile:v1" metodo-et/drive-sync.js
+          grep -q "Metodo ET - Camile - Dados.json" metodo-et/drive-sync.js
+          grep -q "const ACTIVE=\['port','dcon','info','afo','dad','ti'\]" metodo-et/src/analytics.js
