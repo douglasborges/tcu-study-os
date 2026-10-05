@@ -272,9 +272,6 @@
 
   async function createRemoteFile() {
     const payload = buildCloudPayload();
-    if (!hasMeaningfulLocalData(payload.state)) {
-      throw new Error('Importe ou restaure seus dados antes de criar a primeira sincronização no Drive.');
-    }
     const metadata = {
       name: REMOTE_FILE_NAME,
       mimeType: 'application/json',
