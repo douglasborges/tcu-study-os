@@ -4,12 +4,12 @@
   // Espelha a arquitetura estável do Drive Sync atual da StudyOS.
   const CLIENT_ID = '242070309786-1rn9vsc4fo0coaq3e3mprtlf1m9f0kt3.apps.googleusercontent.com';
   const SCOPE = 'https://www.googleapis.com/auth/drive.file';
-  const STORE_KEY = 'metodo-et:v1';
-  const META_KEY = 'metodo-et-drive-sync-meta-v1';
-  const DEVICE_KEY = 'metodo-et-drive-device-v1';
-  const REMOTE_FILE_NAME = 'Metodo ET - Dados.json';
-  const REMOTE_FORMAT = 'metodo-et-cloud-v1';
-  const REMOTE_APP_PROPERTY = 'cloud-v1';
+  const STORE_KEY = 'metodo-et:camile:v1';
+  const META_KEY = 'metodo-et-camile-drive-sync-meta-v1';
+  const DEVICE_KEY = 'metodo-et-camile-drive-device-v1';
+  const REMOTE_FILE_NAME = 'Metodo ET - Camile - Dados.json';
+  const REMOTE_FORMAT = 'metodo-et-camile-cloud-v1';
+  const REMOTE_APP_PROPERTY = 'camile-cloud-v1';
   const SAVE_DEBOUNCE_MS = 1800;
   const REMOTE_CHECK_MS = 5 * 60 * 1000;
 
@@ -218,7 +218,7 @@
       if (user.emailAddress) saveMeta({ accountEmail: user.emailAddress, accountName: user.displayName || '' });
       return user;
     } catch (error) {
-      console.warn('[Método ET Drive Sync] Não foi possível identificar a conta conectada.', error);
+      console.warn('[Método ET Camile · Drive Sync] Não foi possível identificar a conta conectada.', error);
       return null;
     }
   }
@@ -278,7 +278,7 @@
     const metadata = {
       name: REMOTE_FILE_NAME,
       mimeType: 'application/json',
-      description: 'Sincronização automática da Método ET.',
+      description: 'Sincronização automática da Método ET · Estudos da Camile.',
       appProperties: { metodoET: REMOTE_APP_PROPERTY }
     };
     const boundary = `metodo_et_${Date.now()}_${Math.random().toString(36).slice(2)}`;
