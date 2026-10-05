@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const META_KEY='metodo-et-drive-sync-meta-v1';
+  const META_KEY='metodo-et-camile-drive-sync-meta-v1';
   let open=false,manage=null,panel=null,lastRaw='';
 
   function meta(){
@@ -29,7 +29,7 @@
     const state=status?.dataset.state||'disconnected';
     const label=(status?.textContent||'Drive').replace('☁ ','');
     const detail=status?.title||'';
-    panel.innerHTML=`<div class="drive-panel-head"><div><span class="drive-kicker">GOOGLE DRIVE</span><strong>${esc(m.accountName||'Sincronização Método ET')}</strong><small>${esc(m.accountEmail||'Conta será identificada na próxima conexão.')}</small></div><button class="drive-close" type="button" data-drive-ui="close" aria-label="Fechar">×</button></div><div class="drive-panel-status"><span class="drive-state-dot" data-state="${esc(state)}"></span><div><b>${esc(label)}</b><small>${esc(detail)}</small></div></div><dl><div><dt>Última sincronização</dt><dd>${esc(fmt(m.lastSyncAt))}</dd></div><div><dt>Arquivo</dt><dd>Metodo ET - Dados.json</dd></div></dl><div class="drive-panel-actions"><button type="button" data-drive-ui="sync">Sincronizar agora</button><button type="button" class="secondary" data-drive-ui="switch">Trocar conta</button></div><p class="drive-panel-note">A Método ET lembra a conta usada neste Mac e tenta reutilizá-la nas próximas reconexões. O Google ainda pode exigir confirmação quando a sessão expirar.</p>`;
+    panel.innerHTML=`<div class="drive-panel-head"><div><span class="drive-kicker">GOOGLE DRIVE</span><strong>${esc(m.accountName||'Método ET · Camile')}</strong><small>${esc(m.accountEmail||'Conta será identificada na próxima conexão.')}</small></div><button class="drive-close" type="button" data-drive-ui="close" aria-label="Fechar">×</button></div><div class="drive-panel-status"><span class="drive-state-dot" data-state="${esc(state)}"></span><div><b>${esc(label)}</b><small>${esc(detail)}</small></div></div><dl><div><dt>Última sincronização</dt><dd>${esc(fmt(m.lastSyncAt))}</dd></div><div><dt>Arquivo</dt><dd>Metodo ET - Camile - Dados.json</dd></div></dl><div class="drive-panel-actions"><button type="button" data-drive-ui="sync">Sincronizar agora</button><button type="button" class="secondary" data-drive-ui="switch">Trocar conta</button></div><p class="drive-panel-note">A Método ET lembra a conta usada neste Mac e tenta reutilizá-la nas próximas reconexões. O Google ainda pode exigir confirmação quando a sessão expirar.</p>`;
   }
   function mount(){
     if(document.querySelector('.drive-sync-manage'))return;
