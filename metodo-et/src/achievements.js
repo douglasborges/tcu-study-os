@@ -1,5 +1,5 @@
-import * as M from './core.js?v=4.3.0';
-import {streaks} from './progress.js?v=4.3.0';
+import * as M from './core.js?v=1.0.0-camile';
+import {streaks} from './progress.js?v=1.0.0-camile';
 
 export const CATEGORY_META={
   hours:{icon:'⏱',title:'Horas líquidas',description:'Tempo efetivo de estudo principal, sem revisão noturna e sem Legislação Seca.'},
@@ -82,7 +82,7 @@ export const ACHIEVEMENTS=[
   ...constancy,
   {id:'cycle-block-1',category:'cycle',icon:'↻',title:'Primeiro bloco fechado',description:'Concluir o primeiro bloco obedecendo ao ciclo ET.',get:s=>s.cycleBlocks,target:1,unit:'blocks'},
   {id:'cycle-day-3',category:'cycle',icon:'↻',title:'Dia completo de ciclo',description:'Concluir três blocos do ciclo no mesmo dia.',get:s=>s.cycleDays3,target:1,unit:'days'},
-  {id:'cycle-1',category:'cycle',icon:'↻',title:'Primeiro ciclo completo',description:'Fechar uma volta completa pelas seis posições do ciclo.',get:s=>s.completeCycles,target:1,unit:'cycles'},
+  {id:'cycle-1',category:'cycle',icon:'↻',title:'Primeiro ciclo completo',description:'Fechar uma volta completa por Português, DCON e Informática e Dados.',get:s=>s.completeCycles,target:1,unit:'cycles'},
   {id:'cycle-5',category:'cycle',icon:'↻',title:'5 ciclos completos',description:'Completar cinco voltas do ciclo.',get:s=>s.completeCycles,target:5,unit:'cycles'},
   {id:'cycle-10',category:'cycle',icon:'↻',title:'10 ciclos completos',description:'Completar dez voltas do ciclo.',get:s=>s.completeCycles,target:10,unit:'cycles'},
   {id:'cycle-25',category:'cycle',icon:'↻',title:'25 ciclos completos',description:'Completar vinte e cinco voltas do ciclo.',get:s=>s.completeCycles,target:25,unit:'cycles'},
@@ -116,7 +116,7 @@ export const MISSION_TRACK=[
   'questions-3000','streak-60','law-norm-5','hours-750','questions-5000','hours-1000','solid-all'
 ];
 
-export const PHASES=['Ignição','Decolagem','Atmosfera','Órbita','Cruzeiro','Aproximação','Missão TCU'];
+export const PHASES=['Semente','Primeiros brotos','Crescimento','Constância','Florescimento','Reta final','Missão CGU'];
 
 export function progressText(item){
   const v=Math.max(0,Math.round(item.value)),t=Math.max(1,Math.round(item.target));
