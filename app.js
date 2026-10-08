@@ -8256,7 +8256,22 @@
       });
       const existingTitles = new Set(clean.topics.filter(t=>t.disciplineId===science.id).map(t=>normalizeName(t.title)));
       scienceEntries.forEach((entry,idx)=>{
-        if (existingTitles.has(normalizeName(entry.title))) return;
+        if (existingTitles.has(normalizeName(entry.title))) {
+          // Atualiza fonte sugerida sem tocar em progresso, sessões, ordem ou anotações pessoais.
+          const found = clean.topics.find(t=>t.disciplineId===science.id && normalizeName(t.title)===normalizeName(entry.title));
+          if (found && entry.sefazAl) {
+            let notes = String(found.notes || '');
+            const previous = 'Material: '+(entry.originalSource || entry.source);
+            if (notes.startsWith(previous) && notes.includes('Critério: conceitos, questões e prática')) {
+              notes = 'Material: '+entry.source+notes.slice(previous.length);
+            }
+            if (!notes.includes('Fonte especializada: '+entry.sefazAl)) {
+              notes += (notes ? '\n' : '')+'Fonte especializada: '+entry.sefazAl;
+            }
+            found.notes=notes;
+          }
+          return;
+        }
         clean.topics.push(normalizeTopic({
           id:`topic_ticd_v1_${String(idx+1).padStart(2,'0')}`,
           disciplineId:science.id,
@@ -8266,13 +8281,13 @@
           status:'Em espera',
           priority:entry.priority || 'Alta',
           order:idx+1,
-          notes:'Material: '+entry.source+'\\nReferências: TCU TI 2025, TCE-MG 2025, SEFAZ-AL 2026, SUSEP 2025.\\nCritério: conceitos, questões e prática; evitar detalhes operacionais de SGBDs sem necessidade.',
+          notes:'Material: '+entry.source+'\\nReferências: TCU TI 2025, TCE-MG 2025, SEFAZ-AL 2026, SUSEP 2025.\\nCritério: conceitos, questões e prática; evitar detalhes operacionais de SGBDs sem necessidade.' + (entry.sefazAl ? '\nFonte especializada: ' + entry.sefazAl : ''),
           sourceUrl:'https://tidescomplicada.com/materiais/assinaturas/acesso-total',
           tecUrl:''
         },idx,clean.disciplines));
         existingTitles.add(normalizeName(entry.title));
       });
-      clean.contentVersions.tiCienciaDadosTcuCgu=1;
+      clean.contentVersions.tiCienciaDadosTcuCgu=2;
     }
 
     // Repara tópicos órfãos conhecidos.
