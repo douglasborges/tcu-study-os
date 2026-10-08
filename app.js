@@ -7896,7 +7896,7 @@
   function loadState() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (!raw) return seedState();
+      if (!raw) return migrateState(seedState());
       const parsed = JSON.parse(raw);
       return migrateState(parsed);
     } catch (err) {
@@ -8234,14 +8234,46 @@
     const dadR=ensureCatalogDiscipline_(clean,V11_DAD_RAFAEL); addMissingCourseTopics_(clean,dadR,V11_DAD_RAFAEL.topics); clean.contentVersions.dadRafael=1;
 
     // TI Total: remoção integral dos tópicos antigos, uma única vez.
-    const ti=ensureCatalogDiscipline_(clean,{id:'ti',name:'TI - TCU [TI Total]',priority:'Alta',source:'TI Total — trilha TCU'});
+    const ti=ensureCatalogDiscipline_(clean,{id:'ti',name:'TI - Ramon',priority:'Alta',source:'TI Total — trilha TCU'});
     const tiNeeds = clean.contentVersions.tiTotalTcu !== 1 || !clean.topics.some(t=>t.disciplineId==='ti' && normalizeName(t.title)===normalizeName(V11_TI_TOPICS[0]));
     if (tiNeeds) {
-      clean.topics = clean.topics.filter(t => t.disciplineId!=='ti' && normalizeName(t.disciplineName)!=='ti' && normalizeName(t.disciplineName)!==normalizeName('TI - TCU [TI Total]'));
+      clean.topics = clean.topics.filter(t => t.disciplineId!=='ti' && normalizeName(t.disciplineName)!=='ti' && normalizeName(t.disciplineName)!==normalizeName('TI - Ramon'));
       V11_TI_TOPICS.forEach((title,idx)=>clean.topics.push(normalizeTopic({id:`topic_ti_v11_${idx+1}_${slugify(title).slice(0,48)}`,disciplineId:'ti',disciplineName:ti.name,title,details:title,status:'Em espera',priority:'Alta',order:idx+1,notes:'',sourceUrl:'',tecUrl:''},idx,clean.disciplines)));
       clean.contentVersions.tiTotalTcu=1;
     }
-    ti.name='TI - TCU [TI Total]'; clean.topics.forEach(t=>{if(t.disciplineId==='ti')t.disciplineName=ti.name;}); clean.sessions.forEach(x=>{if(x.disciplineId==='ti')x.disciplineName=ti.name;});
+    ti.name='TI - Ramon'; clean.topics.forEach(t=>{if(t.disciplineId==='ti')t.disciplineName=ti.name;}); clean.sessions.forEach(x=>{if(x.disciplineId==='ti')x.disciplineName=ti.name;});
+
+    // TI - Ciência de Dados: trilha adicional, sem mudar flags active/mode/order do ciclo.
+    // Nunca apagar progresso de tópicos existentes, sessões, erros nem foco em AFO.
+    const scienceEntries = Array.isArray(window.__TCU_DATA_CURRICULUM__) ? window.__TCU_DATA_CURRICULUM__ : [];
+    if (scienceEntries.length) {
+      const science = ensureCatalogDiscipline_(clean,{
+        id:'ti-ciencia-dados',
+        name:'TI - Ciência de Dados',
+        priority:'Alta',
+        source:'TI Descomplicada (Felipe) + TI Total (Ramon) + Estatística',
+        sourceUrl:'https://tidescomplicada.com/materiais/assinaturas/acesso-total'
+      });
+      const existingTitles = new Set(clean.topics.filter(t=>t.disciplineId===science.id).map(t=>normalizeName(t.title)));
+      scienceEntries.forEach((entry,idx)=>{
+        if (existingTitles.has(normalizeName(entry.title))) return;
+        clean.topics.push(normalizeTopic({
+          id:`topic_ticd_v1_${String(idx+1).padStart(2,'0')}`,
+          disciplineId:science.id,
+          disciplineName:science.name,
+          title:entry.title,
+          details:entry.details,
+          status:'Em espera',
+          priority:entry.priority || 'Alta',
+          order:idx+1,
+          notes:'Material: '+entry.source+'\\nReferências: TCU TI 2025, TCE-MG 2025, SEFAZ-AL 2026, SUSEP 2025.\\nCritério: conceitos, questões e prática; evitar detalhes operacionais de SGBDs sem necessidade.',
+          sourceUrl:'https://tidescomplicada.com/materiais/assinaturas/acesso-total',
+          tecUrl:''
+        },idx,clean.disciplines));
+        existingTitles.add(normalizeName(entry.title));
+      });
+      clean.contentVersions.tiCienciaDadosTcuCgu=1;
+    }
 
     // Repara tópicos órfãos conhecidos.
     const alias={ 'economia setor publico':'economia-setor-publico', 'direito proc. civil':'proc-civil', 'analise demonstracoes':'analise-demonstracoes' };
