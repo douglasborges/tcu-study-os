@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-5-cycle-dad-fix-2';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-6-ti-science-data';
 const APP_SHELL = [
   './',
   './index.html',
