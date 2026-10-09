@@ -9009,6 +9009,7 @@
           <div class="field span-3"><label>Disciplina</label><input id="reg-discipline" list="discipline-list" placeholder="Ex.: DCON" value="${escapeHTML(draft.discipline||'')}" required /></div>
           <div class="field span-2"><label>Modo</label><select id="reg-mode">${modeOptions(draft.mode||'Teoria')}</select></div>
           <div class="field span-5"><label>Tópico cadastrado</label><select id="reg-topic"><option value="">Selecione a disciplina para carregar tópicos...</option></select><div id="reg-topic-tec-link" class="field-help"></div></div>
+          <div class="field span-12" id="reg-topic-study-guide" aria-live="polite" hidden></div>
           <div class="field span-6"><label>Assunto / ajuste livre</label><input id="reg-subject" placeholder="Ex.: Aplicabilidade das normas constitucionais" value="${escapeHTML(draft.subject||'')}" /></div>
           <div class="field span-2"><label>Horas</label><input id="reg-hours" type="number" min="0" step="1" value="${dm.hours}" required /></div>
           <div class="field span-2"><label>Minutos</label><input id="reg-minutes" type="number" min="0" max="59" step="1" value="${dm.minutes}" required /></div>
@@ -9020,10 +9021,12 @@
       <section class="card" style="margin-top:18px"><h3>Últimos registros</h3>${renderRecentSessions()}</section>`;
     renderLayout(content);
     const disciplineInput=document.getElementById('reg-discipline'), topicSelect=document.getElementById('reg-topic'), subjectInput=document.getElementById('reg-subject'), tecLink=document.getElementById('reg-topic-tec-link');
-    function refreshTopics(selectedId=''){ const name=disciplineInput.value.trim(); topicSelect.innerHTML=name?topicSelectOptions(name,selectedId):'<option value="">Selecione a disciplina primeiro...</option>'; const sel=getTopicById(topicSelect.value); tecLink.innerHTML=sel&&sel.tecUrl?`<a class="source-link" target="_blank" rel="noreferrer" href="${escapeHTML(sel.tecUrl)}">Abrir caderno TEC deste tópico</a>`:''; }
+    const studyReference=document.getElementById('reg-topic-study-guide');
+    function refreshStudyReference_(topic){ const markup=topicStudyGuideHTML_(topic); studyReference.innerHTML=markup; studyReference.hidden=!markup; }
+    function refreshTopics(selectedId=''){ const name=disciplineInput.value.trim(); topicSelect.innerHTML=name?topicSelectOptions(name,selectedId):'<option value="">Selecione a disciplina primeiro...</option>'; const sel=getTopicById(topicSelect.value); tecLink.innerHTML=sel&&sel.tecUrl?`<a class="source-link" target="_blank" rel="noreferrer" href="${escapeHTML(sel.tecUrl)}">Abrir caderno TEC deste tópico</a>`:''; refreshStudyReference_(sel); }
     if(draft.discipline){ refreshTopics(draft.topicId||''); if(draft.topicId&&getTopicById(draft.topicId))subjectInput.value=getTopicById(draft.topicId).title; }
     disciplineInput.addEventListener('change',()=>refreshTopics('')); disciplineInput.addEventListener('input',()=>refreshTopics(''));
-    topicSelect.addEventListener('change',()=>{const t=getTopicById(topicSelect.value); if(t){subjectInput.value=t.title;tecLink.innerHTML=t.tecUrl?`<a class="source-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir caderno TEC deste tópico</a>`:'';}else tecLink.innerHTML='';});
+    topicSelect.addEventListener('change',()=>{const t=getTopicById(topicSelect.value); if(t){subjectInput.value=t.title;tecLink.innerHTML=t.tecUrl?`<a class="source-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir caderno TEC deste tópico</a>`:'';}else tecLink.innerHTML=''; refreshStudyReference_(t);});
     const cancel=document.getElementById('cancel-edit'); if(cancel)cancel.addEventListener('click',()=>{editingSessionId=null;lastDraft=null;renderRegister();});
     const ex=document.getElementById('fill-example'); if(ex)ex.addEventListener('click',()=>{disciplineInput.value='DCON';document.getElementById('reg-hours').value=1;document.getElementById('reg-minutes').value=35;document.getElementById('reg-questions').value=20;document.getElementById('reg-correct').value=15;refreshTopics('');});
     document.getElementById('register-form').addEventListener('submit',e=>{
@@ -9127,6 +9130,65 @@
 
 
 
+  function topicStudyGuide_(topic) {
+  if (!topic) return null;
+  if (topic.disciplineId === 'ti') {
+    return {
+      main: 'Ramon Souza — TI TOTAL',
+      extra: topic.title ? 'Módulo/aula: ' + topic.title : '',
+      extraLabel: 'Referência antiga',
+      felipe: false,
+      ramon: true,
+      check: ''
+    };
+  }
+  if (topic.disciplineId !== 'ti-ciencia-dados') return null;
+  const entries = Array.isArray(window.__TCU_DATA_CURRICULUM__) ? window.__TCU_DATA_CURRICULUM__ : [];
+  const idMatch = String(topic.id || '').match(/^topic_ticd_v1_(\d+)$/);
+  const titleMatch = String(topic.title || '').match(/^(\d{2})\s*\|/);
+  const seq = idMatch ? String(Number(idMatch[1])).padStart(2,'0') : titleMatch ? titleMatch[1] : '';
+  const entry = entries.find(item => String(item.title || '').startsWith(seq + ' |'));
+  if (!entry) return {
+    main: 'Referência ainda não cadastrada para este tópico',
+    extra: '',
+    extraLabel: '',
+    felipe: false,
+    ramon: false,
+    check: 'Você pode usar o campo Observações enquanto mapeamos a aula.'
+  };
+  const specialized = String(entry.sefazAl || '');
+  const primarySEFAZ = specialized.endsWith('(principal)');
+  const primary = primarySEFAZ ? specialized.replace(/\s+\(principal\)$/, '') : String(entry.originalSource || entry.source || '');
+  const extra = primarySEFAZ ? String(entry.originalSource || '') : specialized.replace(/\s+\(apoio\)$/, '');
+  const combined = primary + ' ' + extra;
+  return {
+    main: primary,
+    extra,
+    extraLabel: primarySEFAZ ? 'Complemento / lacunas' : 'Apoio / revisão',
+    felipe: /Felipe|SEFAZ.AL/i.test(combined),
+    ramon: /Ramon|TI TOTAL/i.test(combined),
+    check: 'Equivalência por título/ementa: confirme os subtópicos na aula/PDF.'
+  };
+}
+
+  function topicStudyGuideHTML_(topic) {
+  const ref = topicStudyGuide_(topic);
+  if (!ref) return '';
+  const linkFelipe = 'https://tidescomplicada.com/materiais/assinaturas/acesso-total';
+  const linkRamon = 'https://hotmart.com/pt-BR/club/titotal/products/1717070';
+  const portals = [
+    ref.felipe ? '<a class="ti-study-portal" target="_blank" rel="noopener noreferrer" href="' + linkFelipe + '">Abrir TI Descomplicada ↗</a>' : '',
+    ref.ramon ? '<a class="ti-study-portal" target="_blank" rel="noopener noreferrer" href="' + linkRamon + '">Abrir TI TOTAL ↗</a>' : ''
+  ].filter(Boolean).join(' ');
+  return '<div class="ti-study-guide" aria-label="Indicação de curso e aula">'
+    + '<div class="ti-study-guide-label">📚 Curso e aula recomendados</div>'
+    + '<div class="ti-study-main"><strong>Principal:</strong> ' + escapeHTML(ref.main) + '</div>'
+    + (ref.extra ? '<div class="ti-study-extra"><strong>' + escapeHTML(ref.extraLabel) + ':</strong> ' + escapeHTML(ref.extra) + '</div>' : '')
+    + (portals ? '<div class="ti-study-portals">' + portals + '</div>' : '')
+    + (ref.check ? '<div class="ti-study-caveat">' + escapeHTML(ref.check) + '</div>' : '')
+    + '</div>';
+}
+
   function renderTopics() {
     const discRows = state.disciplines.slice().sort((a,b) => a.name.localeCompare(b.name, 'pt-BR'));
     const selected = topicFilterDiscipline || (discRows.find(d => d.active)?.id) || (discRows[0] ? discRows[0].id : '');
@@ -9135,11 +9197,11 @@
     const visibleTopics = topics.filter(t => {
       if (topicStatusFilter !== 'Todos' && t.status !== topicStatusFilter) return false;
       const q = normalizeName(topicSearch);
-      if (q && !`${normalizeName(t.title)} ${normalizeName(t.details)} ${normalizeName(t.notes)}`.includes(q)) return false;
+      if (q && !`${normalizeName(t.title)} ${normalizeName(t.details)} ${normalizeName(t.notes)} ${normalizeName((topicStudyGuide_(t)||{}).main)} ${normalizeName((topicStudyGuide_(t)||{}).extra)}`.includes(q)) return false;
       return true;
     });
     const content = `
-      <section class="banner"><h2>Conteúdo</h2><p>Seu edital vivo: tópicos, status, prioridade e caderno TEC.</p></section>
+      <section class="banner"><h2>Conteúdo</h2><p>Seu edital vivo: tópicos, status, prioridade e caderno TEC. Para TI, a referência de curso e aula aparece abaixo do tópico.</p></section>
       <section class="card">
         <div class="form-grid">
           <div class="field span-3"><label>Disciplina</label><select id="topic-discipline">${discRows.map(d => `<option value="${escapeHTML(d.id)}" ${selectedDisc && d.id === selectedDisc.id ? 'selected' : ''}>${escapeHTML(d.name)}</option>`).join('')}</select></div>
@@ -9157,7 +9219,7 @@
         <div class="card kpi"><div class="label">Caderno de Erros</div><div class="value">${topics.filter(t=>t.status==='Caderno de Erros').length}</div><div class="hint">ataque</div></div>
       </section>
       <section class="card" style="margin-top:18px">
-        ${visibleTopics.length ? `<div class="table-wrap"><table><thead><tr><th>Ordem</th><th>Tópico</th><th>Status</th><th>Prior.</th><th>Caderno TEC URL</th><th>Detalhes/observação</th><th>Ações</th></tr></thead><tbody>${visibleTopics.map(t => `<tr data-topic-id="${escapeHTML(t.id)}"><td><input class="inline-input topic-order" type="number" min="1" value="${escapeHTML(t.order)}"></td><td><input class="inline-input topic-title" value="${escapeHTML(t.title)}"></td><td><select class="inline-select topic-status">${topicStatusOptions(t.status)}</select></td><td><select class="inline-select topic-priority">${PRIORITIES.map(p => `<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select></td><td><input class="inline-input topic-tec-url" value="${escapeHTML(t.tecUrl || '')}" placeholder="https://tecconcursos.com.br/...">${t.tecUrl ? `<a class="source-link mini-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir TEC</a>` : ''}</td><td><textarea class="inline-input topic-notes" rows="2">${escapeHTML(t.notes || t.details || '')}</textarea></td><td><button class="primary-btn mini" data-register-topic="${escapeHTML(t.id)}">Registrar</button> <button class="danger-btn mini" data-delete-topic="${escapeHTML(t.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div><div class="table-actions" style="margin-top:16px"><button class="primary-btn" id="save-topics">Salvar tópicos</button></div>` : '<p class="empty">Nenhum tópico encontrado para os filtros atuais. Adicione um tópico ou limpe os filtros.</p>'}
+        ${visibleTopics.length ? `<div class="table-wrap"><table><thead><tr><th>Ordem</th><th>Tópico</th><th>Status</th><th>Prior.</th><th>Caderno TEC URL</th><th>Detalhes/observação</th><th>Ações</th></tr></thead><tbody>${visibleTopics.map(t => `<tr data-topic-id="${escapeHTML(t.id)}"><td><input class="inline-input topic-order" type="number" min="1" value="${escapeHTML(t.order)}"></td><td><input class="inline-input topic-title" value="${escapeHTML(t.title)}">${topicStudyGuideHTML_(t)}</td><td><select class="inline-select topic-status">${topicStatusOptions(t.status)}</select></td><td><select class="inline-select topic-priority">${PRIORITIES.map(p => `<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select></td><td><input class="inline-input topic-tec-url" value="${escapeHTML(t.tecUrl || '')}" placeholder="https://tecconcursos.com.br/...">${t.tecUrl ? `<a class="source-link mini-link" target="_blank" rel="noreferrer" href="${escapeHTML(t.tecUrl)}">Abrir TEC</a>` : ''}</td><td><textarea class="inline-input topic-notes" rows="2">${escapeHTML(t.notes || t.details || '')}</textarea></td><td><button class="primary-btn mini" data-register-topic="${escapeHTML(t.id)}">Registrar</button> <button class="danger-btn mini" data-delete-topic="${escapeHTML(t.id)}">Excluir</button></td></tr>`).join('')}</tbody></table></div><div class="table-actions" style="margin-top:16px"><button class="primary-btn" id="save-topics">Salvar tópicos</button></div>` : '<p class="empty">Nenhum tópico encontrado para os filtros atuais. Adicione um tópico ou limpe os filtros.</p>'}
       </section>
     `;
     renderLayout(content);
