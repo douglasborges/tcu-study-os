@@ -222,3 +222,47 @@ tr:last-child td { border-bottom: 0; }
 .bar-track span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#FFCB05,#26247B)}
 .bar-track.alt span{background:linear-gradient(90deg,#26247B,#F5D86E)}
 @media (max-width: 700px){.app-version{display:none}.bar-label{display:block}.bar-label span{display:block;margin-top:3px;white-space:normal}}
+
+
+/* v11.8 — Orientação de curso/aula por tópico (TI - Ramon e TI - Ciência de Dados) */
+.ti-study-guide {
+  margin-top: 9px;
+  padding: 12px 13px;
+  border: 1px solid rgba(38,36,123,.18);
+  border-left: 4px solid #26247B;
+  border-radius: 12px;
+  background: #F5F5FB;
+  color: #191935;
+  min-width: 235px;
+  max-width: 530px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.ti-study-guide-label {
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: .045em;
+  color: #26247B;
+  margin-bottom: 7px;
+}
+.ti-study-main { font-size: 13px; line-height: 1.45; }
+.ti-study-extra { margin-top: 5px; color: #43435C; }
+.ti-study-portals { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.ti-study-portal {
+  display: inline-flex;
+  align-items: center;
+  background: #E7E7F9;
+  color: #26247B;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: 800;
+}
+.ti-study-portal:hover, .ti-study-portal:focus { text-decoration: underline; }
+.ti-study-caveat { margin-top: 8px; font-size: 11px; color: #646477; }
+#reg-topic-study-guide .ti-study-guide { max-width: none; }
+@media (max-width: 680px) {
+  .ti-study-guide { min-width: 185px; max-width: 320px; padding: 9px; }
+}
