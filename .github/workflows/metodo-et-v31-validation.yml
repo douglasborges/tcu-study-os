@@ -1,4 +1,4 @@
-name: Metodo ET v4.3.0 validation
+name: Metodo ET v4.3.1 validation
 
 on:
   push:
@@ -189,10 +189,10 @@ jobs:
           if(ended.bizurafo.focus.active||ended.cycle.index!==2) throw new Error('Encerrar intensivão deve preservar o ciclo original.');
           console.log('BizurAFO OK ·',snap.minutes,'min · ciclo preservado em',ended.cycle.index);
           NODE
-      - name: Smoke checks v4.3.0
+      - name: Smoke checks v4.3.1
         run: |
-          grep -q '4.3.0-bizurafo-focus' metodo-et/index.html
-          grep -q 'app.js?v=4.3.0' metodo-et/index.html
+          grep -q '4.3.1-drive-audit' metodo-et/index.html
+          grep -q 'app.js?v=4.3.1' metodo-et/index.html
           grep -q 'analytics.js?v=4.3.0' metodo-et/src/app.js
           grep -q 'personal.js?v=4.3.0' metodo-et/src/app.js
           grep -q 'goalSnapshot, completeGoal' metodo-et/src/app.js
@@ -200,7 +200,7 @@ jobs:
           grep -q 'bizurTodayPage' metodo-et/src/app.js
           grep -q 'MODO INTENSIVÃO AFO' metodo-et/src/app.js
           grep -q 'NÃO ESTUDAR NESTE INTENSIVÃO' metodo-et/src/personal.js
-          grep -q '4.3.0-bizurafo-focus' metodo-et/index.html
+          grep -q '4.3.1-drive-audit' metodo-et/index.html
           grep -q 'Central de Desempenho' metodo-et/src/app.js
           grep -q 'Metas ET' metodo-et/src/app.js
           grep -q 'Concluir esta ocorrência e chamar a próxima disciplina do ciclo' metodo-et/src/app.js
@@ -243,6 +243,9 @@ jobs:
           grep -q 'analyticsSnapshot' metodo-et/src/analytics.js
           grep -q 'attentionItems' metodo-et/src/analytics.js
           grep -q 'login_hint' metodo-et/drive-sync.js
+          grep -q '242070309786-1rn9vsc4fo0coaq3e3mptrlf1m9f0kt3.apps.googleusercontent.com' metodo-et/drive-sync.js
+          grep -q 'Arquivo vivo' metodo-et/drive-sync-ui.js
+          grep -q 'drive.google.com/file/d/' metodo-et/drive-sync-ui.js
           grep -q 'refreshAccountInfo' metodo-et/drive-sync.js
           grep -q 'data-ach-filter' metodo-et/src/app.js
           grep -q 'todayCommandCenter' metodo-et/src/app.js
