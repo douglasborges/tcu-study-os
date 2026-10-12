@@ -2,7 +2,7 @@
   'use strict';
 
   // Espelha a arquitetura estável do Drive Sync atual da StudyOS.
-  const CLIENT_ID = '242070309786-1rn9vsc4fo0coaq3e3mprtlf1m9f0kt3.apps.googleusercontent.com';
+  const CLIENT_ID = '242070309786-1rn9vsc4fo0coaq3e3mptrlf1m9f0kt3.apps.googleusercontent.com';
   const SCOPE = 'https://www.googleapis.com/auth/drive.file';
   const STORE_KEY = 'metodo-et:v1';
   const META_KEY = 'metodo-et-drive-sync-meta-v1';
