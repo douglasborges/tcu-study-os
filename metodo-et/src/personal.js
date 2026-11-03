@@ -175,8 +175,10 @@ export function completeGoal(current,id){
  const snap=goalSnapshot(st,index);
  if(!snap.ready)throw Error('A meta fecha apenas com 30 horas reais registradas. Faltam '+Math.max(0,snap.remaining)+' minutos.');
  const next=GOAL_TEMPLATES[index+1];
- if(!next)throw Error('A próxima meta ainda precisa ser configurada antes do fechamento.');
  const now=new Date().toISOString();item.status='done';item.completedAt=now;
+ // Pedido expresso: concluir a Meta 02 NUNCA desbloqueia a Meta 03.
+ if(index===1){const n=ensureGoalItem(st,index+1,'locked');n.status='locked';n.startedAt=null;st.goals.current=index+1;return st;}
+ if(!next)throw Error('A próxima meta ainda precisa ser configurada antes do fechamento.');
  const n=ensureGoalItem(st,index+1,'locked');n.status='active';n.startedAt=now;st.goals.current=index+1;
  ensureGoalItem(st,index+2,'locked');
  return st;
