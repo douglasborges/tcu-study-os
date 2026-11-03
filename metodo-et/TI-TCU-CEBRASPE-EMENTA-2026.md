@@ -121,9 +121,9 @@
 | Edital e cargo | Acrescenta ou reforça além do TCU/FGV 2021 | Tratamento |
 |---|---|---|
 | TCU/FGV 2021 — Auditor Geral | Python bibliotecas específicas, R/Tidyverse, record linkage, representação espacial, formatos e LAI/LGPD; manter integral | Núcleo A permanente |
-| TCDF/Cebraspe 2023 — controle | Dados prescritivos, decisões orientadas a dados e Excel avançado | TI63, TI83, INF04 como reforço |
+| TCDF/Cebraspe 2024 — Auditor de Controle Externo | Dados estruturados, bancos relacionais, modelagem dimensional, CRISP-DM, Big Data, EDA | FD01, FD02, TI06, TI07, TI83 |
 | SEFAZ/SE Cebraspe 2025 — Auditor Fiscal Tributário | Modelagem dimensional, mineração de dados, BI/SQL/planilhas | TI06, TI07, TI83, TI43, TI44 |
-| SEFAZ/RN Cebraspe 2025 — Auditor Fiscal | DAMA-DMBOK e qualidade de dados, CRISP-DM, governança | TI61, TI07, TI60 |
+| SEFAZ/RN Cebraspe 2025 — Auditor Fiscal | Fluência em dados, análise, governança, IA/PLN, Big Data, nuvem, Python/R, NoSQL, LAI/LGPD; na prova, DAMA-DMBOK e CRISP-DM | TI60–63, TI61, TI07, TI38/39, TI34/35 |
 | TCE/RN Cebraspe 2025 — Auditor Controle Externo | EDA, Python/R/SAS, modelagem dimensional e mineração de texto; para TI, IA generativa, MLOps e ética | TI83, TI37, TI38, TI39; IA em B |
 | TCU/Cebraspe 2025 — Técnico | Windows, Office, rede/navegadores, nuvem, segurança e backup | Reserva C, porque cargo distinto |
 | TCU/Cebraspe 2025 — Auditoria TI | IA e engenharia de dados, governança de TIC, segurança, desenvolvimento | B/C, evitando cursar todo edital especializado |
@@ -149,3 +149,8 @@
 - TCU contrato: https://contas.tcu.gov.br/contrata2/web/externo/consultaPublicaTermoContratual.xhtml?code=30963
 
 Fonte adicional: catálogo enviado pelo usuário **TI TOTAL.pdf**, páginas 1–99; roteiro autoral do Ramon, páginas 96–99.
+
+- SEFAZ/AL 2021: https://cdn.cebraspe.org.br/concursos/sefaz_al_21_auditor/arquivos/ED_1_SEFAZ_AL_2021_ABT.PDF
+- TCDF Auditor 2024: https://cdn.cebraspe.org.br/concursos/tc_df_24_auditor/arquivos/ED_1_TCDF_ACE_ABERTURA.PDF
+- SEFAZ/RN Auditor 2025: https://cdn.cebraspe.org.br/concursos/SEFAZ_RN_25_AUDITOR/arquivos/E8D7BE4C19CD39BFF1D87ECFBF92C0409AF35B178B8865C9534F17236D261200.pdf
+- CGU Auditor Ciência de Dados 2026: https://cdn.cebraspe.org.br/concursos/CGU_26_AFFC/arquivos/90B861E07F72AFB1ECB1B3AE8974443779FFF17388907D1F7F5FDB621761295F.html
