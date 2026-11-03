@@ -84,7 +84,7 @@
     'TI40 - Pareamento de dados',
     'TI41 - XML, JSON e CSV',
     'TI42 - Representação de Dados',
-    'TI43 - NoSQL'
+    'TI43 - NoSQL',
     "TI93 - SQL analítico avançado",
     "TI60 - Fluência em Dados",
     "TI61 - Governança de dados",
