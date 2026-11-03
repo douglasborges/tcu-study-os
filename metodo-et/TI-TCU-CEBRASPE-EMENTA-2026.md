@@ -27,6 +27,7 @@
 | **TI04** | **SQL DDL**. CREATE, ALTER, DROP, integridade e objetos | A |
 | **TI05** | **SQL DCL e DTL**. GRANT, REVOKE, COMMIT e ROLLBACK | A |
 | **TI43** | **Bancos NoSQL**. Modelos documento/chave-valor/grafo/colunar, CAP e BASE | A |
+| **TI09** | **Teoria da Informação**. Dado, informação, conhecimento, inteligência, gestão do conhecimento e metadados | A |
 | **TI93** | **SQL analítico avançado**. CTE, window functions, OVER, PARTITION BY, ROW_NUMBER e RANK | A |
 
 ## 02. Business Intelligence, engenharia e governança de dados
