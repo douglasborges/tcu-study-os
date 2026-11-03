@@ -195,6 +195,14 @@
           "availability": "conforme catalogo 02/11/2026"
         },
         {
+          "code": "TI09",
+          "title": "Teoria da Informação",
+          "scope": "Dado, informação, conhecimento, inteligência, gestão do conhecimento e metadados",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
           "code": "TI93",
           "title": "SQL analítico avançado",
           "scope": "CTE, window functions, OVER, PARTITION BY, ROW_NUMBER e RANK",
