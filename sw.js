@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-8-ti-reference-guide';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-9-alien-official';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,7 +10,10 @@ const APP_SHELL = [
   './theme-tcu-blue-gold.js',
   './oauth-client-hotfix-v11.3.1.js',
   './drive-sync.js',
-  './assets/icons/favicon-v11-blue-gold.svg',
+  './assets/icons/tcu-alien-icon-32.png',
+  './assets/icons/tcu-alien-icon-180.png',
+  './assets/icons/tcu-alien-icon-192.png',
+  './assets/icons/tcu-alien-icon-512.png',
   './manifest.webmanifest'
 ];
 

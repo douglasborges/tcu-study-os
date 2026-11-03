@@ -1,7 +1,7 @@
 {
   "name": "TCU Study OS",
   "short_name": "TCU Study OS",
-  "description": "TCU Study OS v11.5: corrige o ciclo no Dock, garante os cinco cursos ativos, mantém 5h/dia e 30h/semana e sinaliza aulas de DAD fora dos editais TCU usados como referência.",
+  "description": "TCU Study OS — preparação de estudos para o TCU, com identidade visual oficial verde alienígena.",
   "start_url": "./index.html?v=11.5",
   "scope": "./",
   "display": "standalone",
@@ -15,40 +15,22 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "assets/icons/logo-v11-azul-dourado.png",
-      "sizes": "any",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icons/logo-v11-azul-dourado.png",
+      "src": "assets/icons/tcu-alien-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/logo-v11-azul-dourado.png",
+      "src": "assets/icons/tcu-alien-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/logo-v11-azul-dourado.png",
+      "src": "assets/icons/tcu-alien-icon-1024.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "assets/icons/logo-v11-azul-dourado.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "assets/icons/logo-v11-azul-dourado.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "shortcuts": [
@@ -56,25 +38,49 @@
       "name": "Registrar sessão",
       "short_name": "Registrar",
       "url": "./index.html#registrar",
-      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/icons/tcu-alien-icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Progresso",
       "short_name": "Progresso",
       "url": "./index.html#progresso",
-      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/icons/tcu-alien-icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Conteúdo",
       "short_name": "Conteúdo",
       "url": "./index.html#conteudo",
-      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/icons/tcu-alien-icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Revisão Noturna",
       "short_name": "Revisão",
       "url": "./index.html#revisao",
-      "icons": [{ "src": "assets/icons/logo-v11-azul-dourado.png", "sizes": "any", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/icons/tcu-alien-icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
