@@ -303,7 +303,7 @@ export function migrateTiRamon(current){
  if(!current||!Array.isArray(current.subjects))return current;
  const ti=current.subjects.find(s=>s.id==='ti');
  if(!ti||!Array.isArray(ti.units))return current;
- const normalizeCode=t=>String(t||'').match(/^(FD\d+|SI\d+|TI\d+(?:\.II)?(?:\.I)?(?:-B)?|INF\d+)/i)?.[1]?.toUpperCase()||'';
+ const normalizeCode=t=>{const s=String(t||'');if(/^TI01\s*-\s*Parte I\b/i.test(s))return 'TI01.I';if(/^TI01\s*-\s*Parte II\b/i.test(s))return 'TI01.II';if(/^TI37\s*-\s*Parte I\b/i.test(s))return 'TI37.I';if(/^TI37\s*-\s*Parte II\b/i.test(s))return 'TI37.II';return s.match(/^(FD\d+|SI\d+|TI\d+(?:\.II)?(?:\.I)?(?:-B)?|INF\d+)/i)?.[1]?.toUpperCase()||'';};
  const coreSet=new Set(TI_RAMON_ORIGINAL);
  const codes=new Set(ti.units.map(x=>normalizeCode(x.title)).filter(Boolean));
  const oldCourse=ti.course;
@@ -330,7 +330,7 @@ export function migrateTiRamon(current){
      order:ti.units.length+1,
      theoryDone:false,theoryDate:'',batteryDone:false,generalDone:false,materialReady:false,
      battery:{attempted:0,correct:0},general:{attempted:0,correct:0},
-     marks:[],legacy:[],hiddenFromRoute:m.priority==='C',courseId:COURSE_ID,
+     marks:[],legacy:[],hiddenFromRoute:m.priority==='C'||m.availability.startsWith('previsto'),courseId:COURSE_ID,
      pdfDone:false,exerciseVideoDone:false,theoryStarted:false,completedBlocks:[],
      planningPriority:m.priority,
      plannedScope:m.scope,
