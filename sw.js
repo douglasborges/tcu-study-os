@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tcu-study-os-pwa-v11-9-alien-official';
+const CACHE_NAME = 'tcu-study-os-pwa-v11-10-original-exact';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './theme-tcu-blue-gold.js',
   './oauth-client-hotfix-v11.3.1.js',
   './drive-sync.js',
+  './assets/icons/tcu-icone-original-exato.png',
   './assets/icons/tcu-alien-icon-32.png',
   './assets/icons/tcu-alien-icon-180.png',
   './assets/icons/tcu-alien-icon-192.png',
