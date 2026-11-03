@@ -1,0 +1,777 @@
+{
+  "version": "tcu-cebraspe-20261103-1",
+  "teacher": "Ramon Souza",
+  "course": "TI Total",
+  "goal": "TCU Auditor Federal de Controle Externo - area geral",
+  "planningAssumption": "Cebraspe contratado pelo TCU, futuro edital geral ainda nao publicado",
+  "baseline": {
+    "edital": "TCU/FGV 2021 (prova 2022)",
+    "originalModules": [
+      "FD00",
+      "FD01",
+      "FD02",
+      "FD03",
+      "FD04",
+      "FD05",
+      "FD06",
+      "SI00",
+      "SI01",
+      "TI01.I",
+      "TI01.II",
+      "TI02",
+      "TI03",
+      "TI04",
+      "TI05",
+      "TI06",
+      "TI07",
+      "TI08",
+      "TI08.II",
+      "TI09",
+      "TI21.II",
+      "TI23",
+      "TI25",
+      "TI34",
+      "TI35",
+      "TI36",
+      "TI37.I",
+      "TI37.II",
+      "TI38",
+      "TI38.II",
+      "TI39",
+      "TI39.II",
+      "TI40",
+      "TI41",
+      "TI42",
+      "TI43"
+    ],
+    "operationalOrder": [
+      "FD01",
+      "FD02",
+      "FD03",
+      "FD04",
+      "FD05",
+      "FD06",
+      "FD00",
+      "SI00",
+      "SI01",
+      "TI01.I",
+      "TI01.II",
+      "TI02",
+      "TI03",
+      "TI04",
+      "TI05",
+      "TI06",
+      "TI07",
+      "TI08",
+      "TI08.II",
+      "TI09",
+      "TI21.II",
+      "TI23",
+      "TI25",
+      "TI34",
+      "TI35",
+      "TI36",
+      "TI37.I",
+      "TI37.II",
+      "TI38",
+      "TI38.II",
+      "TI39",
+      "TI39.II",
+      "TI40",
+      "TI41",
+      "TI42",
+      "TI43"
+    ]
+  },
+  "sourceCatalog": "TI TOTAL.pdf (usuario, 02/11/2026)",
+  "groups": [
+    {
+      "id": "01",
+      "name": "Fundamentos, modelagem e bancos de dados",
+      "priority": "A",
+      "modules": [
+        {
+          "code": "FD01",
+          "title": "Dado, informação, conhecimento; estruturados/semiestruturados; dados abertos",
+          "scope": "Tipos, ciclo de vida, coleta, integração, interoperabilidade e qualidade de dados",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "FD02",
+          "title": "SGBD, metadados e transações",
+          "scope": "ANSI/SPARC; catálogo e metadados; ACID e consistência",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "FD03",
+          "title": "Modelagem conceitual (MER)",
+          "scope": "Entidades, atributos, cardinalidade, relacionamentos, especialização e notações",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "FD04",
+          "title": "Modelo relacional",
+          "scope": "Relações, chaves, restrições e normalização",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "FD05",
+          "title": "Mapeamento ER-relacional",
+          "scope": "Regras de transformação e integridade referencial",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "FD06",
+          "title": "Introdução a SQL",
+          "scope": "DDL, DML, DCL, SELECT e lógica de NULL",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI01.I",
+          "title": "Bancos de dados — aprofundamento",
+          "scope": "Arquitetura, transações e implementação",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI01.II",
+          "title": "Modelo relacional — aprofundamento",
+          "scope": "Normalização, dependências funcionais e álgebra relacional",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI02",
+          "title": "MER — aprofundamento",
+          "scope": "Modelagem e mapeamento",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI03",
+          "title": "SQL DML",
+          "scope": "SELECT, JOIN, filtros, agregações, subconsultas e operações de conjuntos",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI04",
+          "title": "SQL DDL",
+          "scope": "CREATE, ALTER, DROP, integridade e objetos",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI05",
+          "title": "SQL DCL e DTL",
+          "scope": "GRANT, REVOKE, COMMIT e ROLLBACK",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI43",
+          "title": "Bancos NoSQL",
+          "scope": "Modelos documento/chave-valor/grafo/colunar, CAP e BASE",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI93",
+          "title": "SQL analítico avançado",
+          "scope": "CTE, window functions, OVER, PARTITION BY, ROW_NUMBER e RANK",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "name": "Business Intelligence, engenharia e governança de dados",
+      "priority": "A",
+      "modules": [
+        {
+          "code": "TI06",
+          "title": "Business Intelligence e Data Warehouse",
+          "scope": "ETL/ELT, DW, Data Mart, tabelas fato e dimensão, estrela/floco, OLAP",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI08",
+          "title": "Big Data",
+          "scope": "5 Vs; Hadoop e processamento distribuído",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI08.II",
+          "title": "Big Data avançado",
+          "scope": "Spark, Kafka, ferramentas e arquiteturas de processamento",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI60",
+          "title": "Fluência em Dados",
+          "scope": "Qualidade, transformação e indicadores",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI61",
+          "title": "Governança de dados",
+          "scope": "DAMA-DMBOK, papéis, catálogo, metadados, lineage, qualidade e stewardship",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI44",
+          "title": "Power BI e visualização",
+          "scope": "Dashboards, indicadores, medidas e comunicação de evidências",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI41",
+          "title": "XML, JSON e CSV",
+          "scope": "Sintaxe, interoperabilidade e transformação de formatos",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI42",
+          "title": "Representação de dados",
+          "scope": "Bases numéricas, caracteres, aritmética computacional, representação espacial",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI83",
+          "title": "Visualização e análise exploratória",
+          "scope": "Histogramas, boxplot, quartis, outliers, gráficos e leitura crítica",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI21.II",
+          "title": "Computação em nuvem",
+          "scope": "IaaS/PaaS/SaaS, cloud storage e contexto de pipelines de dados",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI33",
+          "title": "APIs e web services",
+          "scope": "HTTP, REST, SOAP, integração de fontes e XML/JSON",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI76",
+          "title": "Mensageria e streaming",
+          "scope": "Filas, publicação/assinatura, ingestão e eventos",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "name": "Ciência, mineração, estatística aplicada e aprendizado de máquina",
+      "priority": "A",
+      "modules": [
+        {
+          "code": "TI07",
+          "title": "Mineração de dados",
+          "scope": "CRISP-DM, classificação, regras de associação, clusterização e anomalias",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI36",
+          "title": "Inteligência Artificial",
+          "scope": "Paradigmas, aplicações e distinções IA/ML/analítica",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI37.I",
+          "title": "Machine Learning",
+          "scope": "Árvores, Naive Bayes, KNN, SVM, validação, regularização e métricas",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI37.II",
+          "title": "Processamento de Linguagem Natural",
+          "scope": "n-gramas, semântica vetorial, tópicos, sentimento, classificação textual",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI62",
+          "title": "Ciência de dados",
+          "scope": "Etapas de projetos, exploração e interpretação",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI63",
+          "title": "Análise de dados",
+          "scope": "Técnicas descritivas, diagnósticas, preditivas e prescritivas",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI86",
+          "title": "Clusterização",
+          "scope": "K-means, métodos hierárquicos e avaliação de agrupamentos",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI87",
+          "title": "Análise de Componentes Principais (PCA)",
+          "scope": "Redução da dimensionalidade, interpretação e uso",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI88",
+          "title": "Análise de correspondência",
+          "scope": "Associação e representação de variáveis categóricas",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI89",
+          "title": "Regressão",
+          "scope": "Regressão linear/logística, coeficientes, resíduos e interpretação",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI90",
+          "title": "Séries temporais",
+          "scope": "Tendência, sazonalidade, previsão e validação temporal",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI96",
+          "title": "Redes neurais artificiais — lançamento futuro",
+          "scope": "Deep Learning, CNN/RNN e fundamentos de Transformers; previsto 14/11/2026",
+          "original": false,
+          "priority": "B",
+          "availability": "previsto 14/11/2026"
+        },
+        {
+          "code": "TI97",
+          "title": "IA generativa, LLM e RAG — lançamento futuro",
+          "scope": "Transformers, embeddings, RAG, alucinação, agentes, ética e controles; previsto 28/11/2026",
+          "original": false,
+          "priority": "B",
+          "availability": "previsto 28/11/2026"
+        },
+        {
+          "code": "TI94",
+          "title": "Visão computacional",
+          "scope": "Noções de imagens e identificação de padrões",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI95",
+          "title": "Geoprocessamento",
+          "scope": "Dados geoespaciais e georreferenciamento para auditoria",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "name": "Programação e análise prática",
+      "priority": "A",
+      "modules": [
+        {
+          "code": "TI80",
+          "title": "Lógica de programação",
+          "scope": "Tipos, operações, condições, laços e funções",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI38",
+          "title": "Python",
+          "scope": "Coleções, estruturas de controle, funções, arquivos, JSON/CSV",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI38.II",
+          "title": "Bibliotecas Python",
+          "scope": "Pandas, NumPy, SciPy, Scikit-Learn, NLTK, TensorFlow e Arrow",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI39",
+          "title": "Linguagem R",
+          "scope": "Sintaxe, data frame, fatores, vetores, gráficos e estruturas de controle",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI39.II",
+          "title": "Tidyverse",
+          "scope": "dplyr, ggplot2 e manipulação de dados",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI40",
+          "title": "Pareamento de registros",
+          "scope": "Record linkage, deduplicação, regras e qualidade do pareamento",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF04",
+          "title": "Excel e análise em planilhas",
+          "scope": "Filtros, fórmulas, tabelas dinâmicas e Power Query — se exigido",
+          "original": false,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "name": "Segurança, privacidade e governança pública",
+      "priority": "A",
+      "modules": [
+        {
+          "code": "SI00",
+          "title": "Fundamentos de Segurança da Informação",
+          "scope": "CID, autenticidade, não repúdio e controles",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "SI01",
+          "title": "Ameaças e ataques",
+          "scope": "Malware, vulnerabilidades e defesas",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI23",
+          "title": "Segurança da Informação",
+          "scope": "Incidentes, criptografia, backup e controles",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI25",
+          "title": "ISO 27001/27002 e SGSI",
+          "scope": "Políticas, gestão de riscos, tratamento e segurança de dados",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI34",
+          "title": "Lei de Acesso à Informação",
+          "scope": "Lei 12.527/2011, transparência e restrição de acesso",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI35",
+          "title": "LGPD",
+          "scope": "Lei 13.709/2018, bases legais, direitos, agentes e tratamento pelo poder público",
+          "original": true,
+          "priority": "A",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI50",
+          "title": "ISO 27005 — riscos",
+          "scope": "Risco, impacto e proteção de dados",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI98",
+          "title": "Auditoria de Sistemas",
+          "scope": "Controles de TI e aplicação de análise de dados em auditoria",
+          "original": false,
+          "priority": "B",
+          "availability": "conforme catalogo 02/11/2026"
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "name": "Técnico TCU e expansão de Auditoria de TI — reserva preventiva",
+      "priority": "C",
+      "modules": [
+        {
+          "code": "FD00",
+          "title": "Introdução à Fluência em Dados",
+          "scope": "Revisão inicial, sem bloquear FD01",
+          "original": true,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI21",
+          "title": "Redes de computadores",
+          "scope": "Redes, TCP/IP, internet/intranet, protocolos",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI22",
+          "title": "Redes sem fio",
+          "scope": "Wi-Fi e princípios de redes",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI13",
+          "title": "PMBOK 7 — gestão de projetos",
+          "scope": "Seleção apenas se constar no edital geral",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI14",
+          "title": "COBIT 2019",
+          "scope": "Governança de TI em órgãos de controle",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI15",
+          "title": "ITIL 4",
+          "scope": "Serviços de TI",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI68",
+          "title": "ISO 38500",
+          "scope": "Governança corporativa de TI",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI70",
+          "title": "Guia de Governança de TIC do SISP",
+          "scope": "Governança federal",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI71",
+          "title": "IN 94/2022",
+          "scope": "Planejamento e fiscalização de contratações de TIC",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI27",
+          "title": "Engenharia de Software",
+          "scope": "Modelos ágeis e desenvolvimento",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI52",
+          "title": "OWASP e desenvolvimento seguro",
+          "scope": "Segurança de aplicações",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI53",
+          "title": "DevOps/DevSecOps",
+          "scope": "Princípios CI/CD",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "TI77",
+          "title": "Docker e Kubernetes",
+          "scope": "Contêineres, orquestração e nuvem",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF01",
+          "title": "Windows",
+          "scope": "Ambiente Windows 10/11, arquivos e pastas",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF03",
+          "title": "Word",
+          "scope": "Processador de textos Office",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF05",
+          "title": "PowerPoint",
+          "scope": "Apresentações Office",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF07",
+          "title": "Correio eletrônico",
+          "scope": "Email e boas práticas",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF08",
+          "title": "Navegadores",
+          "scope": "Chrome, Firefox, Edge; navegação e busca",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF09",
+          "title": "Pesquisa na internet e redes sociais",
+          "scope": "Mecanismos de busca e redes sociais",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        },
+        {
+          "code": "INF10",
+          "title": "Hardware e Software",
+          "scope": "Noções de sistemas e componentes",
+          "original": false,
+          "priority": "C",
+          "availability": "conforme catalogo 02/11/2026"
+        }
+      ]
+    }
+  ],
+  "additionalExistingOriginal": [
+    "TI09",
+    "TI43"
+  ],
+  "priorities": {
+    "A": "nucleo 2021 + recurrences auditor fiscal/controle",
+    "B": "expansao dados/IA para Cebraspe",
+    "C": "reserva TCU tecnico e auditoria TI, acionada pelo novo edital"
+  },
+  "studyingMethod": {
+    "cycle": "intercalar disciplinas a cada sessao",
+    "sessionMinutes": "60-90 minutos, tempo real",
+    "activitySequence": [
+      "teoria PDF/video por necessidade",
+      "10-20 questoes por subtopico, preferir Cebraspe",
+      "revisao ativa 1-7-21 dias como intervalo inicial ajustavel",
+      "checkpoint a cada 4 unidades",
+      "questoes mistas e caderno de erros"
+    ]
+  },
+  "sourceOfficial": [
+    {
+      "label": "TCU 2025 tecnico",
+      "url": "https://cdn.cebraspe.org.br/concursos/tcu_25_tefc/arquivos/Ed_1_TCU_25_TEFC_Abertura.pdf"
+    },
+    {
+      "label": "SEFAZ SE 2025",
+      "url": "https://cdn.cebraspe.org.br/concursos/sefaz_se_25_auditor/arquivos/Ed_1_SEFAZ_SE_25_abertura.pdf"
+    },
+    {
+      "label": "TCE RN 2025",
+      "url": "https://cdn.cebraspe.org.br/concursos/tce_rn_25/arquivos/396F9190B44FB2741EF67D9340D44027247611E0939FB1BF9C6944F7BE3B5CDF.pdf"
+    },
+    {
+      "label": "TCU contrato",
+      "url": "https://contas.tcu.gov.br/contrata2/web/externo/consultaPublicaTermoContratual.xhtml?code=30963"
+    }
+  ]
+}
