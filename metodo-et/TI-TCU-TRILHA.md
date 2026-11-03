@@ -68,3 +68,8 @@ O roteiro do Ramon não pode:
 ## Regra de manutenção
 
 Mudanças futuras em TI devem preservar os 36 itens acima, salvo decisão explícita do usuário de adicionar, remover ou substituir algum conteúdo.
+
+
+## Atualização autorizada de 03/11/2026 — fonte oficial Ramon
+
+Com a escolha expressa do usuário, a **fonte didática primária passa a ser TI Total — Ramon Souza**, enquanto os 36 itens acima continuam preservados e válidos (não foram apagados nem reescritos). O currículo ampliado de controle/fiscal Cebraspe e os recortes de Técnico TCU e Auditoria de TI constam em [TI-TCU-CEBRASPE-EMENTA-2026.md](./TI-TCU-CEBRASPE-EMENTA-2026.md) e [data/ti-tcu-cebraspe-2026.json](./data/ti-tcu-cebraspe-2026.json). A migração deve preservar sessões e progresso; módulos extras devem ser aditivos, nunca deletar o catálogo anterior. A Meta 03 permanece bloqueada por determinação do usuário.
