@@ -34,11 +34,14 @@ function tiCode(u){
 }
 export function methodUnits(s){
  if(s?.id!=='ti')return s?.units||[];
+ // Itens históricos do Felipe e a reserva C/lançamentos não entram na rota ativa.
+ // Os objetos permanecem preservados em s.units para auditoria e reativação futura.
+ const visible=(s.units||[]).filter(u=>!u.hiddenFromRoute);
  const byCode=new Map();
- for(const u of s.units||[]){const code=tiCode(u);if(code&&!byCode.has(code))byCode.set(code,u);}
+ for(const u of visible){const code=tiCode(u);if(code&&!byCode.has(code))byCode.set(code,u);}
  const ordered=TI_TCU_OPERATIONAL_ORDER.map(code=>byCode.get(code)).filter(Boolean),used=new Set(ordered.map(u=>u.id));
- // Nunca descartar conteúdo importado: qualquer item adicional permanece na trilha ao final, na ordem original.
- return [...ordered,...(s.units||[]).filter(u=>!used.has(u.id)).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0))];
+ // Módulos Ramon adicionados aparecem após os 36 itens históricos, sem excluir registros.
+ return [...ordered,...visible.filter(u=>!used.has(u.id)).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0))];
 }
 export function methodOrder(s,u){const i=methodUnits(s).findIndex(v=>v.id===u?.id);return i>=0?i+1:Number(u?.order)||0;}
 export function normalizeMethodState(current){
