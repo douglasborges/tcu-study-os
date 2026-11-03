@@ -85,6 +85,47 @@
     'TI41 - XML, JSON e CSV',
     'TI42 - Representação de Dados',
     'TI43 - NoSQL'
+    "TI93 - SQL analítico avançado",
+    "TI60 - Fluência em Dados",
+    "TI61 - Governança de dados",
+    "TI44 - Power BI e visualização",
+    "TI83 - Visualização e análise exploratória",
+    "TI33 - APIs e web services",
+    "TI76 - Mensageria e streaming",
+    "TI62 - Ciência de dados",
+    "TI63 - Análise de dados",
+    "TI86 - Clusterização",
+    "TI87 - Análise de Componentes Principais (PCA)",
+    "TI88 - Análise de correspondência",
+    "TI89 - Regressão",
+    "TI90 - Séries temporais",
+    "TI96 - Redes neurais artificiais — lançamento futuro",
+    "TI97 - IA generativa, LLM e RAG — lançamento futuro",
+    "TI94 - Visão computacional",
+    "TI95 - Geoprocessamento",
+    "TI80 - Lógica de programação",
+    "INF04 - Excel e análise em planilhas",
+    "TI50 - ISO 27005 — riscos",
+    "TI98 - Auditoria de Sistemas",
+    "TI21 - Redes de computadores",
+    "TI22 - Redes sem fio",
+    "TI13 - PMBOK 7 — gestão de projetos",
+    "TI14 - COBIT 2019",
+    "TI15 - ITIL 4",
+    "TI68 - ISO 38500",
+    "TI70 - Guia de Governança de TIC do SISP",
+    "TI71 - IN 94/2022",
+    "TI27 - Engenharia de Software",
+    "TI52 - OWASP e desenvolvimento seguro",
+    "TI53 - DevOps/DevSecOps",
+    "TI77 - Docker e Kubernetes",
+    "INF01 - Windows",
+    "INF03 - Word",
+    "INF05 - PowerPoint",
+    "INF07 - Correio eletrônico",
+    "INF08 - Navegadores",
+    "INF09 - Pesquisa na internet e redes sociais",
+    "INF10 - Hardware e Software",
   ];
 
   // Trilha TCU 2025 + editais recentes Cebraspe, focada em dados para TCU/CGU.
@@ -93,25 +134,21 @@
   // Aproveitamento seletivo do Curso Especializado SEFAZ-AL (conforme screenshots do usuário).
   // P=fonte principal; A=apoio. Não assumir cobertura de subtópicos não visíveis nos prints.
   const SEFAZ_AL_MATCHES = {"12":["23 SIS APIs REST (formatos XML/CSV: Ramon)","A"],"13":["8 BD Infraestrutura Analítica","P"],"14":["9 BD Modelagem Multidimensional","P"],"15":["8 BD Infraestrutura Analítica e 25 SIS Sistemas Distribuídos","A"],"16":["10 BD Big Data e Data Mining","P"],"17":["10 BD Big Data e Data Mining (Hadoop e Spark: Curso Geral 13)","A"],"18":["8 BD Infraestrutura Analítica (Data Lake explícito)","P"],"20":["8 BD Infraestrutura Analítica e 12 CD Análise Exploratória","A"],"21":["23 SIS APIs REST","P"],"22":["25 SIS Sistemas Distribuídos (Apache Kafka explícito)","P"],"23":["21 SIS Cloud Computing","P"],"24":["31 DVP DevOps e 32 DVP Git","A"],"25":["10 BD Big Data e Data Mining e 12 CD Análise Exploratória","A"],"26":["12 CD Análise Exploratória","P"],"27":["16 CD Tratamento de Dados","P"],"28":["10 BD Big Data e Data Mining (algoritmo Apriori: verificar subassuntos)","A"],"29":["13 CD Machine Learning","P"],"30":["13 CD Machine Learning","P"],"31":["13 CD Machine Learning (detecção de anomalias: verificar subassuntos)","A"],"32":["12 CD Análise Exploratória (base de estatística; Guilherme complementa)","A"],"34":["12 CD Análise Exploratória e 17 CD Avaliação de Modelos Preditivos","A"],"36":["17 CD Avaliação de Modelos Preditivos (curva ROC explícita)","P"],"37":["17 CD Avaliação de Modelos Preditivos (regularização: Geral 22)","A"],"38":["11 CD Inteligência Artificial e 13 CD Machine Learning","P"],"39":["14 CD Redes Neurais","P"],"40":["15 CD Processamento de Linguagem Natural","P"],"41":["11 CD Inteligência Artificial (LLMs e RAG não confirmados)","A"],"43":["11 CD Inteligência Artificial (ética e explicabilidade são complemento)","A"],"44":["31 DVP DevOps (MLOps específico continua complemento)","A"],"45":["27 PRG Lógica de Programação","P"],"48":["5-6 BD SQL e 12 CD Análise Exploratória (Python: Curso Geral)","A"],"52":["12 CD Análise Exploratória e 16 CD Tratamento de Dados","A"],"53":["1-17 BD/CD Fluência em Dados (revisão de Cebraspe)","A"],"01":["1 BD Dados e Teoria da Informação","P"],"02":["2 BD Introdução aos Bancos de Dados","P"],"03":["3 BD Modelagem Conceitual - MER","P"],"04":["4 BD Modelagem Lógica - Modelo Relacional","P"],"05":["3-4 BD Modelagem (para implementação física, usar Curso Geral 05)","A"],"06":["5-6 BD SQL - parte 1 e parte 2","P"],"07":["5-6 BD SQL - parte 1 e parte 2","P"],"08":["5-6 BD SQL (verificar detalhes de DML, DDL, DCL e transações)","A"]};
-  window.__TCU_DATA_CURRICULUM__ = SCIENCE_DATA_CURRICULUM.map(entry => {
-    const match = SEFAZ_AL_MATCHES[entry.title.slice(0,2)];
-    if (!match) return {...entry,originalSource:entry.source,sefazAl:''};
-    const [aula,role] = match;
-    const specialized = 'Felipe • Curso SEFAZ-AL, aula '+aula;
-    return {...entry,originalSource:entry.source,
-      sefazAl:specialized+' ('+(role==='P'?'principal':'apoio')+')',
-      source:role==='P'
-        ? specialized+' (principal); '+entry.source+' (apenas lacunas)'
-        : entry.source+'; '+specialized+' (apoio, sem repetir conteúdo)'
-    };
-  });
+  // Novo material principal: TI TOTAL (Ramon Souza); fontes Felipe preservadas apenas como histórico de catálogo.
+  const RAMON_SOURCE_BY_INDEX = {"10":"TI01.I","11":"TI43","12":"TI41 / TI42","13":"TI06","14":"TI06","15":"TI06 / TI08.II","16":"TI08","17":"TI08.II","18":"TI08.II","19":"TI61","20":"TI44 / TI83","21":"TI33","22":"TI76","23":"TI21.II","24":"TI53","25":"TI07","26":"TI83","27":"TI60","28":"TI07","29":"TI37.I","30":"TI86","31":"TI07","32":"TI83 / TI89","33":"TI89","34":"TI89","35":"TI90","36":"TI37.I","37":"TI37.I","38":"TI36","39":"TI96 (lançamento futuro)","40":"TI37.II","41":"TI97 (lançamento futuro)","42":"TI97 (lançamento futuro)","43":"TI97 (lançamento futuro)","44":"TI53 (MLOps: complemento dirigido)","45":"TI80","46":"TI38","47":"TI38.II","48":"TI38","49":"TI39 / TI39.II","50":"TI40","51":"TI34 / TI35","52":"TI98","53":"Cadernos Cebraspe do TI Total","01":"FD01","02":"FD02 / TI01.I","03":"FD03 / TI02","04":"FD04 / TI01.II","05":"FD05","06":"TI03","07":"TI03 / TI93","08":"TI04 / TI05","09":"TI93"};
+  window.__TCU_DATA_CURRICULUM__ = SCIENCE_DATA_CURRICULUM.map(entry => ({
+    ...entry,
+    originalSource: entry.source,
+    sefazAl: '',
+    source: 'TI Total · Ramon Souza — '+(RAMON_SOURCE_BY_INDEX[entry.title.slice(0,2)] || 'roteiro TCU Geral/Cebraspe')
+  }));
 
   const ACTIVE_SPECS = [
     { id: 'afo', name: 'AFO (Pacelli)', source: 'Pacelli — AFO', priority: 'Alta' },
     { id: 'dad-rafael-oliveira-vas-2026', name: 'DAD - Rafael Oliveira [VAs] [2026]', source: 'Rafael Oliveira — Grupo GEN', sourceUrl: 'https://www.grupogen.com.br/curso-direito-administrativo-rafael-oliveira', priority: 'Alta', topics: DAD_TOPICS },
     { id: 'port-ceb-teorico-2026', name: '[Port_Cebraspe] 1- Teórico [2026] [13 aulas]', source: 'Andresan Machado — Missão Cebraspe', priority: 'Média', topics: PORT_TOPICS },
     { id: 'dcon', name: 'DCON', priority: 'Alta' },
-    { id: 'ti', name: 'TI - Ramon', priority: 'Alta', topics: TI_TOPICS }
+    { id: 'ti', name: 'TI Total — Ramon Souza · TCU Geral/Cebraspe', source: 'Ramon Souza — TI Total', priority: 'Alta', topics: TI_TOPICS }
   ];
   const ACTIVE_IDS = ACTIVE_SPECS.map(spec => spec.id);
 
